@@ -1,0 +1,38 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'db/schema.rb'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'db/migrate/20240726225157_devise_token_auth_create_users.rb'
+    
+  TargetRubyVersion: 3.2
+
+Style/Documentation:
+  Enabled: false
+  
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    -  'config/environments/development.rb'
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/QuotedSymbols:
+  EnforcedStyle: double_quotes
+
+# Add more custom rule configurations
