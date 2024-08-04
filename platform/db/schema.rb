@@ -10,9 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_27_110422) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_04_200123) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "organizations", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_organizations_on_name", unique: true
+  end
+
+  create_table "user_organization_memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "organization_id", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_user_organization_memberships_on_organization_id"
+    t.index ["user_id", "organization_id"], name: "index_user_org_memberships_on_user_id_and_org_id", unique: true
+    t.index ["user_id"], name: "index_user_organization_memberships_on_user_id"
+  end
+
+  create_table "user_workspace_memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "workspace_id", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "workspace_id"], name: "index_user_workspace_memberships_on_user_id_and_workspace_id", unique: true
+    t.index ["user_id"], name: "index_user_workspace_memberships_on_user_id"
+    t.index ["workspace_id"], name: "index_user_workspace_memberships_on_workspace_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "provider", default: "email", null: false
@@ -38,10 +67,27 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_27_110422) do
     t.datetime "last_sign_in_at"
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
+    t.string "organization_name"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["email", "provider"], name: "index_users_on_email_and_provider", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["organization_name"], name: "index_users_on_organization_name"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  create_table "workspaces", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "organization_id"], name: "index_workspaces_on_name_and_organization_id", unique: true
+    t.index ["organization_id"], name: "index_workspaces_on_organization_id"
+  end
+
+  add_foreign_key "user_organization_memberships", "organizations"
+  add_foreign_key "user_organization_memberships", "users"
+  add_foreign_key "user_workspace_memberships", "users"
+  add_foreign_key "user_workspace_memberships", "workspaces"
+  add_foreign_key "workspaces", "organizations"
 end
