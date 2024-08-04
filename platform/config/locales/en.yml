@@ -27,5 +27,13 @@
 #       "yes": yup
 #       enabled: "ON"
 
+# config/locales/en.yml
 en:
-  hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        workspace:
+          attributes:
+            name:
+              unique_within_organization: "must be unique within the organization"
+
