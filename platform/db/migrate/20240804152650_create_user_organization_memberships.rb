@@ -7,10 +7,10 @@ class CreateUserOrganizationMemberships < ActiveRecord::Migration[7.1]
       t.references :organization, null: false, foreign_key: true
       t.string :role, null: false
 
+      t.index %i[user_id organization_id], unique: true,
+                                           name: "index_user_org_memberships_on_user_id_and_org_id"
+
       t.timestamps
     end
-
-    add_index :user_organization_memberships, %i[user_id organization_id], unique: true,
-                                                                           name: "index_user_org_memberships_on_user_id_and_org_id"
   end
 end

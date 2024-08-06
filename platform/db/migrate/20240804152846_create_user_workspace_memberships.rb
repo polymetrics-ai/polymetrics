@@ -6,11 +6,10 @@ class CreateUserWorkspaceMemberships < ActiveRecord::Migration[7.1]
       t.references :user, null: false, foreign_key: true
       t.references :workspace, null: false, foreign_key: true
       t.string :role, null: false
+      t.index %i[user_id workspace_id], unique: true,
+                                        name: "index_user_workspace_memberships_on_user_id_and_workspace_id"
 
       t.timestamps
     end
-
-    add_index :user_workspace_memberships, %i[user_id workspace_id], unique: true,
-                                                                     name: "index_user_workspace_memberships_on_user_id_and_workspace_id"
   end
 end

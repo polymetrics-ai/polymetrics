@@ -42,8 +42,11 @@ RSpec.describe User do
         expect { user.save }.to change(UserWorkspaceMembership, :count).by(1)
       end
 
-      it "sets the user as the owner of the organization and workspace" do
+      it "sets the user as the owner of the organization" do
         expect(user.user_organization_memberships.first.role).to eq("owner")
+      end
+
+      it "sets the user as the owner of the workspace" do
         expect(user.user_workspace_memberships.first.role).to eq("owner")
       end
     end
