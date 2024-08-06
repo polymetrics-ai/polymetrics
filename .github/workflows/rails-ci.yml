@@ -1,0 +1,32 @@
+name: Rails CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "platform/**"
+  push:
+    branches: [main]
+    paths:
+      - "platform/**"
+
+jobs:
+  rubocop-rspec:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+          working-directory: platform
+      - name: Install dependencies
+        run: bundle install
+      - name: Run RuboCop
+        run: bundle exec rubocop
+      - name: Run RSpec
+        run: bundle exec rspec
