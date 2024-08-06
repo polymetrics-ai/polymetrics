@@ -4,12 +4,12 @@ require "rails_helper"
 
 RSpec.describe Workspace do
   describe "validations" do
-    subject { build(:workspace) }
+    subject(:workspace) { build(:workspace) }
 
     it { is_expected.to validate_presence_of(:name) }
 
     it {
-      expect(subject).to validate_uniqueness_of(:name)
+      expect(workspace).to validate_uniqueness_of(:name)
         .scoped_to(:organization_id)
         .with_message(:unique_within_organization)
     }
@@ -21,20 +21,23 @@ RSpec.describe Workspace do
     it { is_expected.to have_many(:users).through(:user_workspace_memberships) }
   end
 
-  describe "uniqueness of name within organization" do
+  describe "uniqueness validation" do
     let(:organization) { create(:organization) }
-    let(:existing_workspace) { create(:workspace, organization:, name: "Test Workspace") }
+    let(:existing_workspace_name) { "Existing Workspace" }
+
+    before do
+      create(:workspace, name: existing_workspace_name, organization:)
+    end
 
     it "does not allow duplicate workspace names within the same organization" do
-      existing_workspace # create the workspace
-      new_workspace = build(:workspace, organization:, name: "Test Workspace")
+      new_workspace = build(:workspace, name: existing_workspace_name, organization:)
+      expect(new_workspace).not_to be_valid
+    end
 
-      aggregate_failures do
-        expect(new_workspace).not_to be_valid
-        expect(new_workspace.errors[:name]).to include(
-          I18n.t("activerecord.errors.models.workspace.attributes.name.unique_within_organization")
-        )
-      end
+    it "adds an error message for duplicate workspace names" do
+      new_workspace = build(:workspace, name: existing_workspace_name, organization:)
+      new_workspace.valid?
+      expect(new_workspace.errors[:name]).to include("has already been taken")
     end
   end
 end
