@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "GitHub Connector Configuration",
+  "description": "Configuration schema for GitHub connector",
+  "properties": {
+    "personalAccessToken": {
+      "type": "string",
+      "title": "Personal Access Token",
+      "description": "GitHub personal access token for authentication. This token should have the necessary permissions to access the specified repository.",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "title": "Repository",
+      "description": "The GitHub repository to connect to, in the format 'owner/repo-name'. For example, 'octocat/Hello-World'.",
+      "pattern": "^[\\w.-]+/[\\w.-]+$"
+    }
+  },
+  "required": ["personalAccessToken", "repository"]
+}

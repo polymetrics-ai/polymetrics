@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# Specify your gem's dependencies in ruby_connectors.gemspec
+gemspec
+
+gem "rake", "~> 13.0"
+
+gem "rspec", "~> 3.0"
+
+gem "rubocop", "~> 1.21"
+
+gem "octokit"
+
+gem "byebug"
+
+gem "google-protobuf", "~> 3.19"
+
+gem "temporal-ruby", github: "coinbase/temporal-ruby"
+
+gem "sequel"
+
+gem "pg"
+
+gem "activesupport"
+
+gem "vcr"
+
+gem "webmock"
+
+gem "dotenv"
