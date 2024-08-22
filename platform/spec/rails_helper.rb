@@ -8,6 +8,8 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require "rspec/rails"
 require "factory_bot_rails"
 require "shoulda/matchers"
+require "devise"
+require "devise_token_auth"
 
 begin
   ActiveRecord::Migration.maintain_test_schema!
@@ -42,6 +44,18 @@ RSpec.configure do |config|
       example.run
     end
   end
+
+  config.include Devise::Test::ControllerHelpers, type: :controller
+
+  # Add this helper method for authentication in controller specs
+  config.include Module.new {
+    def sign_in_and_set_token(user)
+      @request.env["devise.mapping"] = Devise.mappings[:user]
+      sign_in user
+      auth_headers = user.create_new_auth_token
+      request.headers.merge!(auth_headers)
+    end
+  }, type: :controller
 end
 
 Shoulda::Matchers.configure do |config|

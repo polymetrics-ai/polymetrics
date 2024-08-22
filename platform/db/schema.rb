@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_04_200123) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_21_141831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "connectors", force: :cascade do |t|
+    t.bigint "workspace_id", null: false
+    t.integer "connector_language"
+    t.jsonb "configuration"
+    t.string "name"
+    t.string "connector_class_name"
+    t.string "description"
+    t.boolean "connected", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workspace_id", "name", "configuration"], name: "index_connectors_on_workspace_name_config", unique: true
+    t.index ["workspace_id"], name: "index_connectors_on_workspace_id"
+  end
 
   create_table "organizations", force: :cascade do |t|
     t.string "name", null: false
@@ -85,6 +99,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_04_200123) do
     t.index ["organization_id"], name: "index_workspaces_on_organization_id"
   end
 
+  add_foreign_key "connectors", "workspaces"
   add_foreign_key "user_organization_memberships", "organizations"
   add_foreign_key "user_organization_memberships", "users"
   add_foreign_key "user_workspace_memberships", "users"
