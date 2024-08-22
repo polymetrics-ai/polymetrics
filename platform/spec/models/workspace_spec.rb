@@ -37,7 +37,7 @@ RSpec.describe Workspace do
     it "adds an error message for duplicate workspace names" do
       new_workspace = build(:workspace, name: existing_workspace_name, organization:)
       new_workspace.valid?
-      expect(new_workspace.errors[:name]).to include("has already been taken")
+      expect(new_workspace.errors[:name]).to include("must be unique within the organization")
     end
   end
 end

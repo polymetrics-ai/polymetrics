@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "setup"
+
+worker = Temporal::Worker.new
+
+worker.start
