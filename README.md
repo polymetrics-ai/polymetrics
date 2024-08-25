@@ -1,7 +1,7 @@
 ## Features
 
 - **Multi-Source Data Extraction**: Connect to various data sources, including APIs (GitHub, Salesforce) and databases.
-- **Seamless Connection Management**: Easily set up and manage connections to different data sources.
+- **Seamless Connection Management**: Easily manage connections to different data sources.
 - **Automated Synchronization**: Background jobs handle data syncing from sources to the analytical database (DuckDB).
 - **Interactive Data Visualization**: Create custom charts and dashboards using the synced data.
 - **Flexible Dashboard Layout**: Utilize drag-and-drop interface for resizable and arrangeable dashboard components.
@@ -30,6 +30,7 @@
 4. The chart will be added to your dashboard.
 5. Use the drag-and-drop interface to arrange and resize charts as needed.
 6. Click "Save" to preserve your dashboard layout.
+![create_charts_and_dashboard](https://github.com/user-attachments/assets/67b8889d-568e-4367-9ef3-ca7d3cdda8ba)
 
 ## Data Synchronization
 
@@ -40,10 +41,12 @@
    - Destination (e.g., DuckDB)
    - ETL process description
 4. Click "Continue" to proceed with the synchronization.
+![create_connector_and_connection](https://github.com/user-attachments/assets/3043cef5-6190-45d6-a735-1522235114b5)
+
 
 ### Synchronization Status
 
-1. On the Connections page, click "View Details" for a specific connection.
+1. click "View Details" on the Connections page for a specific connection.
 2. The Data Synchronization Status dialog shows:
    - Stream Name (e.g., Commit, Branch, SHA)
    - Status (Active, Pending, Error)
