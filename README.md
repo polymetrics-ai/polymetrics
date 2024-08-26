@@ -1,3 +1,10 @@
+
+![Logo](https://github.com/user-attachments/assets/0590f70b-5c04-460a-a018-c7308a2e60c9)
+
+# Polymetrics
+
+Polymetrics is an open-source tool for multi-source data extraction, visualization, and analytics.
+
 ## Features
 
 - **Multi-Source Data Extraction**: Connect to various data sources, including APIs (GitHub, Salesforce) and databases.
@@ -70,3 +77,7 @@ This project is licensed under the Elastic License - see the [LICENSE.md](LICENS
 ## Support
 
 If you encounter any issues or have questions, please file an issue on our GitHub repository or contact our support team at support@polymetrics.ai
+
+---
+
+⚠️ **Warning**: Polymetrics is currently under active development and in a non usable state. Features and functionality may change without notice until this banner is removed.
