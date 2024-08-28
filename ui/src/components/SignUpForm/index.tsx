@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "@tanstack/react-router";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +13,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import apiClient from '@/service/apiClient';
+import { AxiosResponse, AxiosError } from 'axios';
 
 interface SignUpProps {
     onLogIn: () => void;
@@ -32,10 +35,12 @@ const FormSchema = z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string(),
-    confrimPassword: z.string()
+    confirmPassword: z.string()
 });
 
 const SignUp: React.FC<SignUpProps> = ({ onLogIn, onTerms, onPrivacyPolicy }) => {
+    const navigate = useNavigate();
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -43,12 +48,24 @@ const SignUp: React.FC<SignUpProps> = ({ onLogIn, onTerms, onPrivacyPolicy }) =>
             name: '',
             email: '',
             password: '',
-            confrimPassword: ''
+            confirmPassword: ''
         }
     });
 
     const onSignUp = (data: z.infer<typeof FormSchema>) => {
-        console.log(data);
+        const payload = {
+            organization_name: data.organisation,
+            email: data.email,
+            password: data.password,
+            password_confirmation: data.confirmPassword
+            
+        };
+        
+        apiClient.post('/auth', payload).then((response: AxiosResponse) => {
+            navigate({ to: '/login' , replace: true });
+        }).catch((error: AxiosError) => {
+            console.error('Login error:', error);
+        });
     };
 
     return (
