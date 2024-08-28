@@ -1,11 +1,9 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -57,17 +55,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
                 <Form {...form}>
                     <form className="flex flex-col mt-8 w-full">
                         {inputFields.map((input, index) => (
-                            // <div className={`flex flex-col mb-4 items-start self-stretch`}>
-                            //     <Label className="mb-2 text-sm font-semibold tracking-tighter">
-                            //         {field.label}
-                            //     </Label>
-                            //     <Input
-                            //         key={index}
-                            //         className="text-sm font-normal"
-                            //         placeholder={field.placeholder}
-                            //         type={field.label.toLowerCase()}
-                            //     />
-                            // </div>
                             <FormField
                                 key={index}
                                 control={form.control}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
     Form,
@@ -66,19 +65,6 @@ const SignUp: React.FC<SignUpProps> = ({ onLogIn, onTerms, onPrivacyPolicy }) =>
                 <Form {...form}>
                     <form className="flex flex-col mt-8 w-full">
                         {inputFields.map((input, index) => (
-                            // <div className={`flex flex-col mb-4 items-start self-stretch`}>
-                            //     <Label
-                            //         className="mb-2 text-sm font-semibold tracking-tighter"
-                            //         htmlFor={field.label}
-                            //     >
-                            //         {field.label}
-                            //     </Label>
-                            //     <Input
-                            //         key={index}
-                            //         className="text-sm font-normal"
-                            //         placeholder={field.placeholder}
-                            //     />
-                            // </div>
                             <FormField
                                 key={index}
                                 control={form.control}
