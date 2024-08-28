@@ -13,16 +13,19 @@ RSpec.describe Connector, type: :model do
     it { is_expected.to validate_presence_of(:connector_language) }
 
     describe "name uniqueness" do
-      let(:workspace) { create(:workspace) }
-      let!(:existing_connector) do
+      before do
         create(:connector, workspace:, name: "Existing Connector", configuration: { key: "value" })
       end
+
+      let(:workspace) { create(:workspace) }
 
       it "validates uniqueness of name scoped to workspace_id and configuration" do
         new_connector = build(:connector, workspace:, name: "Existing Connector",
                                           configuration: { key: "value" })
+        error_message = "Existing Connector already exists for this workspace with the same configuration. " \
+                        "Please change the name or configuration."
         expect(new_connector).not_to be_valid
-        expect(new_connector.errors[:name]).to include("Existing Connector already exists for this workspace with the same configuration. Please change the name or configuration.")
+        expect(new_connector.errors[:name]).to include(error_message)
       end
 
       it "allows same name with different configuration" do

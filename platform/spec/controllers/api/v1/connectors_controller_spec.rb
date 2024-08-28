@@ -6,13 +6,11 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
   let(:user) { create(:user) }
   let(:organization) { create(:organization) }
   let(:workspace) { create(:workspace, organization:) }
-  let!(:user_workspace_membership) do
-    create(:user_workspace_membership, user:, workspace:, role: "owner")
-  end
   let(:connector) { create(:connector, workspace:) }
 
   before do
     sign_in_and_set_token(user)
+    create(:user_workspace_membership, user:, workspace:, role: "owner")
   end
 
   describe "GET #index" do
