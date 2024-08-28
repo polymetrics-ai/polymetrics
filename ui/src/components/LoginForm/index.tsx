@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "@tanstack/react-router";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +13,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-
+import apiClient from '@/service/apiClient';
+import { AxiosResponse, AxiosError } from 'axios';
 interface LoginFormProps {
     onSignUp: () => void;
     onForgotPassword: () => void;
@@ -29,6 +31,8 @@ const FormSchema = z.object({
 });
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => {
+
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -37,8 +41,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
         }
     });
 
-    const onLogin = (data: z.infer<typeof formSchema>) => {
-        console.log(data);
+    const onLogin = (data: z.infer<typeof FormSchema>) => {
+        const payload = {
+            email: data.email,
+            password: data.password
+        };
+        
+        apiClient.post('/auth/sign_in', payload).then((response: AxiosResponse) => {
+            navigate({ to: '/dashboard' , replace: true });
+        }).catch((error: AxiosError) => {
+            console.error('Login error:', error);
+        });
     };
 
     return (
