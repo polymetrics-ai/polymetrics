@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe ApiResponseWrapperConcern, type: :controller do
   controller(ApplicationController) do
-    include described_class
+    include ApiResponseWrapperConcern
 
     def test_success
       render_success({ id: 1, name: "Test" }, :created)
@@ -79,9 +79,9 @@ RSpec.describe ApiResponseWrapperConcern, type: :controller do
       end
 
       it "logs the error" do
-        expect(Rails.logger).to receive(:error).with("Unexpected error: Unexpected error")
-        expect(Rails.logger).to receive(:error)
+        allow(Rails.logger).to receive(:error)
         get :test_api_response_error
+        expect(Rails.logger).to have_received(:error).with("Unexpected error: Unexpected error")
       end
     end
   end

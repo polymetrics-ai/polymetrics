@@ -37,9 +37,11 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     it "permits :organization_name for sign up and account update" do
-      expect(devise_parameter_sanitizer).to receive(:permit).with(:sign_up, keys: %i[organization_name name])
-      expect(devise_parameter_sanitizer).to receive(:permit).with(:account_update, keys: %i[organization_name name])
+      allow(devise_parameter_sanitizer).to receive(:permit)
       controller.send(:configure_permitted_parameters)
+      expect(devise_parameter_sanitizer).to have_received(:permit).with(:sign_up, keys: %i[organization_name name])
+      expect(devise_parameter_sanitizer).to have_received(:permit).with(:account_update,
+                                                                        keys: %i[organization_name name])
     end
   end
 
@@ -51,15 +53,18 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     it "rescues from StandardError and calls handle_error" do
-      expect(controller).to receive(:handle_error)
+      allow(controller).to receive(:handle_error)
       get :index
+      expect(controller).to have_received(:handle_error)
     end
 
     it "renders API response and reports error" do
       error = StandardError.new("Test error")
-      expect(controller).to receive(:render_api_response).with(error, :internal_server_error)
-      expect(Rails.error).to receive(:report).with(error)
+      allow(controller).to receive(:render_api_response)
+      allow(Rails.error).to receive(:report)
       controller.send(:handle_error, error)
+      expect(controller).to have_received(:render_api_response).with(error, :internal_server_error)
+      expect(Rails.error).to have_received(:report).with(error)
     end
   end
 end
