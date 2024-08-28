@@ -1,8 +1,26 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+# Wait for database to be ready
+until PGPASSWORD=$POSTGRES_PASSWORD psql -h "db" -U "postgres" -c '\q'; do
+  >&2 echo "Postgres is unavailable - sleeping"
+  sleep 1
+done
+
+>&2 echo "Postgres is up - executing command"
+
+# If the database doesn't exist, create it
+if ! PGPASSWORD=$POSTGRES_PASSWORD psql -h "db" -U "postgres" -lqt | cut -d \| -f 1 | grep -qw platform_development; then
+  echo "Database does not exist. Creating..."
+  bundle exec rails db:create
 fi
 
-exec "${@}"
+# Run migrations
+bundle exec rails db:migrate
+
+# Run seeds if in development environment
+if [ "$RAILS_ENV" = "development" ]; then
+  bundle exec rails db:seed
+fi
+
+# Then exec the container's main process (what's set as CMD in the Dockerfile)
+exec "$@"
