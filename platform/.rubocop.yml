@@ -35,4 +35,17 @@ Style/FrozenStringLiteralComment:
 Style/QuotedSymbols:
   EnforcedStyle: double_quotes
 
-# Add more custom rule configurations
+RSpec/DescribedClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/MultipleExpectations:
+  Max: 3
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
