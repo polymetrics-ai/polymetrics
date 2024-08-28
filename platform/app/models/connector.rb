@@ -11,7 +11,8 @@ class Connector < ApplicationRecord
   validates :name, uniqueness: {
     scope: %i[workspace_id configuration],
     message: lambda do |_object, data|
-      "#{data[:value]} already exists for this workspace with the same configuration. Please change the name or configuration."
+      "#{data[:value]} already exists for this workspace with the same configuration. " \
+        "Please change the name or configuration."
     end
   }
 end
