@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,15 +15,12 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import apiClient from '@/service/apiClient';
 import { AxiosResponse, AxiosError } from 'axios';
+import { loginFields } from '@/constants/constants';
+import { useAuthStore } from '@/store/authStore';
 interface LoginFormProps {
     onSignUp: () => void;
     onForgotPassword: () => void;
 }
-
-const inputFields = [
-    { label: 'Email', placeholder: 'Enter your email' },
-    { label: 'Password', placeholder: 'Enter your password' }
-];
 
 const FormSchema = z.object({
     email: z.string().email(),
@@ -31,8 +28,8 @@ const FormSchema = z.object({
 });
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => {
-
     const navigate = useNavigate();
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -46,12 +43,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
             email: data.email,
             password: data.password
         };
-        
-        apiClient.post('/auth/sign_in', payload).then((response: AxiosResponse) => {
-            navigate({ to: '/dashboard' , replace: true });
-        }).catch((error: AxiosError) => {
-            console.error('Login error:', error);
-        });
+
+        apiClient
+            .post('/auth/sign_in', payload)
+            .then((response: AxiosResponse) => {
+                // useAuthStore.
+                navigate({ to: '/dashboard', replace: true });
+            })
+            .catch((error: AxiosError) => {
+                if (error.status === 401) navigate({ to: '/login', replace: true });
+            });
     };
 
     return (
@@ -67,7 +68,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
                 </div>
                 <Form {...form}>
                     <form className="flex flex-col mt-8 w-full">
-                        {inputFields.map((input, index) => (
+                        {loginFields.map((input, index) => (
                             <FormField
                                 key={index}
                                 control={form.control}

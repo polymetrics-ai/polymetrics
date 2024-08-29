@@ -1,8 +1,24 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router';
+import { Outlet, createRootRouteWithContext, redirect } from '@tanstack/react-router';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthContext} from '../store/authStore';
 import '../index.css';
 
-export const Route = createRootRoute({
+
+type RouterContext = {
+    authentication: AuthContext;
+  };
+
+export const Route = createRootRouteWithContext<RouterContext>()({
     component: RootLayout,
+    beforeLoad: async ({ context }) => {
+        const { isAuthenticated } = context.auth;
+        console.log(isAuthenticated);
+        if (!isAuthenticated) {
+            throw redirect({
+                to: '/login'
+            });
+        }
+    },
     notFoundComponent: () => {
         return (
             <p className="flex h-dvh w-full items-center justify-center bg-background text-foreground">
@@ -17,5 +33,10 @@ export const Route = createRootRoute({
 });
 
 export default function RootLayout() {
-    return <Outlet />;
+    return (
+        <>
+            <Outlet />
+            <Toaster />
+        </>
+    );
 }
