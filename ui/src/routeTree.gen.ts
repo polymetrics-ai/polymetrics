@@ -13,6 +13,8 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as IndexImport } from './routes/index'
 import { Route as SignupIndexImport } from './routes/signup.index'
 import { Route as LoginIndexImport } from './routes/login.index'
 
@@ -21,8 +23,21 @@ import { Route as LoginIndexImport } from './routes/login.index'
 const AuthenticatedDashboardIndexLazyImport = createFileRoute(
   '/_authenticated/dashboard/',
 )()
+const AuthenticatedConnectorsIndexLazyImport = createFileRoute(
+  '/_authenticated/connectors/',
+)()
 
 // Create/Update Routes
+
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignupIndexRoute = SignupIndexImport.update({
   path: '/signup/',
@@ -37,15 +52,39 @@ const LoginIndexRoute = LoginIndexImport.update({
 const AuthenticatedDashboardIndexLazyRoute =
   AuthenticatedDashboardIndexLazyImport.update({
     path: '/dashboard/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => AuthenticatedRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/dashboard/index.lazy').then((d) => d.Route),
+  )
+
+const AuthenticatedConnectorsIndexLazyRoute =
+  AuthenticatedConnectorsIndexLazyImport.update({
+    path: '/connectors/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/connectors/index.lazy').then(
+      (d) => d.Route,
+    ),
   )
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
     '/login/': {
       id: '/login/'
       path: '/login'
@@ -60,12 +99,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupIndexImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/connectors/': {
+      id: '/_authenticated/connectors/'
+      path: '/connectors'
+      fullPath: '/connectors'
+      preLoaderRoute: typeof AuthenticatedConnectorsIndexLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardIndexLazyImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthenticatedImport
     }
   }
 }
@@ -73,9 +119,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
+  IndexRoute,
+  AuthenticatedRoute: AuthenticatedRoute.addChildren({
+    AuthenticatedConnectorsIndexLazyRoute,
+    AuthenticatedDashboardIndexLazyRoute,
+  }),
   LoginIndexRoute,
   SignupIndexRoute,
-  AuthenticatedDashboardIndexLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -86,8 +136,19 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
+        "/_authenticated",
         "/login/",
-        "/signup/",
+        "/signup/"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/_authenticated": {
+      "filePath": "_authenticated.jsx",
+      "children": [
+        "/_authenticated/connectors/",
         "/_authenticated/dashboard/"
       ]
     },
@@ -97,8 +158,13 @@ export const routeTree = rootRoute.addChildren({
     "/signup/": {
       "filePath": "signup.index.tsx"
     },
+    "/_authenticated/connectors/": {
+      "filePath": "_authenticated/connectors/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/dashboard/": {
-      "filePath": "_authenticated/dashboard/index.lazy.tsx"
+      "filePath": "_authenticated/dashboard/index.lazy.tsx",
+      "parent": "/_authenticated"
     }
   }
 }

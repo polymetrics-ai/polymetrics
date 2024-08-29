@@ -1,5 +1,8 @@
 import React from 'react';
-import { useNavigate } from "@tanstack/react-router";
+import { useForm } from 'react-hook-form';
+import { useNavigate } from '@tanstack/react-router';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,11 +13,9 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import apiClient from '@/service/apiClient';
 import { AxiosResponse, AxiosError } from 'axios';
+import { signUpFields } from '@/constants/constants';
 
 interface SignUpProps {
     onLogIn: () => void;
@@ -22,20 +23,12 @@ interface SignUpProps {
     onPrivacyPolicy: () => void;
 }
 
-const inputFields = [
-    { label: 'Organisation', placeholder: 'Enter your company name' },
-    { label: 'Name', placeholder: 'Enter your name' },
-    { label: 'Email', placeholder: 'Enter your email' },
-    { label: 'Password', placeholder: 'Enter your password' },
-    { label: 'Confirm Password', placeholder: 'Enter your password again' }
-];
-
 const FormSchema = z.object({
-    organisation: z.string(),
+    organization_name: z.string(),
     name: z.string(),
     email: z.string().email(),
     password: z.string(),
-    confirmPassword: z.string()
+    password_confirmation: z.string()
 });
 
 const SignUp: React.FC<SignUpProps> = ({ onLogIn, onTerms, onPrivacyPolicy }) => {
@@ -44,28 +37,27 @@ const SignUp: React.FC<SignUpProps> = ({ onLogIn, onTerms, onPrivacyPolicy }) =>
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            organisation: '',
+            organization_name: '',
             name: '',
             email: '',
             password: '',
-            confirmPassword: ''
+            password_confirmation: ''
         }
     });
 
     const onSignUp = (data: z.infer<typeof FormSchema>) => {
         const payload = {
-            organization_name: data.organisation,
-            email: data.email,
-            password: data.password,
-            password_confirmation: data.confirmPassword
-            
+            ...data
         };
-        
-        apiClient.post('/auth', payload).then((response: AxiosResponse) => {
-            navigate({ to: '/login' , replace: true });
-        }).catch((error: AxiosError) => {
-            console.error('Login error:', error);
-        });
+
+        apiClient
+            .post('/auth', payload)
+            .then((response: AxiosResponse) => {
+                navigate({ to: '/login' });
+            })
+            .catch((error: AxiosError) => {
+                console.error('Login error:', error);
+            });
     };
 
     return (
@@ -81,11 +73,11 @@ const SignUp: React.FC<SignUpProps> = ({ onLogIn, onTerms, onPrivacyPolicy }) =>
                 </header>
                 <Form {...form}>
                     <form className="flex flex-col mt-8 w-full">
-                        {inputFields.map((input, index) => (
+                        {signUpFields.map((input, index) => (
                             <FormField
                                 key={index}
                                 control={form.control}
-                                name={input?.label?.toLocaleLowerCase()}
+                                name={input?.field?.toLocaleLowerCase()}
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col mb-4 items-start self-stretch">
                                         <FormLabel className="mb-2 text-sm font-semibold tracking-tighter">
