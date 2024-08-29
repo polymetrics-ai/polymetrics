@@ -21,9 +21,15 @@ class User < ApplicationRecord
   private
 
   def add_organization_to_user
-    organization = Organization.create(name: organization_name)
-    workspace = Workspace.create(name: "default", organization:)
-    user_organization_memberships.create!(organization:, role: "owner")
-    user_workspace_memberships.create!(workspace:, role: "owner")
+    ActiveRecord::Base.transaction do
+      organization = Organization.create!(name: organization_name)
+      workspace = Workspace.create!(name: "default", organization:)
+      user_organization_memberships.create!(organization:, role: "owner")
+      user_workspace_memberships.create!(workspace:, role: "owner")
+    rescue ActiveRecord::RecordInvalid
+      errors.add(:organization_name, "has already been taken")
+    end
+
+    raise ActiveRecord::Rollback if errors.any?
   end
 end

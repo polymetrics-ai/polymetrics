@@ -24,30 +24,75 @@ RSpec.describe User do
 
   describe "callbacks" do
     describe "#add_organization_to_user" do
-      let(:user) { create(:user, organization_name: "Test Org") }
+      let(:user) { build(:user, organization_name: "Test Org") }
 
-      it "creates an organization after user creation" do
-        expect { user.save }.to change(Organization, :count).by(1)
+      context "when organization name is unique" do
+        it "creates an organization" do
+          expect { user.save }.to change(Organization, :count).by(1)
+        end
+
+        it "creates a workspace" do
+          expect { user.save }.to change(Workspace, :count).by(1)
+        end
+
+        it "creates user organization membership" do
+          expect { user.save }.to change(UserOrganizationMembership, :count).by(1)
+        end
+
+        it "creates user workspace membership" do
+          expect { user.save }.to change(UserWorkspaceMembership, :count).by(1)
+        end
+
+        it "sets the user as the owner of the organization" do
+          user.save
+          expect(user.user_organization_memberships.first.role).to eq("owner")
+        end
+
+        it "sets the user as the owner of the workspace" do
+          user.save
+          expect(user.user_workspace_memberships.first.role).to eq("owner")
+        end
       end
 
-      it "creates a default workspace for the organization" do
-        expect { user.save }.to change(Workspace, :count).by(1)
+      context "when organization name is not unique" do
+        before do
+          create(:organization, name: "Test Org")
+        end
+
+        it "does not create an organization" do
+          expect { user.save }.not_to change(Organization, :count)
+        end
+
+        it "adds an error to the user" do
+          user.save
+          expect(user.errors[:organization_name]).to include("has already been taken")
+        end
+
+        it "does not create any associated records" do
+          expect { user.save }.not_to change(Workspace, :count)
+          expect { user.save }.not_to change(UserOrganizationMembership, :count)
+          expect { user.save }.not_to change(UserWorkspaceMembership, :count)
+        end
       end
 
-      it "creates user organization membership" do
-        expect { user.save }.to change(UserOrganizationMembership, :count).by(1)
-      end
+      context "when organization_name is blank" do
+        let(:user) { build(:user, organization_name: "") }
 
-      it "creates user workspace membership" do
-        expect { user.save }.to change(UserWorkspaceMembership, :count).by(1)
-      end
+        it "does not create any records in the organizations table" do
+          expect { user.save }.not_to change(Organization, :count)
+        end
 
-      it "sets the user as the owner of the organization" do
-        expect(user.user_organization_memberships.first.role).to eq("owner")
-      end
+        it "does not create any records in the workspaces table" do
+          expect { user.save }.not_to change(Workspace, :count)
+        end
 
-      it "sets the user as the owner of the workspace" do
-        expect(user.user_workspace_memberships.first.role).to eq("owner")
+        it "does not create any records in the user_organization_memberships table" do
+          expect { user.save }.not_to change(UserOrganizationMembership, :count)
+        end
+
+        it "does not create any records in the user_workspace_memberships table" do
+          expect { user.save }.not_to change(UserWorkspaceMembership, :count)
+        end
       end
     end
   end
