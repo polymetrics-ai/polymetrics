@@ -17,6 +17,8 @@ import apiClient from '@/service/apiClient';
 import { AxiosResponse, AxiosError } from 'axios';
 import { loginFields } from '@/constants/constants';
 import { useAuthStore } from '@/store/authStore';
+import { user } from '@/service';
+
 interface LoginFormProps {
     onSignUp: () => void;
     onForgotPassword: () => void;
@@ -44,8 +46,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
             password: data.password
         };
 
-        apiClient
-            .post('/auth/sign_in', payload)
+        user.signIn(payload)
             .then((response: AxiosResponse) => {
                 // useAuthStore.
                 navigate({ to: '/dashboard', replace: true });

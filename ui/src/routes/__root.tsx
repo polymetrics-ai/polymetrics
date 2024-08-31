@@ -1,12 +1,12 @@
 import { Outlet, createRootRouteWithContext, redirect } from '@tanstack/react-router';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthContext} from '../store/authStore';
+import { AuthContext } from '../store/authStore';
+import { RouterContext } from '../types/types';
 import '../index.css';
-
 
 type RouterContext = {
     authentication: AuthContext;
-  };
+};
 
 export const Route = createRootRouteWithContext<RouterContext>()({
     component: RootLayout,
