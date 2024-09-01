@@ -4,6 +4,8 @@ require "rails_helper"
 
 RSpec.describe Connectors::ListService do
   describe "#call" do
+    subject(:service_call) { service.call }
+
     let(:service) { described_class.new }
     let(:yaml_content) do
       {
@@ -14,7 +16,7 @@ RSpec.describe Connectors::ListService do
             "language" => "ruby",
             "class_name" => "Connector1Class",
             "operations" => ["read"],
-            "status" => "active",
+            "definition_status" => "active",
             "version" => "1.0.0",
             "maintainer" => "Team A"
           },
@@ -24,7 +26,7 @@ RSpec.describe Connectors::ListService do
             "language" => "python",
             "class_name" => "Connector2Class",
             "operations" => ["write"],
-            "status" => "beta",
+            "definition_status" => "beta",
             "version" => "0.9.0",
             "maintainer" => "Team B"
           }
@@ -32,19 +34,25 @@ RSpec.describe Connectors::ListService do
       }
     end
 
+    let(:connection_specification) do
+      {
+        "name" => "Connector1",
+        "description" => "This is a test connector"
+      }
+    end
+
     before do
       allow(YAML).to receive(:load_file).and_return(yaml_content)
+      allow(File).to receive_messages(exist?: true, read: connection_specification.to_json)
     end
 
     it "returns an array of connector definitions" do
-      result = service.call
-      expect(result).to be_an(Array)
-      expect(result.size).to eq(2)
+      expect(service_call).to be_an(Array)
+      expect(service_call.size).to eq(2)
     end
 
     it "correctly maps connector attributes" do
-      result = service.call
-      expect(result.first).to include(
+      expect(service_call.first).to include(
         name: "Connector1",
         type: "source",
         language: "ruby",
@@ -53,18 +61,26 @@ RSpec.describe Connectors::ListService do
     end
 
     it "correctly maps additional connector attributes" do
-      result = service.call
-      expect(result.first).to include(
+      expect(service_call.first).to include(
         operations: ["read"],
-        status: "active",
+        definition_status: "active",
         version: "1.0.0",
         maintainer: "Team A"
       )
     end
 
     it "loads the YAML file from the correct path" do
-      service.call
+      service_call
       expect(YAML).to have_received(:load_file).with(Rails.root.join("config/connectors.yml"))
+    end
+
+    it "includes name and description in the connection specification" do
+      expect(service_call.first).to include(
+        connection_specification: include(
+          "name" => "Connector1",
+          "description" => "This is a test connector"
+        )
+      )
     end
   end
 end
