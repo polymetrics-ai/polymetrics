@@ -30,6 +30,11 @@ module Api
         head :no_content
       end
 
+      def definitions
+        connector_definitions = Connectors::ListService.new.call
+        render_api_response(connector_definitions, :ok)
+      end
+
       private
 
       def connector_params

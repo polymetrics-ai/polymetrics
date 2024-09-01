@@ -5,7 +5,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :connectors
+      resources :connectors do
+        collection do
+          get "definitions"
+        end
+      end
     end
   end
 
