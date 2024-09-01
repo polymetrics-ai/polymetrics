@@ -115,4 +115,38 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
       expect(response).to have_http_status(:no_content)
     end
   end
+
+  describe "GET #definitions" do
+    let(:connector_definitions) { [{ name: "Connector1" }, { name: "Connector2" }] }
+    let(:list_service) { instance_double(Connectors::ListService) }
+
+    before do
+      allow(Connectors::ListService).to receive(:new).and_return(list_service)
+      allow(list_service).to receive(:call).and_return(connector_definitions)
+      get :definitions
+    end
+
+    it "returns a successful response" do
+      expect(response).to be_successful
+    end
+
+    it "returns the connector definitions in the data key" do
+      expect(response.parsed_body).to have_key("data")
+      expect(response.parsed_body["data"]).to be_an(Array)
+    end
+
+    it "returns the correct number of connector definitions" do
+      expect(response.parsed_body["data"].size).to eq(connector_definitions.size)
+    end
+
+    it "returns the correct connector names" do
+      response.parsed_body["data"].each_with_index do |definition, index|
+        expect(definition["name"]).to eq(connector_definitions[index][:name])
+      end
+    end
+
+    it "calls the Connectors::ListService" do
+      expect(list_service).to have_received(:call)
+    end
+  end
 end

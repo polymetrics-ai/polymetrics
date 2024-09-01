@@ -1,0 +1,44 @@
+connectors:
+  - name: Github
+    type: API
+    language: ruby
+    class_name: github
+    operations:
+      - connect
+      - read
+      - write
+    status: certified
+    version: 1.0.0
+    maintainer: Polymetrics
+  - name: DuckDB
+    type: Database
+    language: ruby
+    class_name: duckdb
+    operations:
+      - connect
+      - write
+      - query
+    status: coming_soon
+    version: 1.0.0
+    maintainer: Polymetrics
+  - name: PostgreSQL
+    type: Database
+    language: javascript
+    class_name: postgresql
+    operations:
+      - connect
+      - write
+      - query
+    status: coming_soon
+    version: 1.0.0
+    maintainer: Polymetrics
+  - name: Salesforce CRM
+    type: API
+    language: javascript
+    class_name: salesforce_crm
+    operations:
+      - connect
+      - read
+    status: coming_soon
+    version: 1.0.0
+    maintainer: Polymetrics
