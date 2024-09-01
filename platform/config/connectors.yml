@@ -7,7 +7,7 @@ connectors:
       - connect
       - read
       - write
-    status: certified
+    definition_status: certified
     version: 1.0.0
     maintainer: Polymetrics
   - name: DuckDB
@@ -18,7 +18,7 @@ connectors:
       - connect
       - write
       - query
-    status: coming_soon
+    definition_status: coming_soon
     version: 1.0.0
     maintainer: Polymetrics
   - name: PostgreSQL
@@ -29,7 +29,7 @@ connectors:
       - connect
       - write
       - query
-    status: coming_soon
+    definition_status: coming_soon
     version: 1.0.0
     maintainer: Polymetrics
   - name: Salesforce CRM
@@ -39,6 +39,6 @@ connectors:
     operations:
       - connect
       - read
-    status: coming_soon
+    definition_status: coming_soon
     version: 1.0.0
     maintainer: Polymetrics
