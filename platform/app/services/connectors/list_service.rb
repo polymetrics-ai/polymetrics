@@ -78,7 +78,10 @@ module Connectors
 
     def connection_specification_paths(connector_folder)
       {
-        ruby: Rails.root.join("ruby_connectors", "lib", "ruby_connectors", connector_folder,
+        ruby: Rails.root.join("..", "ruby_connectors",
+                              "lib",
+                              "ruby_connectors",
+                              connector_folder,
                               "connection_specification.json").to_s,
         python: nil,
         javascript: nil
