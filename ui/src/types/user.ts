@@ -8,8 +8,15 @@ export interface AuthState {
     hasValidAuthData: () => boolean;
 }
 
-export interface AUTH_ROUTES {
-    SIGN_IN: '/auth';
-    SIGN_UP: '/auth/sign_up';
-    SIGN_OUT: '/auth/sign_out';
+export interface SignInCredentials {
+    email: string;
+    password: string;
+}
+
+export interface SignUpCredentials {
+    organization_name: string;
+    email: string;
+    name: string;
+    password: string;
+    password_confirmation: string;
 }

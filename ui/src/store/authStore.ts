@@ -1,7 +1,7 @@
 // src/stores/authStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AuthState } from '@/constants/types';
+import { AuthState } from '@/types/types';
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -24,7 +24,6 @@ export const useAuthStore = create<AuthState>()(
         }
     )
 );
-
 
 export type AuthContext = ReturnType<typeof useAuthStore>;
 

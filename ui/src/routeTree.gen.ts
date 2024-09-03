@@ -13,6 +13,8 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignupImport } from './routes/signup'
+import { Route as LoginImport } from './routes/login'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as SignupIndexImport } from './routes/signup.index'
@@ -29,6 +31,16 @@ const AuthenticatedConnectorsIndexLazyImport = createFileRoute(
 
 // Create/Update Routes
 
+const SignupRoute = SignupImport.update({
+  path: '/signup',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginRoute = LoginImport.update({
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRoute,
@@ -40,13 +52,13 @@ const IndexRoute = IndexImport.update({
 } as any)
 
 const SignupIndexRoute = SignupIndexImport.update({
-  path: '/signup/',
-  getParentRoute: () => rootRoute,
+  path: '/',
+  getParentRoute: () => SignupRoute,
 } as any)
 
 const LoginIndexRoute = LoginIndexImport.update({
-  path: '/login/',
-  getParentRoute: () => rootRoute,
+  path: '/',
+  getParentRoute: () => LoginRoute,
 } as any)
 
 const AuthenticatedDashboardIndexLazyRoute =
@@ -85,19 +97,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
-    '/login/': {
-      id: '/login/'
+    '/login': {
+      id: '/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexImport
+      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupImport
+      parentRoute: typeof rootRoute
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/'
+      fullPath: '/login/'
+      preLoaderRoute: typeof LoginIndexImport
+      parentRoute: typeof LoginImport
     }
     '/signup/': {
       id: '/signup/'
-      path: '/signup'
-      fullPath: '/signup'
+      path: '/'
+      fullPath: '/signup/'
       preLoaderRoute: typeof SignupIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof SignupImport
     }
     '/_authenticated/connectors/': {
       id: '/_authenticated/connectors/'
@@ -124,8 +150,8 @@ export const routeTree = rootRoute.addChildren({
     AuthenticatedConnectorsIndexLazyRoute,
     AuthenticatedDashboardIndexLazyRoute,
   }),
-  LoginIndexRoute,
-  SignupIndexRoute,
+  LoginRoute: LoginRoute.addChildren({ LoginIndexRoute }),
+  SignupRoute: SignupRoute.addChildren({ SignupIndexRoute }),
 })
 
 /* prettier-ignore-end */
@@ -138,8 +164,8 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/_authenticated",
-        "/login/",
-        "/signup/"
+        "/login",
+        "/signup"
       ]
     },
     "/": {
@@ -152,11 +178,25 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/dashboard/"
       ]
     },
+    "/login": {
+      "filePath": "login.tsx",
+      "children": [
+        "/login/"
+      ]
+    },
+    "/signup": {
+      "filePath": "signup.tsx",
+      "children": [
+        "/signup/"
+      ]
+    },
     "/login/": {
-      "filePath": "login.index.tsx"
+      "filePath": "login.index.tsx",
+      "parent": "/login"
     },
     "/signup/": {
-      "filePath": "signup.index.tsx"
+      "filePath": "signup.index.tsx",
+      "parent": "/signup"
     },
     "/_authenticated/connectors/": {
       "filePath": "_authenticated/connectors/index.lazy.tsx",
