@@ -332,13 +332,13 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none  bg-auto bg-transparent hover:bg-emerald-100"
-                                    aria-label="Playground"
+                                    aria-label="Dashboard"
                                 >
                                     <img className="h-6 w-6" src="/icon-dashboard.svg" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
-                                Playground
+                                Dashboard
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -349,13 +349,13 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100"
-                                    aria-label="Playground"
+                                    aria-label="Charts"
                                 >
                                     <img className="h-6 w-6" src="/icon-charts.svg" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
-                                Playground
+                                Charts
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -366,13 +366,13 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none bg-auto bg-transparent  hover:bg-emerald-100"
-                                    aria-label="Playground"
+                                    aria-label="Connectors"
                                 >
                                     <img className="h-6 w-6" src="/icon-connectors.svg" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
-                                Playground
+                                Connectors
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -383,7 +383,7 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none bg-auto bg-transparent  hover:bg-emerald-100"
-                                    aria-label="Playground"
+                                    aria-label="Connections"
                                 >
                                     <img className="h-6 w-6" src="/icon-connections.svg" />
                                 </Button>
@@ -402,13 +402,13 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none bg-auto bg-transparent  hover:bg-emerald-100"
-                                    aria-label="Playground"
+                                    aria-label="Settings"
                                 >
                                     <img className="h-6 w-6" src="/icon-setting.svg" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
-                                Playground
+                                Settings
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -419,13 +419,13 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none bg-auto bg-transparent  hover:bg-emerald-100"
-                                    aria-label="Playground"
+                                    aria-label="documentation"
                                 >
                                     <img className="h-6 w-6" src="/icon-documentation.svg" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
-                                Connections
+                                Documentation
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -436,7 +436,7 @@ export function Dashboard() {
                                     variant="ghost"
                                     size="icon"
                                     className="mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-transparent"
-                                    aria-label="Playground"
+                                    aria-label="Logout"
                                 >
                                     <img className="h-8 w-8" src="/icon-avatar.svg" />
                                 </Button>
@@ -450,15 +450,23 @@ export function Dashboard() {
             </aside>
             <div className="h-full flex flex-col flex-1">
                 <div className="h-full my-8 mr-8 px-10 py-8 bg-slate-100">
-                    <div className="flex gap-2">
-                        <span className="text-2xl font-semibold">Playground</span>
-                        <Button className="self-end" onClick={() => console.log('dashbaord')}>
+                    <div className="flex justify-between h-8.5">
+                        <span className="self-start text-2xl font-semibold">Dashboard</span>
+                        <Button className="self-end gap-2 hidden" onClick={() => console.log('dashbaord')}>
                             <img className="" src="/icon-plus.svg" />
                             Add Dashboard
                         </Button>
                     </div>
+            <div className='flex-1 h-full flex items-center justify-center'>
+            <div className='flex flex-col items-center'>
+                <Button className='h-20 w-20 p-0 shadow-none bg-transparent hover:bg-transparent ring-0 focus:ring-0'>
+                    <img className='h-full w-full' src="/dashboard.svg"/>
+                </Button>
+                <Separator className="my-2" />
+                <span className='text-base text-slate-400'>Coming Soon</span>
+            </div>
+        </div>
                 </div>
-                <div className=""></div>
             </div>
         </div>
     );
