@@ -20,3 +20,9 @@ export interface SignUpCredentials {
     password: string;
     password_confirmation: string;
 }
+
+export interface SignOutCredentials {
+    accessToken: string;
+    uid: string;
+    client: string;
+}

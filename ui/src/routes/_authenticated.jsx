@@ -1,8 +1,13 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import React from 'react';
+import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router';
+import useAuthStore from '@/store/authStore';
+import NavBar from '@/components/NavBar';
+import { user } from '@/service';
 
 export const Route = createFileRoute('/_authenticated')({
-    beforeLoad: async ({ context }) => {
-        const { isAuthenticated } = context.auth;
+    component: AuthLayout,
+    beforeLoad: async () => {
+        const { isAuthenticated } = useAuthStore.getState();
         console.log(isAuthenticated);
         if (!isAuthenticated) {
             throw redirect({
@@ -11,3 +16,28 @@ export const Route = createFileRoute('/_authenticated')({
         }
     }
 });
+
+function AuthLayout() {
+    const navigate = useNavigate();
+
+    const onSignOut = () => {
+        user.signOut()
+            .then((resp) => {
+                console.log(resp);
+                if (resp) useAuthStore.getState().clearAuthData();
+                navigate({ to: '/login' });
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error?.status === 404) useAuthStore.getState().clearAuthData();
+                navigate({ to: '/login' });
+            });
+    };
+
+    return (
+        <div className="h-dvh w-full flex">
+            <NavBar onSignOut={onSignOut} />
+            <Outlet />
+        </div>
+    );
+}

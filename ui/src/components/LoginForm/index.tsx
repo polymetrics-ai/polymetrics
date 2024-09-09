@@ -1,4 +1,7 @@
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,13 +13,9 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import apiClient from '@/service/apiClient';
+
 import { AxiosResponse, AxiosError } from 'axios';
 import { loginFields } from '@/constants/constants';
-import { useAuthStore } from '@/store/authStore';
 import { user } from '@/service';
 
 interface LoginFormProps {
