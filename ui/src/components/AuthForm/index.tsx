@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { loginFields, signUpFields } from '@/constants/constants';
 import { user } from '@/service';
-import { SignUpCredentials, SignInCredentials } from '@/types/user';
+// import { SignUpCredentials, SignInCredentials } from '@/types/user';
 import { AxiosResponse, AxiosError } from 'axios';
 
 interface AuthFormProps {
@@ -40,11 +40,10 @@ const AuthForm: React.FC<AuthFormProps> = ({
         password: z.string()
     });
 
-    const SignUpSchema = z.object({
+    //Extending Login Schema as Signup contains login params
+    const SignUpSchema = LoginSchema.extend({
         organization_name: z.string(),
         name: z.string(),
-        email: z.string().email(),
-        password: z.string(),
         password_confirmation: z.string()
     });
 

@@ -2,14 +2,14 @@ import React from 'react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { MENU_ICONS } from '@/constants/constants';
+import { NAV_ICONS } from '@/constants/constants';
 
 interface NavBarProps {
     onSignOut: () => void;
 }
 
 const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
-    const { routeIcons, userIcons } = MENU_ICONS;
+    const { routeIcons, userIcons } = NAV_ICONS;
 
     return (
         <aside className="w-[60px] h-full flex flex-col justify-between py-8 bg-white">
@@ -19,7 +19,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                     size="icon"
                     aria-label="Home"
                 >
-                    <img className="" src="pm-logo.svg" />
+                    <img className="" src="/pm-logo.svg" />
                 </Button>
                 {routeIcons.map((route, key) => (
                     <TooltipProvider delayDuration={50} key={key}>

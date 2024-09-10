@@ -19,6 +19,7 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as SignupIndexImport } from './routes/signup.index'
 import { Route as LoginIndexImport } from './routes/login.index'
+import { Route as AuthenticatedConnectorsAddConnectorIndexImport } from './routes/_authenticated/connectors/add-connector/index'
 
 // Create Virtual Routes
 
@@ -78,6 +79,12 @@ const AuthenticatedConnectorsIndexLazyRoute =
       (d) => d.Route,
     ),
   )
+
+const AuthenticatedConnectorsAddConnectorIndexRoute =
+  AuthenticatedConnectorsAddConnectorIndexImport.update({
+    path: '/connectors/add-connector/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -139,6 +146,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexLazyImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/connectors/add-connector/': {
+      id: '/_authenticated/connectors/add-connector/'
+      path: '/connectors/add-connector'
+      fullPath: '/connectors/add-connector'
+      preLoaderRoute: typeof AuthenticatedConnectorsAddConnectorIndexImport
+      parentRoute: typeof AuthenticatedImport
+    }
   }
 }
 
@@ -149,6 +163,7 @@ export const routeTree = rootRoute.addChildren({
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedConnectorsIndexLazyRoute,
     AuthenticatedDashboardIndexLazyRoute,
+    AuthenticatedConnectorsAddConnectorIndexRoute,
   }),
   LoginRoute: LoginRoute.addChildren({ LoginIndexRoute }),
   SignupRoute: SignupRoute.addChildren({ SignupIndexRoute }),
@@ -175,7 +190,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated.jsx",
       "children": [
         "/_authenticated/connectors/",
-        "/_authenticated/dashboard/"
+        "/_authenticated/dashboard/",
+        "/_authenticated/connectors/add-connector/"
       ]
     },
     "/login": {
@@ -204,6 +220,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/dashboard/": {
       "filePath": "_authenticated/dashboard/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/connectors/add-connector/": {
+      "filePath": "_authenticated/connectors/add-connector/index.tsx",
       "parent": "/_authenticated"
     }
   }
