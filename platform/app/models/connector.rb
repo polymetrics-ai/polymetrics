@@ -15,4 +15,8 @@ class Connector < ApplicationRecord
         "Please change the name or configuration."
     end
   }
+
+  def icon_url
+    @icon_url ||= "https://raw.githubusercontent.com/polymetrics-ai/polymetrics/main/public/connector_icons/#{connector_class_name}.svg"
+  end
 end
