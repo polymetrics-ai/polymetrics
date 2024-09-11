@@ -1,4 +1,4 @@
-import ConnectorCard from "./ConnectorCard";
-import ContactCard from "./ContactCard";
+import ConnectorCard from './ConnectorCard';
+import ContactCard from './ContactCard';
 
-export { ConnectorCard, ContactCard}
+export { ConnectorCard, ContactCard };

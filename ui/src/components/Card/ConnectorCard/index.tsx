@@ -1,5 +1,5 @@
 import React from 'react';
-import ConnectorType from '../../ConnectorType';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface ConnectorCardProps {
     name: string;
@@ -13,9 +13,18 @@ const ConnectorCard: React.FC<ConnectorCardProps> = ({ name, icon }) => {
                 <img className="w-6 h-6" src={icon} alt="Icon" />
             </div>
             {name && (
-                <div className="flex-1 min-w-0">
-                    <p className="text-base text-slate-800 truncate">{name}</p>
-                </div>
+                <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-base text-slate-800 truncate">{name}</p>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent className='bg-zinc-700 text-white px-4 py-2'>
+                            <p>{name}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             )}
         </div>
     );

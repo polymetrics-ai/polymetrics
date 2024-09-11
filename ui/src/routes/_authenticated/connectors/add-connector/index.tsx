@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {ConnectorCard , ContactCard} from '@/components/Card'
+import { ConnectorCard, ContactCard } from '@/components/Card';
 import { CONNECTORS_LIST } from '@/constants/constants';
 import SearchBar from '@/components/Search';
 
@@ -41,7 +41,7 @@ function AddConnector() {
                                     onSearch={() => console.log('Searching')}
                                 />
                             </div>
-                            <div className="grid grid-flow-row grid-cols-4 gap-3 mt-8 text-base font-medium tracking-normal text-slate-800 max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <div className="grid grid-flow-row grid-cols-3 gap-3 mt-8 text-base font-medium tracking-normal text-slate-800 max-h-[calc(100vh-200px)] overflow-y-auto">
                                 {connectors.map((item, key) => (
                                     <ConnectorCard key={key} name={item.name} icon={item.icon} />
                                 ))}
