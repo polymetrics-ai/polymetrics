@@ -53,4 +53,12 @@ RSpec.describe Connector, type: :model do
       expect(connector.reload.configuration).to eq({ "key" => "value" })
     end
   end
+
+  describe "#icon_url" do
+    it "returns the correct icon URL" do
+      connector = create(:connector, connector_class_name: "github")
+      expected_url = "https://raw.githubusercontent.com/polymetrics-ai/polymetrics/main/public/connector_icons/github.svg"
+      expect(connector.icon_url).to eq(expected_url)
+    end
+  end
 end

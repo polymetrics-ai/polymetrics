@@ -8,7 +8,10 @@ module Api
 
       def index
         connectors = current_user.workspaces.last.connectors
-        render_api_response(connectors, :ok)
+        connectors_with_icons = connectors.map do |connector|
+          connector.attributes.merge(icon_url: connector.icon_url)
+        end
+        render_api_response(connectors_with_icons, :ok)
       end
 
       def show
