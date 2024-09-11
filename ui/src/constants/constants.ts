@@ -119,5 +119,5 @@ export const CONNECTORS_LIST = [
     {
         name: 'Google Ads',
         icon: '/connectors/google-ads.svg'
-    },
-]
+    }
+];

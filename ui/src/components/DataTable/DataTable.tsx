@@ -14,8 +14,6 @@ import {
 } from '@/components/ui/table';
 import { getTimeStamp } from '@/lib/date-helper';
 
-
-
 const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
     const table = useReactTable({
         data,

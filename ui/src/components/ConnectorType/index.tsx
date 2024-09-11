@@ -6,7 +6,7 @@ export interface ConnectorTypeProps {
     name: string;
 }
 
-const ConnectorType: React.FC<ConnectorTypeProps> = ({icon, name }) => {
+const ConnectorType: React.FC<ConnectorTypeProps> = ({ icon, name }) => {
     return (
         <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white border-1 border-slate-200">
