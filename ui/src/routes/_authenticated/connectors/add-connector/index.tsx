@@ -10,6 +10,8 @@ import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
 import { ConnectorSchema } from '@/lib/schema';
 
+
+
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
 });
