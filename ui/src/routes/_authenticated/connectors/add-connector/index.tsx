@@ -102,6 +102,14 @@ function AddConnector() {
                             Next
                         </Button>
                     </div>
+                    <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
+                        <Button disabled className="hidden">
+                            Back
+                        </Button>
+                        <Button disabled className="ml-auto">
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
             <div className="col-span-1 gap-0 w-full overflow-hidden">
