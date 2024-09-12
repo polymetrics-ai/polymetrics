@@ -20,11 +20,8 @@ const ConnectorCard: React.FC<ConnectorCardProps> = ({ name, icon }) => {
                         </div>
                     </div>
                 </TooltipTrigger>
-                <TooltipContent className='bg-zinc-800 text-white py-2 px-2'>
-                   {name}
-                </TooltipContent>
+                <TooltipContent className="bg-zinc-800 text-white py-2 px-2">{name}</TooltipContent>
             </Tooltip>
-           
         </TooltipProvider>
     );
 };
