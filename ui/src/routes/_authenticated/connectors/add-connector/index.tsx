@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ConnectorCard, ContactCard } from '@/components/Card';
 import { CONNECTORS_LIST } from '@/constants/constants';
 import SearchBar from '@/components/Search';
+import { Button } from '@/components/ui';
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
@@ -11,9 +12,9 @@ function AddConnector() {
     const connectors = CONNECTORS_LIST;
     return (
         <main className="grid grid-cols-4 my-8 mr-8 bg-slate-100">
-            <div className="col-span-3 overflow-hidden">
-                <div className="flex flex-col rounded bg-slate-100">
-                    <div className="flex flex-wrap gap-10 py-5 px-10 w-full text-sm font-medium tracking-normal rounded border-b border-solid border-b-slate-200 text-slate-400">
+            <div className="col-span-3 overflow-hidden flex-grow">
+                <div className="flex flex-1 flex-col bg-slate-100 h-full">
+                    <div className="flex h-19 flex-wrap gap-10 py-5 px-10 w-full text-sm font-medium tracking-normal rounded border-b border-solid border-b-slate-200 text-slate-400">
                         <div className="flex gap-2 items-center">
                             <img
                                 loading="lazy"
@@ -30,23 +31,31 @@ function AddConnector() {
                         </div>
                         <div className="flex gap-4" />
                     </div>
-                    <div className="flex flex-col mx-10 mt-8">
-                        <div className="flex flex-col">
-                            <div className="text-xl font-semibold tracking-tight leading-none text-slate-800">
-                                Choose a new connector
-                            </div>
-                            <div className="mt-4 cursor-pointer bg-white border-slate-300">
-                                <SearchBar
-                                    placeholder="Search for Connectors"
-                                    onSearch={() => console.log('Searching')}
-                                />
-                            </div>
-                            <div className="grid grid-flow-row grid-cols-3 gap-3 mt-8 text-base font-medium tracking-normal text-slate-800 max-h-[calc(100vh-200px)] overflow-y-auto">
+                    <div className="flex flex-col my-8 overflow-hidden flex-grow">
+                        <div className="mx-10 text-xl font-semibold tracking-tight leading-none text-slate-800">
+                            Choose a new connector
+                        </div>
+                        <div className="mx-10 mt-4 mb-8 cursor-pointer bg-white border-slate-300">
+                            <SearchBar
+                                placeholder="Search for Connectors"
+                                onSearch={() => console.log('Searching')}
+                            />
+                        </div>
+                        <div className="overflow-y-auto px-10">
+                            <div className="grid grid-flow-row grid-cols-4 gap-3 text-base font-medium tracking-normal text-slate-800 h-full flex-grow">
                                 {connectors.map((item, key) => (
                                     <ConnectorCard key={key} name={item.name} icon={item.icon} />
                                 ))}
                             </div>
                         </div>
+                    </div>
+                    <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
+                        <Button disabled className="hidden">
+                            Back
+                        </Button>
+                        <Button disabled className="ml-auto">
+                            Next
+                        </Button>
                     </div>
                 </div>
             </div>

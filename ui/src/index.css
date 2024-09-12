@@ -44,3 +44,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
+      @apply rounded bg-black/50 shadow-[0_0_1px_rgba(255,255,255,0.5)] ml-8;
+    }
+  }
+}

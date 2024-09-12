@@ -119,5 +119,41 @@ export const CONNECTORS_LIST = [
     {
         name: 'Google Ads',
         icon: '/connectors/google-ads.svg'
+    },
+    {
+        name: 'Facebook Marketing',
+        icon: '/connectors/facebook.svg'
+    },
+    {
+        name: 'Tiktok Marketing',
+        icon: '/connectors/tiktok.svg'
+    },
+    {
+        name: 'Stripe',
+        icon: '/connectors/stripe.svg'
+    },
+    {
+        name: 'Braze',
+        icon: '/connectors/braze.svg'
+    },
+    {
+        name: 'ClickUp',
+        icon: '/connectors/clickup.svg'
+    },
+    {
+        name: 'Google Analytics 4(GA4)',
+        icon: '/connectors/google-analytics.svg'
+    },
+    {
+        name: 'Facebook Marketing',
+        icon: '/connectors/facebook.svg'
+    },
+    {
+        name: 'Klaviyo',
+        icon: '/connectors/klaviyo.svg'
+    },
+    {
+        name: 'Google Ads',
+        icon: '/connectors/google-ads.svg'
     }
 ];
