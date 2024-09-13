@@ -5,12 +5,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
 import ConnectorGrid from '@/components/ConnectorGrid';
+import ConnectorForm from '@/components/ConnectorForm';
 import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
 import { ConnectorSchema } from '@/lib/schema';
-
-
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
