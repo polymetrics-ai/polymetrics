@@ -1,7 +1,6 @@
 import React from 'react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { loginFields, signUpFields } from '@/constants/constants';
 import { user } from '@/service';
-import { SignUpCredentials, SignInCredentials } from '@/types/user';
+import { LoginSchema, SignUpSchema } from '@/lib/schema';
 import { AxiosResponse, AxiosError } from 'axios';
 
 interface AuthFormProps {
@@ -34,19 +33,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
     onPrivacyPolicy
 }) => {
     const navigate = useNavigate();
-
-    const LoginSchema = z.object({
-        email: z.string().email(),
-        password: z.string()
-    });
-
-    const SignUpSchema = z.object({
-        organization_name: z.string(),
-        name: z.string(),
-        email: z.string().email(),
-        password: z.string(),
-        password_confirmation: z.string()
-    });
 
     const FormSchema = login ? LoginSchema : SignUpSchema;
 
