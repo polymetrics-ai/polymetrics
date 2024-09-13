@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
 import ConnectorGrid from '@/components/ConnectorGrid';
-import ConnectorForm from '@/components/ConnectorForm';
+// import ConnectorForm from '@/components/ConnectorForm';
 import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
