@@ -3,11 +3,11 @@ import { ConnectorCard } from '../Card';
 import { CONNECTORS_LIST } from '@/constants/constants';
 
 export interface ConnectorGridProps {
-    list: Array<object>
+    list: Array<object>;
 }
 
-const ConnectorGrid: React.FC<ConnectorGridProps> = ({list}) => {
-    console.log(list)
+const ConnectorGrid: React.FC<ConnectorGridProps> = ({ list }) => {
+    console.log(list);
     const connectors = CONNECTORS_LIST;
     return (
         <div className="overflow-y-auto px-10">

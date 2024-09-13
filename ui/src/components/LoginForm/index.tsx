@@ -35,7 +35,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
         resolver: zodResolver(FormSchema),
         defaultValues: {
             name: '',
-            email: ''
+            description: '',
+            personal_access_token: '',
+            repository: ''
         }
     });
 

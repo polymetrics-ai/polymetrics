@@ -157,3 +157,18 @@ export const CONNECTORS_LIST = [
         icon: '/connectors/google-ads.svg'
     }
 ];
+
+export const connectorFields = [
+    // { label: 'Name', field: 'name', placeholder: 'Add Name for the Connector' },
+    {
+        label: 'Description',
+        field: 'description',
+        placeholder: 'Add Description for the Connector'
+    },
+    { label: 'Personal Access Token', field: 'personal_access_token', placeholder: '' },
+    {
+        label: 'Respository',
+        field: 'repository',
+        placeholder: 'Repository name should follow the pattern */* i.e rails/rails'
+    }
+];
