@@ -104,10 +104,10 @@ function AddConnector() {
                         </Button>
                     </div>
                     <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
-                        <Button disabled className="hidden">
+                        <Button className={`${steps  === 0 ? 'hidden' : ''}`} onClick={()=>onPrev()}>
                             Back
                         </Button>
-                        <Button disabled className="ml-auto">
+                        <Button  className="ml-auto" onClick={()=>onNext()}>
                             Next
                         </Button>
                     </div>
