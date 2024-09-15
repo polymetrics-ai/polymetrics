@@ -3,10 +3,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
 import ConnectorGrid from '@/components/ConnectorGrid';
-// import ConnectorForm from '@/components/ConnectorForm';
+import ConnectorForm from '@/components/ConnectorForm';
 import { Button } from '@/components/ui';
 import Loader from '@/components/Loader'
-import ConnectorForm from '@/components/ConnectorForm';
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
@@ -29,7 +28,6 @@ function AddConnector() {
         else
           setSteps(0)
     }
-
     return (
         <main className="grid grid-cols-4 my-8 mr-8 bg-slate-100">
             <div className="col-span-3 overflow-hidden flex-grow">
