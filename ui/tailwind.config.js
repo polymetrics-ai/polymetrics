@@ -60,6 +60,10 @@ module.exports = {
                 sm: 'calc(var(--radius) - 4px)'
             },
             keyframes: {
+                loader: {
+                    '0%, 100%': { height: '8rem' },
+                    '50%': { height: '3rem' },
+                },
                 'accordion-down': {
                     from: { height: '0' },
                     to: { height: 'var(--radix-accordion-content-height)' }
@@ -70,6 +74,7 @@ module.exports = {
                 }
             },
             animation: {
+                loader: 'loader 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out'
             }

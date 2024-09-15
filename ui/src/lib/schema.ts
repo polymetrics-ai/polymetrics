@@ -16,5 +16,7 @@ export const ConnectorSchema = z.object({
     name: z.string(),
     description: z.string(),
     personal_access_token: z.string(),
-    repository: z.string()
+    repository: z.string().regex(
+        /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/
+    )
 });

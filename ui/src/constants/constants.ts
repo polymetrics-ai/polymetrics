@@ -159,7 +159,7 @@ export const CONNECTORS_LIST = [
 ];
 
 export const connectorFields = [
-    // { label: 'Name', field: 'name', placeholder: 'Add Name for the Connector' },
+    { label: 'Name', field: 'name', placeholder: 'Add Name for the Connector' },
     {
         label: 'Description',
         field: 'description',
