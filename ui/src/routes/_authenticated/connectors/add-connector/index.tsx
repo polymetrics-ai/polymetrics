@@ -1,15 +1,33 @@
+import { useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
 import ConnectorGrid from '@/components/ConnectorGrid';
-// import ConnectorForm from '@/components/ConnectorForm';
+import ConnectorForm from '@/components/ConnectorForm';
 import { Button } from '@/components/ui';
+import Loader from '@/components/Loader'
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
 });
 
 function AddConnector() {
+    const [steps, setSteps]  = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const onPrev = () =>{
+        setSteps(prev => prev - 1)
+    }
+    const onNext=()=>{
+        setIsLoading(true)
+        if(steps === 0 ){
+            // setIsLoading(false);
+            setSteps(prev => prev + 1)  
+           
+        }
+        else
+          setSteps(0)
+    }
     return (
         <main className="grid grid-cols-4 my-8 mr-8 bg-slate-100">
             <div className="col-span-3 overflow-hidden flex-grow">
@@ -31,7 +49,8 @@ function AddConnector() {
                         </div>
                         <div className="flex gap-4" />
                     </div>
-                    <div className="flex flex-col my-8 overflow-hidden flex-grow">
+                    {steps === 0 ? 
+                    (<div className="flex flex-col my-8 overflow-hidden flex-grow">
                         <div className="mx-10 text-xl font-semibold tracking-tight leading-none text-slate-800">
                             Choose a new connector
                         </div>
@@ -41,14 +60,18 @@ function AddConnector() {
                                 onSearch={() => console.log('Searching')}
                             />
                         </div>
-                        {/* <ConnectorForm data={{}} /> */}
-                        <ConnectorGrid list={[]}/>
-                    </div>
+                        {isLoading ?  <Loader/> : <ConnectorGrid list={[]}/>}
+                        
+                    </div>)
+                    :
+                    (<div className="flex flex-col my-8 overflow-hidden flex-grow">
+                       {isLoading ? <Loader/> :  <ConnectorForm data={{}}/>}
+                    </div>)}
                     <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
-                        <Button disabled className="hidden">
+                        <Button className={`${steps  === 0 ? 'hidden' : ''}`} onClick={()=>onPrev()}>
                             Back
                         </Button>
-                        <Button disabled className="ml-auto">
+                        <Button  className="ml-auto" onClick={()=>onNext()}>
                             Next
                         </Button>
                     </div>
