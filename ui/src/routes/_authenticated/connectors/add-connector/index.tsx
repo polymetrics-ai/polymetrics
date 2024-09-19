@@ -1,12 +1,9 @@
 import { useState, useRef } from 'react';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { createFileRoute } from '@tanstack/react-router';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
 import ConnectorGrid from '@/components/ConnectorGrid';
-// import ConnectorForm from '@/components/ConnectorForm';
 import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
@@ -38,11 +35,6 @@ function AddConnector() {
             }
         };
          
-        payload.connector.configuration ={
-            repository,
-            personal_access_token,x
-        }
-        payload
      };
 
     const onPrev = () => {
