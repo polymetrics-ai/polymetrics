@@ -2,7 +2,7 @@ import React from 'react';
 import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router';
 import useAuthStore from '@/store/authStore';
 import NavBar from '@/components/NavBar';
-import { user } from '@/service';
+import { signOut } from '@/service';
 
 export const Route = createFileRoute('/_authenticated')({
     component: AuthLayout,
@@ -21,7 +21,7 @@ function AuthLayout() {
     const navigate = useNavigate();
 
     const onSignOut = () => {
-        user.signOut()
+        signOut()
             .then((resp) => {
                 console.log(resp);
                 if (resp) useAuthStore.getState().clearAuthData();
