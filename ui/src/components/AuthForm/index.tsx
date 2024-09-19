@@ -13,7 +13,7 @@ import {
     FormMessage
 } from '@/components/ui/form';
 import { loginFields, signUpFields } from '@/constants/constants';
-import { user } from '@/service';
+import { signIn, signUp } from '@/service';
 import { LoginSchema, SignUpSchema } from '@/lib/schema';
 import { AxiosResponse, AxiosError } from 'axios';
 
@@ -51,13 +51,13 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
         if (login) {
-            user.signIn(data)
+            signIn(data)
                 .then(() => navigate({ to: '/dashboard', replace: true }))
                 .catch((error: AxiosError) => {
                     if (error.status === 401) navigate({ to: '/login', replace: true });
                 });
         } else {
-            user.signUp(data)
+            signUp(data)
                 .then(() => navigate({ to: '/dashboard' }))
                 .catch((error: AxiosError) => console.error('Signup error:', error));
         }

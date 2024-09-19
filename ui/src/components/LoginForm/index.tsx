@@ -16,7 +16,7 @@ import {
 
 import { AxiosResponse, AxiosError } from 'axios';
 import { loginFields } from '@/constants/constants';
-import { user } from '@/service';
+import { signIn } from '@/service';
 
 interface LoginFormProps {
     onSignUp: () => void;
@@ -35,9 +35,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
         resolver: zodResolver(FormSchema),
         defaultValues: {
             name: '',
-            description: '',
-            personal_access_token: '',
-            repository: ''
+            description: ''
         }
     });
 
@@ -47,7 +45,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignUp, onForgotPassword }) => 
             password: data.password
         };
 
-        user.signIn(payload)
+        signIn(payload)
             .then((response: AxiosResponse) => {
                 // useAuthStore.
                 navigate({ to: '/dashboard', replace: true });

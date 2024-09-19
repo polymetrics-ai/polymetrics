@@ -13,8 +13,4 @@ const signOut = async () => {
     return apiClient.delete('/auth/sign_out');
 };
 
-export const user = {
-    signUp,
-    signIn,
-    signOut
-};
+export { signUp, signIn, signOut };
