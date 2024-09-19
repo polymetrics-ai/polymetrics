@@ -1,3 +1,4 @@
+
 import { useState, useRef } from 'react';
 import { z } from 'zod';
 import { createFileRoute } from '@tanstack/react-router';
@@ -8,7 +9,6 @@ import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
 import { ConnectorSchema } from '@/lib/schema';
-// import { getConnectorsList } from '@/service';
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
