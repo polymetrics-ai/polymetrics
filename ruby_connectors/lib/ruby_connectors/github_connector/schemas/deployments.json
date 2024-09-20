@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Deployments",
+  "description": "Detailed information about a deployment in a GitHub repository, including its URL, ID, node ID, task, original environment, environment, description, creation timestamp, update timestamp, statuses URL, repository URL, creator, SHA, ref, payload, transient environment flag, production environment flag, performed via GitHub App, and repository.",
+  "x-stream_name": "deployments",
+  "properties": {
+    "url": {
+      "description": "The fully qualified API endpoint URL for retrieving detailed information about this specific deployment.",
+      "type": ["null", "string"]
+    },
+    "id": {
+      "description": "The immutable, system-generated unique identifier for the deployment within GitHub's database.",
+      "type": ["null", "integer"]
+    },
+    "node_id": {
+      "description": "The globally unique identifier for the deployment in the GitHub GraphQL API, typically a base64-encoded string.",
+      "type": ["null", "string"]
+    },
+    "task": {
+      "description": "A string identifier representing the operational task associated with this deployment. Common values include 'deploy' and 'rollback'.",
+      "type": ["null", "string"]
+    },
+    "original_environment": {
+      "description": "The initial target environment name, preserved for reference in case of subsequent environment changes or promotions.",
+      "type": ["null", "string"]
+    },
+    "environment": {
+      "description": "The current target environment for this deployment. Common values include 'staging', 'production', or custom environment names.",
+      "type": ["null", "string"]
+    },
+    "description": {
+      "description": "An optional human-readable summary or notes about the purpose, context, or changes included in this deployment.",
+      "type": ["null", "string"]
+    },
+    "created_at": {
+      "description": "The ISO 8601 format timestamp (YYYY-MM-DDTHH:mm:ssZ) indicating when the deployment was initially created in the GitHub system.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "description": "The ISO 8601 format timestamp (YYYY-MM-DDTHH:mm:ssZ) indicating when the deployment was last modified or its status was updated.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "statuses_url": {
+      "description": "The fully qualified API endpoint URL for retrieving the list of status updates associated with this deployment.",
+      "type": ["null", "string"]
+    },
+    "repository_url": {
+      "description": "The fully qualified API endpoint URL for the repository where this deployment was initiated.",
+      "type": ["null", "string"]
+    },
+    "creator": {
+      "description": "Detailed information about the GitHub user account or system that initiated this deployment.",
+      "$ref": "user.json"
+    },
+    "sha": {
+      "description": "The full 40-character SHA-1 hash of the commit that is being deployed.",
+      "type": ["null", "string"]
+    },
+    "ref": {
+      "description": "The name of the branch or tag that is being deployed, typically in the format 'refs/heads/branch-name' or 'refs/tags/tag-name'.",
+      "type": ["null", "string"]
+    },
+    "payload": {
+      "description": "A flexible field for storing deployment-specific metadata or configuration details. Can be a JSON object, a string, or null.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "transient_environment": {
+      "description": "A boolean flag indicating whether this deployment targets a temporary or ephemeral environment that will be destroyed after use.",
+      "type": ["null", "boolean"]
+    },
+    "production_environment": {
+      "description": "A boolean flag indicating whether this deployment targets a production or customer-facing environment. Used for additional safeguards and notifications.",
+      "type": ["null", "boolean"]
+    },
+    "performed_via_github_app": {
+      "description": "The name or identifier of the GitHub App that executed this deployment, if applicable. Null if not performed by a GitHub App.",
+      "type": ["null", "string"]
+    },
+    "repository": {
+      "description": "The fully qualified name or unique identifier of the repository where this deployment originated, typically in the format 'owner/repo'.",
+      "type": "string"
+    }
+  }
+}

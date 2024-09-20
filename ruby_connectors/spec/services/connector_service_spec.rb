@@ -14,18 +14,22 @@ RSpec.describe RubyConnectors::Services::ConnectorService do
     }
   end
 
-  describe ".connect_and_fetch_status" do
-    it "calls connect_to_connector with the connector", :vcr do
-      expect(described_class).to receive(:connect_to_connector).with(connector)
-      described_class.connect_and_fetch_status(connector)
+  describe ".connect_and_fetch_status", :vcr do
+    it "calls connect_to_connector with the connector" do
+      VCR.use_cassette("connector_service_connect_and_fetch_status") do
+        expect(described_class).to receive(:connect_to_connector).with(connector)
+        described_class.connect_and_fetch_status(connector)
+      end
     end
   end
 
   describe ".connect_to_connector" do
     context "when the connection is successful", :vcr do
       it "returns a hash with connected status" do
-        result = described_class.connect_to_connector(connector)
-        expect(result).to eq({ connected: true })
+        VCR.use_cassette("github_connect") do
+          result = described_class.connect_to_connector(connector)
+          expect(result).to eq({ connected: true })
+        end
       end
     end
 
@@ -35,8 +39,10 @@ RSpec.describe RubyConnectors::Services::ConnectorService do
       end
 
       it "returns a hash with connected status as false and error message" do
-        result = described_class.connect_to_connector(connector)
-        expect(result).to eq({ connected: false, error_message: "Connection error" })
+        VCR.use_cassette("connector_service_failed_connection") do
+          result = described_class.connect_to_connector(connector)
+          expect(result).to eq({ connected: false, error_message: "Connection error" })
+        end
       end
     end
   end

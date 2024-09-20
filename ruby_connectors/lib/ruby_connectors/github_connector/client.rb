@@ -14,9 +14,9 @@ module RubyConnectors
         @connection.connect
       end
 
-      # def read
-      #   @reader.read
-      # end
+      def read(stream_name, page = 1, per_page = 30)
+        @reader.read(stream_name, page, per_page)
+      end
 
       # def write(data)
       #   @writer.write(data)

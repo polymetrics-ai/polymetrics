@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Branches",
+  "description": "Detailed information about a branch in a GitHub repository, including its name, commit, protection status, and protection rules.",
+  "x-stream_name": "branches",
+  "properties": {
+    "repository": {
+      "description": "The fully qualified name or unique identifier of the repository containing the branch. This could be in the format 'owner/repo'.",
+      "type": "string"
+    },
+    "name": {
+      "description": "The unique reference name of the branch within the repository. This is typically in the format 'refs/heads/branch-name'. Can be null if the branch is being created.",
+      "type": ["null", "string"]
+    },
+    "commit": {
+      "description": "Metadata about the most recent commit on this branch. May be null if the branch is empty or being initialized.",
+      "type": ["null", "object"],
+      "properties": {
+        "sha": {
+          "description": "The 40-character SHA-1 hash of the commit, serving as its immutable and unique identifier.",
+          "type": ["null", "string"]
+        },
+        "url": {
+          "description": "The fully qualified API endpoint URL for retrieving detailed information about the commit. This URL is specific to the GitHub API.",
+          "type": ["null", "string"]
+        }
+      }
+    },
+    "protected": {
+      "description": "A boolean flag indicating whether the branch has any protection rules applied. True if protected, false otherwise. May be null if the protection status is unknown or not applicable.",
+      "type": ["null", "boolean"]
+    },
+    "protection": {
+      "description": "Detailed configuration of the protection rules for this branch. This object is present only if the branch is protected.",
+      "type": ["null", "object"],
+      "properties": {
+        "enabled": {
+          "description": "A boolean flag indicating if branch protection is currently active and enforced. May be null if the status is unknown.",
+          "type": ["null", "boolean"]
+        },
+        "required_status_checks": {
+          "description": "Configuration for mandatory status checks that must pass before merging is allowed.",
+          "type": ["null", "object"],
+          "properties": {
+            "enforcement_level": {
+              "description": "The strictness level of status check enforcement. Possible values include 'strict' (require branches to be up to date before merging) and 'non_admins' (enforce status checks for non-administrators).",
+              "type": ["null", "string"]
+            },
+            "contexts": {
+              "description": "An array of status check names that must pass before merging is allowed. This is a legacy field and may be deprecated in favor of 'checks'.",
+              "type": ["null", "array"],
+              "items": {
+                "description": "The name of an individual required status check. This should match the 'context' field of status checks.",
+                "type": ["null", "string"]
+              }
+            },
+            "checks": {
+              "description": "Detailed specifications for each required status check, providing more granular control than 'contexts'.",
+              "type": ["null", "array"],
+              "items": {
+                "description": "Configuration for a specific required status check.",
+                "type": "object",
+                "properties": {
+                  "context": {
+                    "description": "The name or identifier of the status check. This should match the 'context' field of status checks.",
+                    "type": ["null", "string"]
+                  },
+                  "app_id": {
+                    "description": "The unique numeric identifier of the GitHub App associated with this status check. Null if not associated with a GitHub App.",
+                    "type": ["null", "integer"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "protection_url": {
+      "description": "The fully qualified API endpoint URL for managing and viewing branch protection settings. This URL is specific to the GitHub API and may require appropriate authentication to access.",
+      "type": ["null", "string"]
+    }
+  }
+}

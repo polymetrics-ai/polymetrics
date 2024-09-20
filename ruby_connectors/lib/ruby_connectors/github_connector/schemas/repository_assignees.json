@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Repository Assignees",
+  "description": "Detailed information about a repository assignee, including their repository, login, ID, node ID, avatar URL, gravatar ID, URL, HTML URL, followers URL, following URL, gists URL, starred URL, subscriptions URL, organizations URL, repositories URL, events URL, received events URL, type, site admin status, and permissions.",
+  "x-stream_name": "repository_assignees",
+  "properties": {
+    "repository": {
+      "description": "The full name of the repository where the assignee is associated",
+      "type": "string"
+    },
+    "login": {
+      "description": "The unique username of the assignee on the platform",
+      "type": ["null", "string"]
+    },
+    "id": {
+      "description": "The system-generated unique identifier for the assignee",
+      "type": ["null", "integer"]
+    },
+    "node_id": {
+      "description": "The globally unique identifier for the assignee in the GitHub GraphQL API",
+      "type": ["null", "string"]
+    },
+    "avatar_url": {
+      "description": "The URL of the assignee's profile picture or avatar image",
+      "type": ["null", "string"]
+    },
+    "gravatar_id": {
+      "description": "The identifier for the assignee's Gravatar profile, if used",
+      "type": ["null", "string"]
+    },
+    "url": {
+      "description": "The API URL for fetching details about the assignee's account",
+      "type": ["null", "string"]
+    },
+    "html_url": {
+      "description": "The web URL of the assignee's public GitHub profile page",
+      "type": ["null", "string"]
+    },
+    "followers_url": {
+      "description": "The API URL for retrieving the list of users following the assignee",
+      "type": ["null", "string"]
+    },
+    "following_url": {
+      "description": "The API URL for retrieving the list of users the assignee is following",
+      "type": ["null", "string"]
+    },
+    "gists_url": {
+      "description": "The API URL for accessing the assignee's public gists",
+      "type": ["null", "string"]
+    },
+    "starred_url": {
+      "description": "The API URL for retrieving repositories starred by the assignee",
+      "type": ["null", "string"]
+    },
+    "subscriptions_url": {
+      "description": "The API URL for accessing repositories the assignee is watching",
+      "type": ["null", "string"]
+    },
+    "organizations_url": {
+      "description": "The API URL for retrieving organizations the assignee belongs to",
+      "type": ["null", "string"]
+    },
+    "repos_url": {
+      "description": "The API URL for accessing the assignee's public repositories",
+      "type": ["null", "string"]
+    },
+    "events_url": {
+      "description": "The API URL for retrieving events associated with the assignee",
+      "type": ["null", "string"]
+    },
+    "received_events_url": {
+      "description": "The API URL for accessing events received by the assignee",
+      "type": ["null", "string"]
+    },
+    "type": {
+      "description": "The category of the assignee's account (e.g., 'User', 'Organization')",
+      "type": ["null", "string"]
+    },
+    "site_admin": {
+      "description": "Indicates whether the assignee has administrative privileges on the site",
+      "type": ["null", "boolean"]
+    }
+  }
+}
