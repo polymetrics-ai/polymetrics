@@ -1,0 +1,82 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.github.com/repos/octocat/Hello-World/branches?page=1&per_page=2
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 9.1.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 19 Sep 2024 16:36:09 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Cache-Control:
+      - public, max-age=60, s-maxage=60
+      Vary:
+      - Accept,Accept-Encoding, Accept, X-Requested-With
+      Etag:
+      - W/"876aeb6ab9e6b72bbca240b1f3069e5424163b5a000c2c40890b2b04a620fff5"
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Link:
+      - <https://api.github.com/repositories/1296269/branches?page=2&per_page=2>;
+        rel="next", <https://api.github.com/repositories/1296269/branches?page=2&per_page=2>;
+        rel="last"
+      X-Github-Api-Version-Selected:
+      - '2022-11-28'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Access-Control-Allow-Origin:
+      - "*"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Frame-Options:
+      - deny
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - '0'
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Content-Security-Policy:
+      - default-src 'none'
+      Server:
+      - github.com
+      X-Ratelimit-Limit:
+      - '60'
+      X-Ratelimit-Remaining:
+      - '8'
+      X-Ratelimit-Reset:
+      - '1726765742'
+      X-Ratelimit-Resource:
+      - core
+      X-Ratelimit-Used:
+      - '52'
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '414'
+      X-Github-Request-Id:
+      - 5273:1C9CB7:113CA71:123D9E1:66EC52F8
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"name":"master","commit":{"sha":"7fd1a60b01f91b314f59955a4e4d4e80d8edf11d","url":"https://api.github.com/repos/octocat/Hello-World/commits/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"},"protected":false},{"name":"octocat-patch-1","commit":{"sha":"b1b3f9723831141a31a1a7252a213e216ea76e56","url":"https://api.github.com/repos/octocat/Hello-World/commits/b1b3f9723831141a31a1a7252a213e216ea76e56"},"protected":false}]'
+  recorded_at: Thu, 19 Sep 2024 16:36:09 GMT
+recorded_with: VCR 6.2.0

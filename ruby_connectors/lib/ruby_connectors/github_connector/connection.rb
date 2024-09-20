@@ -12,8 +12,6 @@ module RubyConnectors
         client.repository?(@config[:repository])
       end
 
-      private
-
       def authorize_connection
         Octokit::Client.new(access_token: @config[:personal_access_token])
       end

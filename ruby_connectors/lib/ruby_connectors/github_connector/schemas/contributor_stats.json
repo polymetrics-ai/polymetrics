@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Contributor Stats",
+  "description": "Detailed information about a contributor's GitHub activity, including their name, email, login, ID, node ID, avatar URL, gravatar ID, URL, HTML URL, followers URL, following URL, gists URL, starred URL, subscriptions URL, organizations URL, repositories URL, events URL, received events URL, type, site admin status, role name, and permissions.",
+  "x-stream_name": "contributor_stats",
+  "properties": {
+    "name": {
+      "description": "The full name of the contributor as configured in their GitHub profile. May be null if not set or private.",
+      "type": ["null", "string"]
+    },
+    "email": {
+      "description": "The primary email address associated with the contributor's GitHub account. May be null if not public or unavailable.",
+      "type": ["string", "null"]
+    },
+    "login": {
+      "description": "The unique username of the contributor on GitHub. This is their public identifier on the platform.",
+      "type": ["null", "string"]
+    },
+    "id": {
+      "description": "The immutable, system-generated unique identifier for the contributor on GitHub.",
+      "type": ["null", "integer"]
+    },
+    "node_id": {
+      "description": "The globally unique identifier for the contributor in the GitHub GraphQL API, typically a base64-encoded string.",
+      "type": ["null", "string"]
+    },
+    "avatar_url": {
+      "description": "The fully qualified URL of the contributor's profile picture or avatar image on GitHub.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "gravatar_id": {
+      "description": "The identifier for the contributor's Gravatar profile, if used. An empty string if Gravatar is not used.",
+      "type": ["string", "null"]
+    },
+    "url": {
+      "description": "The fully qualified API endpoint URL for retrieving detailed information about the contributor's GitHub account.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "html_url": {
+      "description": "The fully qualified web URL of the contributor's public GitHub profile page.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "followers_url": {
+      "description": "The fully qualified API endpoint URL for retrieving the list of users following the contributor on GitHub.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "following_url": {
+      "description": "The API endpoint URL template for retrieving the list of users the contributor is following. Replace {/other_user} with a specific username.",
+      "type": ["null", "string"]
+    },
+    "gists_url": {
+      "description": "The API endpoint URL template for accessing the contributor's public gists. Replace {/gist_id} with a specific gist ID.",
+      "type": ["null", "string"]
+    },
+    "starred_url": {
+      "description": "The API endpoint URL template for retrieving repositories starred by the contributor. Replace {/owner}{/repo} with specific repository details.",
+      "type": ["null", "string"]
+    },
+    "subscriptions_url": {
+      "description": "The fully qualified API endpoint URL for accessing repositories the contributor is watching on GitHub.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "organizations_url": {
+      "description": "The fully qualified API endpoint URL for retrieving public organizations the contributor belongs to on GitHub.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "repos_url": {
+      "description": "The fully qualified API endpoint URL for accessing the contributor's public repositories on GitHub.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "events_url": {
+      "description": "The API endpoint URL template for retrieving events associated with the contributor. Replace {/privacy} with the event privacy level.",
+      "type": ["null", "string"]
+    },
+    "repository": {
+      "description": "The fully qualified name or unique identifier of the repository the contributor is associated with, typically in the format 'owner/repo'.",
+      "type": ["null", "string"]
+    },
+    "received_events_url": {
+      "description": "The fully qualified API endpoint URL for accessing public events received by the contributor on GitHub.",
+      "type": ["null", "string"],
+      "format": "uri"
+    },
+    "type": {
+      "description": "The category of the contributor's GitHub account. Common values include 'User' for individual accounts and 'Organization' for organizational accounts.",
+      "type": ["null", "string"]
+    },
+    "site_admin": {
+      "description": "A boolean flag indicating whether the contributor has administrative privileges on the GitHub instance. True for GitHub staff members, false otherwise.",
+      "type": ["null", "boolean"]
+    },
+    "starred_at": {
+      "description": "The ISO 8601 format timestamp (YYYY-MM-DDTHH:mm:ssZ) indicating when the contributor starred the repository. Null if not applicable.",
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "total": {
+      "description": "The cumulative count of all contributions (commits, pull requests, issues, etc.) made by the contributor to the repository.",
+      "type": ["null", "integer"]
+    },
+    "weeks": {
+      "description": "An array of weekly contribution statistics for the contributor, typically covering the last year.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "w": {
+            "description": "The Unix timestamp representing the start of the week (00:00:00 UTC on Sunday) for which the statistics are reported.",
+            "type": ["null", "integer"]
+          },
+          "a": {
+            "description": "The total number of lines added by the contributor during the specified week.",
+            "type": ["null", "integer"]
+          },
+          "d": {
+            "description": "The total number of lines deleted by the contributor during the specified week.",
+            "type": ["null", "integer"]
+          },
+          "c": {
+            "description": "The total number of commits made by the contributor during the specified week.",
+            "type": ["null", "integer"]
+          }
+        }
+      }
+    }
+  }
+}

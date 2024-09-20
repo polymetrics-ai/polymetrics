@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Contributions",
+  "description": "Detailed information about a contributor in a GitHub repository, including their login, ID, node ID, avatar URL, gravatar ID, URL, HTML URL, followers URL, following URL, gists URL, starred URL, subscriptions URL, organizations URL, repositories URL, events URL, received events URL, type, site admin status, role name, and permissions.",
+  "x-stream_name": "contribs",
+  "properties": {
+    "repository": {
+      "description": "The fully qualified name or unique identifier of the repository associated with the collaborator, typically in the format 'owner/repo'.",
+      "type": "string"
+    },
+    "login": {
+      "description": "The unique username of the collaborator on the GitHub platform. May be null if the collaborator has been removed or the information is unavailable.",
+      "type": ["null", "string"]
+    },
+    "id": {
+      "description": "The immutable, system-generated unique identifier for the collaborator's account on GitHub.",
+      "type": ["null", "integer"]
+    },
+    "node_id": {
+      "description": "The globally unique identifier for the collaborator in the GitHub GraphQL API, typically a base64-encoded string.",
+      "type": ["null", "string"]
+    },
+    "avatar_url": {
+      "description": "The fully qualified URL of the collaborator's profile picture or avatar image on GitHub.",
+      "type": ["null", "string"]
+    },
+    "gravatar_id": {
+      "description": "The identifier for the collaborator's Gravatar profile, if used. An empty string if Gravatar is not used.",
+      "type": ["null", "string"]
+    },
+    "url": {
+      "description": "The fully qualified API endpoint URL for retrieving detailed information about the collaborator's GitHub account.",
+      "type": ["null", "string"]
+    },
+    "html_url": {
+      "description": "The fully qualified web URL of the collaborator's public GitHub profile page.",
+      "type": ["null", "string"]
+    },
+    "followers_url": {
+      "description": "The fully qualified API endpoint URL for retrieving the list of users following the collaborator on GitHub.",
+      "type": ["null", "string"]
+    },
+    "following_url": {
+      "description": "The fully qualified API endpoint URL for retrieving the list of users the collaborator is following on GitHub. May contain '{/other_user}' to be replaced with a specific username.",
+      "type": ["null", "string"]
+    },
+    "gists_url": {
+      "description": "The fully qualified API endpoint URL for accessing the collaborator's public gists. May contain '{/gist_id}' to be replaced with a specific gist ID.",
+      "type": ["null", "string"]
+    },
+    "starred_url": {
+      "description": "The fully qualified API endpoint URL for retrieving repositories starred by the collaborator. May contain '{/owner}{/repo}' to be replaced with specific repository details.",
+      "type": ["null", "string"]
+    },
+    "subscriptions_url": {
+      "description": "The fully qualified API endpoint URL for accessing repositories the collaborator is watching on GitHub.",
+      "type": ["null", "string"]
+    },
+    "organizations_url": {
+      "description": "The fully qualified API endpoint URL for retrieving public organizations the collaborator belongs to on GitHub.",
+      "type": ["null", "string"]
+    },
+    "repos_url": {
+      "description": "The fully qualified API endpoint URL for accessing the collaborator's public repositories on GitHub.",
+      "type": ["null", "string"]
+    },
+    "events_url": {
+      "description": "The fully qualified API endpoint URL for retrieving public events associated with the collaborator. May contain '{/privacy}' to be replaced with event privacy level.",
+      "type": ["null", "string"]
+    },
+    "received_events_url": {
+      "description": "The fully qualified API endpoint URL for accessing public events received by the collaborator on GitHub.",
+      "type": ["null", "string"]
+    },
+    "type": {
+      "description": "The category of the collaborator's GitHub account. Common values include 'User' for individual accounts and 'Organization' for organizational accounts.",
+      "type": ["null", "string"]
+    },
+    "site_admin": {
+      "description": "A boolean flag indicating whether the collaborator has administrative privileges on the GitHub instance. True for GitHub staff members, false otherwise.",
+      "type": ["null", "boolean"]
+    },
+    "role_name": {
+      "description": "The designated role or position of the collaborator within the specific repository. This may reflect custom repository roles or default GitHub roles.",
+      "type": ["null", "string"]
+    },
+    "permissions": {
+      "description": "A detailed breakdown of the collaborator's access rights within the specific repository.",
+      "type": ["null", "object"],
+      "properties": {
+        "admin": {
+          "description": "A boolean flag indicating whether the collaborator has full administrative access to the repository, including the ability to manage settings and other collaborators.",
+          "type": ["null", "boolean"]
+        },
+        "maintain": {
+          "description": "A boolean flag indicating whether the collaborator has permissions to manage the repository without full admin access, such as managing non-protected branches and pull requests.",
+          "type": ["null", "boolean"]
+        },
+        "push": {
+          "description": "A boolean flag indicating whether the collaborator has permissions to push changes (write access) to the repository.",
+          "type": ["null", "boolean"]
+        },
+        "pull": {
+          "description": "A boolean flag indicating whether the collaborator has permissions to clone and pull changes from the repository (read access).",
+          "type": ["null", "boolean"]
+        },
+        "triage": {
+          "description": "A boolean flag indicating whether the collaborator has permissions to manage issues and pull requests without write access, such as applying labels or requesting reviews.",
+          "type": ["null", "boolean"]
+        }
+      }
+    }
+  }
+}

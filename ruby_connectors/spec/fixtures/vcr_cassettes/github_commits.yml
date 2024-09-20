@@ -1,0 +1,98 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.github.com/repos/rails/rails/commits?page=1&per_page=2
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 9.1.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 19 Sep 2024 16:44:43 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Cache-Control:
+      - public, max-age=60, s-maxage=60
+      Vary:
+      - Accept,Accept-Encoding, Accept, X-Requested-With
+      Etag:
+      - W/"b9b69dbcfd4b1cce3aba0ed89e7fedbf1745a41d1947c7bd2cf5becfcb8c32d3"
+      Last-Modified:
+      - Thu, 19 Sep 2024 09:12:58 GMT
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Link:
+      - <https://api.github.com/repositories/8514/commits?page=2&per_page=2>; rel="next",
+        <https://api.github.com/repositories/8514/commits?page=46449&per_page=2>;
+        rel="last"
+      X-Github-Api-Version-Selected:
+      - '2022-11-28'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Access-Control-Allow-Origin:
+      - "*"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Frame-Options:
+      - deny
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - '0'
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Content-Security-Policy:
+      - default-src 'none'
+      Server:
+      - github.com
+      X-Ratelimit-Limit:
+      - '60'
+      X-Ratelimit-Remaining:
+      - '1'
+      X-Ratelimit-Reset:
+      - '1726765742'
+      X-Ratelimit-Resource:
+      - core
+      X-Ratelimit-Used:
+      - '59'
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '7826'
+      X-Github-Request-Id:
+      - 4C1D:D4F20:4C5060:4FA55B:66EC54FB
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"sha":"dfd1e951aa1aeef06c39fffb2994db8a8fa1914f","node_id":"C_kwDNIULaAChkZmQxZTk1MWFhMWFlZWYwNmMzOWZmZmIyOTk0ZGI4YThmYTE5MTRm","commit":{"author":{"name":"Xavier
+        Noria","email":"fxn@hashref.com","date":"2024-09-19T09:10:09Z"},"committer":{"name":"Xavier
+        Noria","email":"fxn@hashref.com","date":"2024-09-19T09:12:58Z"},"message":"Reorder
+        i18n hooks and reword comments\n\nIf eager loading is enabled, `before_eager_load`
+        runs\nbefore `after_initialize`. I believe it is natural to\ndefine these
+        hooks matching that order.\n\nFor this to make sense, it is important to highlight\nthat
+        initialize_i18n is idempotent.","tree":{"sha":"39f7a4322c901f93f9f88818b01072f9ad6db820","url":"https://api.github.com/repos/rails/rails/git/trees/39f7a4322c901f93f9f88818b01072f9ad6db820"},"url":"https://api.github.com/repos/rails/rails/git/commits/dfd1e951aa1aeef06c39fffb2994db8a8fa1914f","comment_count":0,"verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}},"url":"https://api.github.com/repos/rails/rails/commits/dfd1e951aa1aeef06c39fffb2994db8a8fa1914f","html_url":"https://github.com/rails/rails/commit/dfd1e951aa1aeef06c39fffb2994db8a8fa1914f","comments_url":"https://api.github.com/repos/rails/rails/commits/dfd1e951aa1aeef06c39fffb2994db8a8fa1914f/comments","author":{"login":"fxn","id":3387,"node_id":"MDQ6VXNlcjMzODc=","avatar_url":"https://avatars.githubusercontent.com/u/3387?v=4","gravatar_id":"","url":"https://api.github.com/users/fxn","html_url":"https://github.com/fxn","followers_url":"https://api.github.com/users/fxn/followers","following_url":"https://api.github.com/users/fxn/following{/other_user}","gists_url":"https://api.github.com/users/fxn/gists{/gist_id}","starred_url":"https://api.github.com/users/fxn/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/fxn/subscriptions","organizations_url":"https://api.github.com/users/fxn/orgs","repos_url":"https://api.github.com/users/fxn/repos","events_url":"https://api.github.com/users/fxn/events{/privacy}","received_events_url":"https://api.github.com/users/fxn/received_events","type":"User","site_admin":false},"committer":{"login":"fxn","id":3387,"node_id":"MDQ6VXNlcjMzODc=","avatar_url":"https://avatars.githubusercontent.com/u/3387?v=4","gravatar_id":"","url":"https://api.github.com/users/fxn","html_url":"https://github.com/fxn","followers_url":"https://api.github.com/users/fxn/followers","following_url":"https://api.github.com/users/fxn/following{/other_user}","gists_url":"https://api.github.com/users/fxn/gists{/gist_id}","starred_url":"https://api.github.com/users/fxn/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/fxn/subscriptions","organizations_url":"https://api.github.com/users/fxn/orgs","repos_url":"https://api.github.com/users/fxn/repos","events_url":"https://api.github.com/users/fxn/events{/privacy}","received_events_url":"https://api.github.com/users/fxn/received_events","type":"User","site_admin":false},"parents":[{"sha":"219e75354b516af0144035a49abcbfa6a380a2f2","url":"https://api.github.com/repos/rails/rails/commits/219e75354b516af0144035a49abcbfa6a380a2f2","html_url":"https://github.com/rails/rails/commit/219e75354b516af0144035a49abcbfa6a380a2f2"}]},{"sha":"219e75354b516af0144035a49abcbfa6a380a2f2","node_id":"C_kwDNIULaACgyMTllNzUzNTRiNTE2YWYwMTQ0MDM1YTQ5YWJjYmZhNmEzODBhMmYy","commit":{"author":{"name":"John
+        Hawthorn","email":"john@hawthorn.email","date":"2024-09-19T05:57:26Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2024-09-19T05:57:26Z"},"message":"Merge
+        pull request #52963 from jhawthorn/fix_benchmark_tests\n\nLoosen time assertions","tree":{"sha":"46737b66abf1e361db3e43776d98b9e45d2cd44f","url":"https://api.github.com/repos/rails/rails/git/trees/46737b66abf1e361db3e43776d98b9e45d2cd44f"},"url":"https://api.github.com/repos/rails/rails/git/commits/219e75354b516af0144035a49abcbfa6a380a2f2","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+        PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJm671GCRC1aQ7uu5UhlAAAfZEQAILPsn3Crj4SQh1BmSckQ5Du\n+P2Pb0/8454PptNFpf9lDqPxxPjXvhouMVKSPvv60d9OEj1YAWDOVAhonaXIlcMS\nRxrTWL0mEbfgkxrBjnVBfnKYsU5Wba2gU18h9jNLRGNx7SxDejsSsasC3FkEjPPw\nLUrKS60x4nshKDVgG5bIahnkQ8gbXyvR6yl14KBBKzN9oE3Cso5f7I1Jh27/+rs1\n+Bj4vRETXDuSeHxYhXSXC+L8SCJuuYTvrAiBAjEmPna/sI2sbAShYBejd3NW1JH8\nMrBCUUmRd7zkjdlGF2Zyu7fOECJbtQt1pMD6MOfGsRZzizBJOzrH6MxP6jYPPsYD\nLorpMlS3wRUDyawqAQGQxCB4cFhBjUdF07AdRRgEZxqDVoj6gdCa7tgszquc8P3E\noQVL8FqVjRlrNEDn5uGebyyOIHYf7cEtReaFKfjdBufjX36pDrRXnL6nXudXiLCk\najvvMvbhARJsqDjM94Om91cyQE1xLxwJaz4sgXG8y9Y/t3znttURuyFaGu+X56W/\noPu0toeJnkkVd+UvQG9cyvx7gtlf5iTBbcjBXqoTZyOZWLRh03RxzAf+pvRm4bzM\n8WToXYQjzBzuhoDLLxni22yB0WDtVoGl9RX+xtqBRnpLEFgoegnmFIdGMMbZoXYh\nJfrZTq/vL8Uzxv/sld3y\n=z8ez\n-----END
+        PGP SIGNATURE-----\n","payload":"tree 46737b66abf1e361db3e43776d98b9e45d2cd44f\nparent
+        7abc8fb982ad853a2df5637a567227a70f5b52ce\nparent d8f62809d1cc22c99d77e2782214195e32a1745e\nauthor
+        John Hawthorn <john@hawthorn.email> 1726725446 -0700\ncommitter GitHub <noreply@github.com>
+        1726725446 -0700\n\nMerge pull request #52963 from jhawthorn/fix_benchmark_tests\n\nLoosen
+        time assertions"}},"url":"https://api.github.com/repos/rails/rails/commits/219e75354b516af0144035a49abcbfa6a380a2f2","html_url":"https://github.com/rails/rails/commit/219e75354b516af0144035a49abcbfa6a380a2f2","comments_url":"https://api.github.com/repos/rails/rails/commits/219e75354b516af0144035a49abcbfa6a380a2f2/comments","author":{"login":"jhawthorn","id":131752,"node_id":"MDQ6VXNlcjEzMTc1Mg==","avatar_url":"https://avatars.githubusercontent.com/u/131752?v=4","gravatar_id":"","url":"https://api.github.com/users/jhawthorn","html_url":"https://github.com/jhawthorn","followers_url":"https://api.github.com/users/jhawthorn/followers","following_url":"https://api.github.com/users/jhawthorn/following{/other_user}","gists_url":"https://api.github.com/users/jhawthorn/gists{/gist_id}","starred_url":"https://api.github.com/users/jhawthorn/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/jhawthorn/subscriptions","organizations_url":"https://api.github.com/users/jhawthorn/orgs","repos_url":"https://api.github.com/users/jhawthorn/repos","events_url":"https://api.github.com/users/jhawthorn/events{/privacy}","received_events_url":"https://api.github.com/users/jhawthorn/received_events","type":"User","site_admin":true},"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"7abc8fb982ad853a2df5637a567227a70f5b52ce","url":"https://api.github.com/repos/rails/rails/commits/7abc8fb982ad853a2df5637a567227a70f5b52ce","html_url":"https://github.com/rails/rails/commit/7abc8fb982ad853a2df5637a567227a70f5b52ce"},{"sha":"d8f62809d1cc22c99d77e2782214195e32a1745e","url":"https://api.github.com/repos/rails/rails/commits/d8f62809d1cc22c99d77e2782214195e32a1745e","html_url":"https://github.com/rails/rails/commit/d8f62809d1cc22c99d77e2782214195e32a1745e"}]}]'
+  recorded_at: Thu, 19 Sep 2024 16:44:43 GMT
+recorded_with: VCR 6.2.0
