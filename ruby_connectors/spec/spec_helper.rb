@@ -4,6 +4,9 @@ require "ruby_connectors"
 require "vcr"
 require "webmock"
 
+# Load environment variables from .env file
+Dotenv.load
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -21,4 +24,5 @@ VCR.configure do |config|
   config.hook_into :webmock
   config.configure_rspec_metadata!
   config.filter_sensitive_data("<GITHUB_ACCESS_TOKEN>") { ENV.fetch("GITHUB_ACCESS_TOKEN", nil) }
+  config.filter_sensitive_data("<MOTHERDUCK_TOKEN>") { ENV.fetch("MOTHERDUCK_TOKEN", nil) }
 end

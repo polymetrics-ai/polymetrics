@@ -30,3 +30,7 @@ gem "vcr"
 gem "webmock"
 
 gem "dotenv"
+
+gem "duckdb"
+
+gem "json-schema"

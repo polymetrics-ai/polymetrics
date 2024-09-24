@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "database": {
+      "type": "string",
+      "description": "Name of the database to connect to."
+    },
+    "credentials": {
+      "type": "object",
+      "oneOf": [
+        {
+          "title": "Local Setup",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Path to the local DuckDB database file."
+            }
+          },
+          "required": ["path"],
+          "additionalProperties": false
+        },
+        {
+          "title": "Motherduck",
+          "properties": {
+            "token": {
+              "type": "string",
+              "description": "Access token for connecting to MotherDuck."
+            }
+          },
+          "required": ["token"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": ["database", "credentials"],
+  "additionalProperties": false
+}
