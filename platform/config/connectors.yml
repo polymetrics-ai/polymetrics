@@ -18,7 +18,7 @@ connectors:
       - connect
       - write
       - query
-    definition_status: coming_soon
+    definition_status: certified
     version: 1.0.0
     maintainer: Polymetrics
   - name: PostgreSQL
