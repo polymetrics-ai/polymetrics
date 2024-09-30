@@ -40,8 +40,8 @@ class Connector < ApplicationRecord
   end
 
   def ensure_default_analytics_db_is_false_for_api_type
-    if api?
-      self.default_analytics_db = false
-    end
+    return unless api?
+
+    self.default_analytics_db = false
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Workspace < ApplicationRecord
   belongs_to :organization
   has_many :user_workspace_memberships, dependent: :destroy
@@ -13,9 +15,7 @@ class Workspace < ApplicationRecord
     connectors.find_by(default_analytics_db: true)
   end
 
-  def connectors_count
-    connectors.count
-  end
+  delegate :count, to: :connectors, prefix: true
 
   private
 

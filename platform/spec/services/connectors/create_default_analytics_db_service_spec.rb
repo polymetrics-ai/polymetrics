@@ -15,13 +15,9 @@ RSpec.describe Connectors::CreateDefaultAnalyticsDbService do
       connector = Connector.last
 
       expect(connector).to have_attributes(
-        workspace:,
-        name: "Default DuckDB",
-        connector_class_name: "duckdb",
+        workspace:, name: "Default DuckDB", connector_class_name: "duckdb",
         description: "Default local analytics database for the workspace",
-        connector_language: "ruby",
-        connected: true,
-        default_analytics_db: true
+        connector_language: "ruby", connected: true, default_analytics_db: true
       )
     end
 
@@ -31,11 +27,7 @@ RSpec.describe Connectors::CreateDefaultAnalyticsDbService do
 
       expected_config = {
         database: "analytics_db_#{workspace.id}",
-        credentials: {
-          local: {
-            path: "analytics.duckdb"
-          }
-        }
+        credentials: { local: { path: "analytics.duckdb" } }
       }
 
       expect(connector.configuration.deep_symbolize_keys).to eq(expected_config)
