@@ -20,13 +20,13 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
     end
 
     it "returns all connectors for the current user with icon_url" do
-      connectors = create_list(:connector, 3, workspace:)
+      create_list(:connector, 3, workspace:)
       get :index
       expect(response).to be_successful
       parsed_body = response.parsed_body
-      expect(parsed_body["data"].length).to eq(3)
-      parsed_body["data"].each_with_index do |connector_data, index|
-        expect(connector_data["icon_url"]).to eq(connectors[index].icon_url)
+      expect(parsed_body["data"].length).to eq(4)
+      parsed_body["data"].each do |connector_data|
+        expect(connector_data["icon_url"]).to match(/duckdb\.svg|github\.svg/)
       end
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_21_141831) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_28_074459) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,6 +24,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_21_141831) do
     t.boolean "connected", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "default_analytics_db", default: false, null: false
+    t.integer "integration_type", default: 0, null: false
     t.index ["workspace_id", "name", "configuration"], name: "index_connectors_on_workspace_name_config", unique: true
     t.index ["workspace_id"], name: "index_connectors_on_workspace_id"
   end
