@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_28_074459) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "connections", force: :cascade do |t|
+    t.bigint "workspace_id", null: false
+    t.bigint "source_id", null: false
+    t.bigint "destination_id", null: false
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.jsonb "configuration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["destination_id"], name: "index_connections_on_destination_id"
+    t.index ["source_id"], name: "index_connections_on_source_id"
+    t.index ["workspace_id", "name"], name: "index_connections_on_workspace_id_and_name", unique: true
+    t.index ["workspace_id"], name: "index_connections_on_workspace_id"
+  end
 
   create_table "connectors", force: :cascade do |t|
     t.bigint "workspace_id", null: false
@@ -35,6 +50,65 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_28_074459) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_organizations_on_name", unique: true
+  end
+
+  create_table "sync_logs", force: :cascade do |t|
+    t.bigint "sync_run_id", null: false
+    t.integer "log_type", null: false
+    t.text "message", null: false
+    t.datetime "emitted_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sync_run_id"], name: "index_sync_logs_on_sync_run_id"
+  end
+
+  create_table "sync_read_records", force: :cascade do |t|
+    t.bigint "sync_run_id", null: false
+    t.jsonb "data", null: false
+    t.string "signature", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sync_run_id", "signature"], name: "index_sync_read_records_on_sync_run_id_and_signature", unique: true
+    t.index ["sync_run_id"], name: "index_sync_read_records_on_sync_run_id"
+  end
+
+  create_table "sync_runs", force: :cascade do |t|
+    t.bigint "sync_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "started_at", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
+  end
+
+  create_table "sync_write_records", force: :cascade do |t|
+    t.bigint "sync_run_id", null: false
+    t.jsonb "data", null: false
+    t.string "signature", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sync_run_id", "signature"], name: "index_sync_write_records_on_sync_run_id_and_signature", unique: true
+    t.index ["sync_run_id"], name: "index_sync_write_records_on_sync_run_id"
+  end
+
+  create_table "syncs", force: :cascade do |t|
+    t.bigint "connection_id", null: false
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "sync_mode", null: false
+    t.string "sync_frequency", null: false
+    t.jsonb "schema"
+    t.string "supported_sync_modes", array: true
+    t.boolean "source_defined_cursor"
+    t.string "default_cursor_field", array: true
+    t.string "source_defined_primary_key", array: true
+    t.string "destination_sync_mode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["connection_id", "name"], name: "index_syncs_on_connection_id_and_name", unique: true
+    t.index ["connection_id"], name: "index_syncs_on_connection_id"
   end
 
   create_table "user_organization_memberships", force: :cascade do |t|
@@ -101,7 +175,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_28_074459) do
     t.index ["organization_id"], name: "index_workspaces_on_organization_id"
   end
 
+  add_foreign_key "connections", "connectors", column: "destination_id"
+  add_foreign_key "connections", "connectors", column: "source_id"
+  add_foreign_key "connections", "workspaces"
   add_foreign_key "connectors", "workspaces"
+  add_foreign_key "sync_logs", "sync_runs"
+  add_foreign_key "sync_read_records", "sync_runs"
+  add_foreign_key "sync_runs", "syncs"
+  add_foreign_key "sync_write_records", "sync_runs"
+  add_foreign_key "syncs", "connections"
   add_foreign_key "user_organization_memberships", "organizations"
   add_foreign_key "user_organization_memberships", "users"
   add_foreign_key "user_workspace_memberships", "users"
