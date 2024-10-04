@@ -23,11 +23,23 @@ import { Route as AuthenticatedConnectorsAddConnectorIndexImport } from './route
 
 // Create Virtual Routes
 
+const AuthenticatedSettingsIndexLazyImport = createFileRoute(
+  '/_authenticated/settings/',
+)()
+const AuthenticatedDocumentationIndexLazyImport = createFileRoute(
+  '/_authenticated/documentation/',
+)()
 const AuthenticatedDashboardIndexLazyImport = createFileRoute(
   '/_authenticated/dashboard/',
 )()
 const AuthenticatedConnectorsIndexLazyImport = createFileRoute(
   '/_authenticated/connectors/',
+)()
+const AuthenticatedConnectionsIndexLazyImport = createFileRoute(
+  '/_authenticated/connections/',
+)()
+const AuthenticatedChartsIndexLazyImport = createFileRoute(
+  '/_authenticated/charts/',
 )()
 
 // Create/Update Routes
@@ -62,6 +74,24 @@ const LoginIndexRoute = LoginIndexImport.update({
   getParentRoute: () => LoginRoute,
 } as any)
 
+const AuthenticatedSettingsIndexLazyRoute =
+  AuthenticatedSettingsIndexLazyImport.update({
+    path: '/settings/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/settings/index.lazy').then((d) => d.Route),
+  )
+
+const AuthenticatedDocumentationIndexLazyRoute =
+  AuthenticatedDocumentationIndexLazyImport.update({
+    path: '/documentation/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/documentation/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 const AuthenticatedDashboardIndexLazyRoute =
   AuthenticatedDashboardIndexLazyImport.update({
     path: '/dashboard/',
@@ -78,6 +108,24 @@ const AuthenticatedConnectorsIndexLazyRoute =
     import('./routes/_authenticated/connectors/index.lazy').then(
       (d) => d.Route,
     ),
+  )
+
+const AuthenticatedConnectionsIndexLazyRoute =
+  AuthenticatedConnectionsIndexLazyImport.update({
+    path: '/connections/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/connections/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthenticatedChartsIndexLazyRoute =
+  AuthenticatedChartsIndexLazyImport.update({
+    path: '/charts/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/charts/index.lazy').then((d) => d.Route),
   )
 
 const AuthenticatedConnectorsAddConnectorIndexRoute =
@@ -132,6 +180,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupIndexImport
       parentRoute: typeof SignupImport
     }
+    '/_authenticated/charts/': {
+      id: '/_authenticated/charts/'
+      path: '/charts'
+      fullPath: '/charts'
+      preLoaderRoute: typeof AuthenticatedChartsIndexLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/connections/': {
+      id: '/_authenticated/connections/'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof AuthenticatedConnectionsIndexLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/connectors/': {
       id: '/_authenticated/connectors/'
       path: '/connectors'
@@ -144,6 +206,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardIndexLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/documentation/': {
+      id: '/_authenticated/documentation/'
+      path: '/documentation'
+      fullPath: '/documentation'
+      preLoaderRoute: typeof AuthenticatedDocumentationIndexLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexLazyImport
       parentRoute: typeof AuthenticatedImport
     }
     '/_authenticated/connectors/add-connector/': {
@@ -161,8 +237,12 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
+    AuthenticatedChartsIndexLazyRoute,
+    AuthenticatedConnectionsIndexLazyRoute,
     AuthenticatedConnectorsIndexLazyRoute,
     AuthenticatedDashboardIndexLazyRoute,
+    AuthenticatedDocumentationIndexLazyRoute,
+    AuthenticatedSettingsIndexLazyRoute,
     AuthenticatedConnectorsAddConnectorIndexRoute,
   }),
   LoginRoute: LoginRoute.addChildren({ LoginIndexRoute }),
@@ -189,8 +269,12 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated": {
       "filePath": "_authenticated.jsx",
       "children": [
+        "/_authenticated/charts/",
+        "/_authenticated/connections/",
         "/_authenticated/connectors/",
         "/_authenticated/dashboard/",
+        "/_authenticated/documentation/",
+        "/_authenticated/settings/",
         "/_authenticated/connectors/add-connector/"
       ]
     },
@@ -214,12 +298,28 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "signup.index.tsx",
       "parent": "/signup"
     },
+    "/_authenticated/charts/": {
+      "filePath": "_authenticated/charts/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/connections/": {
+      "filePath": "_authenticated/connections/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/connectors/": {
       "filePath": "_authenticated/connectors/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/dashboard/": {
       "filePath": "_authenticated/dashboard/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/documentation/": {
+      "filePath": "_authenticated/documentation/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/settings/": {
+      "filePath": "_authenticated/settings/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/connectors/add-connector/": {

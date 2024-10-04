@@ -46,13 +46,13 @@ export const NAV_ICONS = {
     userIcons: [
         {
             label: 'Settings',
-            value: '',
+            value: '/settings',
             icon: '/icon-settings.svg',
             className: ''
         },
         {
             label: 'Documentation',
-            value: '',
+            value: '/documentation',
             icon: '/icon-documentation.svg',
             className: ''
         },

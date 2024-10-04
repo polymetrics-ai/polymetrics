@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation} from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NAV_ICONS } from '@/constants/constants';
@@ -10,6 +10,7 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
     const { routeIcons, userIcons } = NAV_ICONS;
+    const location = useLocation();
 
     return (
         <aside className="w-[60px] h-full flex flex-col justify-between py-8 bg-white">
@@ -29,7 +30,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={`mx-2 p-0 shadow-none  bg-auto bg-transparent hover:bg-emerald-100 ${route.className ? route.className : ''}`}
+                                        className={`mx-2 p-0 shadow-none  bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${route.value}` ? 'bg-emerald-100' : ''} ${route.className ? route.className : ''}`}
                                         aria-label={route.label}
                                     >
                                         <img className="h-6 w-6" src={route.icon} />
@@ -48,10 +49,11 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                     <TooltipProvider delayDuration={50} key={key}>
                         <Tooltip>
                             <TooltipTrigger>
+                            <Link to={user?.value ? user?.value : ''}>
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${user.className ? user.className : ''}`}
+                                    className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${user.value}` && user.label!== 'Logout' ? 'bg-emerald-100' : ''} ${user.className ? user.className : ''}`}
                                     aria-label={user.label}
                                     onClick={
                                         user.label === 'Logout' ? () => onSignOut() : undefined
@@ -59,6 +61,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                 >
                                     <img className="h-6 w-6" src={user.icon} />
                                 </Button>
+                            </Link>
                             </TooltipTrigger>
                             <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
                                 {user.label}
