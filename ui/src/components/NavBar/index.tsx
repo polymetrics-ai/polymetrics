@@ -25,19 +25,19 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                 {routeIcons.map((route, key) => (
                     <TooltipProvider delayDuration={50} key={key}>
                         <Tooltip>
-                            <TooltipTrigger>
+                            <TooltipTrigger asChild>
                                 <Link to={route?.value ? route?.value : ''}>
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={`mx-2 p-0 shadow-none  bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${route.value}` ? 'bg-emerald-100' : ''} ${route.className ? route.className : ''}`}
+                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${route.value}` ? 'bg-emerald-100' : ''} ${route.className ? route.className : ''}`}
                                         aria-label={route.label}
                                     >
                                         <img className="h-6 w-6" src={route.icon} />
                                     </Button>
                                 </Link>
                             </TooltipTrigger>
-                            <TooltipContent className="bg-emerald-600" side="right" sideOffset={5}>
+                            <TooltipContent className="bg-emerald-600 -translate-y-5" side="right" sideOffset={5} align="start">
                                 {route.label}
                             </TooltipContent>
                         </Tooltip>
