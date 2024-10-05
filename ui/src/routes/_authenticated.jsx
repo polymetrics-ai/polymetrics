@@ -1,5 +1,5 @@
 import React from 'react';
-import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect, useNavigate , useLocation } from '@tanstack/react-router';
 import useAuthStore from '@/store/authStore';
 import NavBar from '@/components/NavBar';
 import { signOut } from '@/service';
