@@ -53,7 +53,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${user.value}` && user.label!== 'Logout' ? 'bg-emerald-100' : ''} ${user.className ? user.className : ''}`}
+                                    className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${user.value}` ? 'bg-emerald-100' : ''} ${user.className ? user.className : ''}`}
                                     aria-label={user.label}
                                     onClick={
                                         user.label === 'Logout' ? () => onSignOut() : undefined
