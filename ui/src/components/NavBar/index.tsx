@@ -63,7 +63,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                 </Button>
                             </Link>
                             </TooltipTrigger>
-                            <TooltipContent className="bg-emerald-600 -translate-y-5" side="right" sideOffset={5}>
+                            <TooltipContent className="bg-emerald-600 -translate-y-6" side="right" sideOffset={5}>
                                 {user.label}
                             </TooltipContent>
                         </Tooltip>
