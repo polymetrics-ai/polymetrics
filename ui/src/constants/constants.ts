@@ -60,7 +60,7 @@ export const NAV_ICONS = {
             label: 'Logout',
             value: '',
             icon: '/icon-avatar.svg',
-            className: 'hover:bg-transparent'
+            className: ''
         }
     ]
 };
