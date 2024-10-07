@@ -22,25 +22,21 @@ export const NAV_ICONS = {
             label: 'Dashboard',
             value: '/dashboard',
             icon: '/icon-dashboard.svg',
-            className: ''
         },
         {
             label: 'Charts',
             value: '/charts',
             icon: '/icon-charts.svg',
-            className: ''
         },
         {
             label: 'Connectors',
             value: '/connectors',
             icon: '/icon-connectors.svg',
-            className: ''
         },
         {
             label: 'Connections',
             value: '/connections',
             icon: '/icon-connections.svg',
-            className: ''
         }
     ],
     userIcons: [
@@ -48,19 +44,16 @@ export const NAV_ICONS = {
             label: 'Settings',
             value: '/settings',
             icon: '/icon-settings.svg',
-            className: ''
         },
         {
             label: 'Documentation',
             value: '/documentation',
             icon: '/icon-documentation.svg',
-            className: ''
         },
         {
             label: 'Logout',
             value: '',
             icon: '/icon-avatar.svg',
-            className: ''
         }
     ]
 };
@@ -120,42 +113,6 @@ export const CONNECTORS_LIST = [
         name: 'Google Ads',
         icon: '/connectors/google-ads.svg'
     },
-    {
-        name: 'Facebook Marketing',
-        icon: '/connectors/facebook.svg'
-    },
-    {
-        name: 'Tiktok Marketing',
-        icon: '/connectors/tiktok.svg'
-    },
-    {
-        name: 'Stripe',
-        icon: '/connectors/stripe.svg'
-    },
-    {
-        name: 'Braze',
-        icon: '/connectors/braze.svg'
-    },
-    {
-        name: 'ClickUp',
-        icon: '/connectors/clickup.svg'
-    },
-    {
-        name: 'Google Analytics 4(GA4)',
-        icon: '/connectors/google-analytics.svg'
-    },
-    {
-        name: 'Facebook Marketing',
-        icon: '/connectors/facebook.svg'
-    },
-    {
-        name: 'Klaviyo',
-        icon: '/connectors/klaviyo.svg'
-    },
-    {
-        name: 'Google Ads',
-        icon: '/connectors/google-ads.svg'
-    }
 ];
 
 export const connectorFields = [

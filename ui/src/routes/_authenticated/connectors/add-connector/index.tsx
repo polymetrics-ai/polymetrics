@@ -14,10 +14,13 @@ export const Route = createFileRoute('/_authenticated/connectors/add-connector/'
     component: AddConnector
 });
 
+
+
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
-    const [steps, setSteps] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+    const [steps, setSteps] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
 
     const handleSubmit = (data: z.infer<typeof ConnectorSchema>) => {
         console.log('data', data);
@@ -36,6 +39,7 @@ function AddConnector() {
         };
          
      };
+
 
     const onPrev = () => {
         setSteps((prev) => prev - 1);
@@ -80,7 +84,7 @@ function AddConnector() {
                                     onSearch={() => console.log('Searching')}
                                 />
                             </div>
-                            {isLoading ? <Loader /> : <ConnectorGrid list={[]} />}
+                            {isLoading ? <Loader /> : <ConnectorGrid/>}
                         </div>
                     ) : (
                         <div className="flex flex-col my-8 overflow-hidden flex-grow">
