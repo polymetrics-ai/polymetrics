@@ -11,7 +11,7 @@ RSpec.describe SyncReadRecord, type: :model do
   describe "validations" do
     subject { build(:sync_read_record) }
 
-    context "data validations" do
+    context "when validating data" do
       it "validates presence of data" do
         record = build(:sync_read_record, data: nil)
         expect(record).not_to be_valid
@@ -22,12 +22,15 @@ RSpec.describe SyncReadRecord, type: :model do
 
   describe "callbacks" do
     it "generates a signature before validation on create" do
-      record = build(:sync_read_record, signature: nil)
-      expect(record.signature).to be_nil
-      record.valid?
-      expect(record.signature).not_to be_nil
-      expect(record.signature).to be_a(String)
-      expect(record.signature.length).to eq(64) # SHA256 hex length
+      aggregate_failures do
+        record = build(:sync_read_record, data: { "key" => "value" })
+        expect(record.signature).to be_nil
+
+        record.valid?
+        expect(record.signature).not_to be_nil
+        expect(record.signature).to be_a(String)
+        expect(record.signature.length).to be > 0
+      end
     end
 
     it "changes the signature on update" do

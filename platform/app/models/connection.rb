@@ -6,7 +6,7 @@ class Connection < ApplicationRecord
   belongs_to :destination, class_name: "Connector"
   has_many :syncs, dependent: :destroy
 
-  enum status: { healthy: 0, failed: 1, running: 2, paused: 3 }
+  enum status: { healthy: 0, failed: 1, running: 2, paused: 3, created: 4 }
   enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }
 
   validates :name, presence: true, uniqueness: { scope: :workspace_id }, length: { maximum: 255 }

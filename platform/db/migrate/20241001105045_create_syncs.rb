@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class CreateSyncs < ActiveRecord::Migration[7.1]
+  # rubocop:disable Metrics/MethodLength
   def change
     create_table :syncs do |t|
       t.references :connection, null: false, foreign_key: true
@@ -11,7 +12,7 @@ class CreateSyncs < ActiveRecord::Migration[7.1]
       t.integer :schedule_type, null: false, default: 0
       t.jsonb :schema
       t.string :supported_sync_modes, array: true
-      t.boolean :source_defined_cursor
+      t.boolean :source_defined_cursor, null: false, default: false
       t.string :default_cursor_field, array: true
       t.string :source_defined_primary_key, array: true
       t.string :destination_sync_mode
@@ -21,4 +22,5 @@ class CreateSyncs < ActiveRecord::Migration[7.1]
 
     add_index :syncs, %i[connection_id stream_name], unique: true
   end
+  # rubocop:enable Metrics/MethodLength
 end

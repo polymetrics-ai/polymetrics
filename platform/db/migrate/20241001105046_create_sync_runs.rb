@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class CreateSyncRuns < ActiveRecord::Migration[7.1]
+  # rubocop:disable Metrics/MethodLength
   def change
     create_table :sync_runs do |t|
       t.references :sync, null: false, foreign_key: true
@@ -17,4 +18,5 @@ class CreateSyncRuns < ActiveRecord::Migration[7.1]
       t.timestamps
     end
   end
+  # rubocop:enable Metrics/MethodLength
 end

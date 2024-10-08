@@ -115,7 +115,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.integer "schedule_type", default: 0, null: false
     t.jsonb "schema"
     t.string "supported_sync_modes", array: true
-    t.boolean "source_defined_cursor"
+    t.boolean "source_defined_cursor", default: false, null: false
     t.string "default_cursor_field", array: true
     t.string "source_defined_primary_key", array: true
     t.string "destination_sync_mode"

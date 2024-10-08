@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class CreateConnections < ActiveRecord::Migration[7.1]
+  # rubocop:disable Metrics/MethodLength
   def change
     create_table :connections do |t|
       t.references :workspace, null: false, foreign_key: true
@@ -19,4 +20,5 @@ class CreateConnections < ActiveRecord::Migration[7.1]
 
     add_index :connections, %i[workspace_id name], unique: true
   end
+  # rubocop:enable Metrics/MethodLength
 end

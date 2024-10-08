@@ -42,12 +42,16 @@ RSpec.describe SyncRun, type: :model do
     let(:sync_run) { create(:sync_run) }
 
     it "sets default values for counters" do
-      expect(sync_run.total_records_read).to eq(0)
-      expect(sync_run.total_records_written).to eq(0)
-      expect(sync_run.successful_records_read).to eq(0)
-      expect(sync_run.failed_records_read).to eq(0)
-      expect(sync_run.successful_records_write).to eq(0)
-      expect(sync_run.records_failed_to_write).to eq(0)
+      aggregate_failures do
+        sync_run = SyncRun.new
+
+        expect(sync_run.total_records_read).to eq(0)
+        expect(sync_run.total_records_written).to eq(0)
+        expect(sync_run.successful_records_read).to eq(0)
+        expect(sync_run.failed_records_read).to eq(0)
+        expect(sync_run.successful_records_write).to eq(0)
+        expect(sync_run.records_failed_to_write).to eq(0)
+      end
     end
   end
 

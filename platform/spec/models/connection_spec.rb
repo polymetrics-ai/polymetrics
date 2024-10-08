@@ -21,7 +21,7 @@ RSpec.describe Connection, type: :model do
   end
 
   describe "enums" do
-    it { is_expected.to define_enum_for(:status).with_values(healthy: 0, failed: 1, running: 2, paused: 3) }
+    it { is_expected.to define_enum_for(:status).with_values(healthy: 0, failed: 1, running: 2, paused: 3, created: 4) }
     it { is_expected.to define_enum_for(:schedule_type).with_values(scheduled: 0, cron: 1, manual: 2) }
   end
 
@@ -56,22 +56,30 @@ RSpec.describe Connection, type: :model do
   end
 
   describe "status transitions" do
-    let(:connection) { create(:connection, status: :healthy) }
+    let(:connection) { create(:connection, status: :created) }
 
-    it "can transition between statuses" do
-      expect(connection.status).to eq("healthy")
+    it "starts with created status" do
+      expect(connection.status).to eq("created")
+    end
 
-      connection.failed!
-      expect(connection.status).to eq("failed")
-
-      connection.running!
-      expect(connection.status).to eq("running")
-
-      connection.paused!
-      expect(connection.status).to eq("paused")
-
+    it "can transition to healthy status" do
       connection.healthy!
       expect(connection.status).to eq("healthy")
+    end
+
+    it "can transition to failed status" do
+      connection.failed!
+      expect(connection.status).to eq("failed")
+    end
+
+    it "can transition to running status" do
+      connection.running!
+      expect(connection.status).to eq("running")
+    end
+
+    it "can transition to paused status" do
+      connection.paused!
+      expect(connection.status).to eq("paused")
     end
   end
 

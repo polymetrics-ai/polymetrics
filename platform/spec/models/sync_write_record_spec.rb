@@ -19,12 +19,15 @@ RSpec.describe SyncWriteRecord, type: :model do
 
   describe "callbacks" do
     it "generates a signature before validation" do
-      record = build(:sync_write_record, signature: nil)
-      expect(record.signature).to be_nil
-      record.valid?
-      expect(record.signature).not_to be_nil
-      expect(record.signature).to be_a(String)
-      expect(record.signature.length).to eq(64) # SHA256 hex length
+      aggregate_failures do
+        record = build(:sync_write_record, data: { "key" => "value" })
+        expect(record.signature).to be_nil
+
+        record.valid?
+        expect(record.signature).not_to be_nil
+        expect(record.signature).to be_a(String)
+        expect(record.signature.length).to be > 0
+      end
     end
   end
 

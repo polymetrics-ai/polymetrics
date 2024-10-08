@@ -10,7 +10,8 @@ class SyncReadRecord < ApplicationRecord
 
   private
 
-  # We need to add uniqueness to signature for only particular sync like incremental sync where we  don't need duplicates
+  # We need to add uniqueness to signature for only particular sync like
+  # incremental sync where we don't need duplicates
   def generate_signature
     self.signature = Digest::SHA256.hexdigest(normalized_data) if data.present?
   end

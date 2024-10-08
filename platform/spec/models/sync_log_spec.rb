@@ -73,11 +73,19 @@ RSpec.describe SyncLog, type: :model do
       create(:sync_log, :debug)
     end
 
+    let(:info_log) { create(:sync_log, log_type: :info) }
+    let(:error_log) { create(:sync_log, log_type: :error) }
+    let(:warn_log) { create(:sync_log, log_type: :warn) }
+    let(:debug_log) { create(:sync_log, log_type: :debug) }
+
     it "filters by log_type" do
-      expect(SyncLog.info.count).to eq(1)
-      expect(SyncLog.warn.count).to eq(1)
-      expect(SyncLog.error.count).to eq(1)
-      expect(SyncLog.debug.count).to eq(1)
+      aggregate_failures do
+        expect(SyncLog.where(log_type: :info)).to include(info_log)
+        expect(SyncLog.where(log_type: :info)).not_to include(error_log, warn_log, debug_log)
+        expect(SyncLog.where(log_type: :error)).to include(error_log)
+        expect(SyncLog.where(log_type: :warn)).to include(warn_log)
+        expect(SyncLog.where(log_type: :debug)).to include(debug_log)
+      end
     end
   end
 

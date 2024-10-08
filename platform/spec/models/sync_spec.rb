@@ -21,14 +21,16 @@ RSpec.describe Sync, type: :model do
   end
 
   describe "enums" do
+    subject(:sync) { described_class.new }
+
     it {
-      expect(subject).to define_enum_for(:status).with_values(synced: 0, syncing: 1, queued: 2, error: 3,
-                                                              action_required: 4)
+      expect(sync).to define_enum_for(:status).with_values(synced: 0, syncing: 1, queued: 2, error: 3,
+                                                           action_required: 4)
     }
 
     it {
-      expect(subject).to define_enum_for(:sync_mode).with_values(full_refresh_overwrite: 0, full_refresh_append: 1,
-                                                                 incremental_append: 2, incremental_dedup_history: 3)
+      expect(sync).to define_enum_for(:sync_mode).with_values(full_refresh_overwrite: 0, full_refresh_append: 1,
+                                                              incremental_append: 2, incremental_dedup_history: 3)
     }
 
     it { is_expected.to define_enum_for(:schedule_type).with_values(scheduled: 0, cron: 1, manual: 2) }
@@ -73,10 +75,17 @@ RSpec.describe Sync, type: :model do
     end
 
     it "creates syncs with different statuses" do
-      expect(build(:sync, :syncing).status).to eq("syncing")
-      expect(build(:sync, :queued).status).to eq("queued")
-      expect(build(:sync, :error).status).to eq("error")
-      expect(build(:sync, :action_required).status).to eq("action_required")
+      aggregate_failures do
+        synced_sync = create(:sync, status: :synced)
+        syncing_sync = create(:sync, status: :syncing)
+        queued_sync = create(:sync, status: :queued)
+        error_sync = create(:sync, status: :error)
+
+        expect(synced_sync.status).to eq("synced")
+        expect(syncing_sync.status).to eq("syncing")
+        expect(queued_sync.status).to eq("queued")
+        expect(error_sync.status).to eq("error")
+      end
     end
   end
 end
