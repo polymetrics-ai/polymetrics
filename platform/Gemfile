@@ -45,10 +45,12 @@ gem "bootsnap", require: false
 
 gem "concurrent-ruby", require: "concurrent"
 gem "data_migrate"
+gem "deepsort"
 gem "devise"
 gem "devise_token_auth"
 gem "dotenv"
 gem "google-protobuf", "~> 3.19"
+gem "json-schema"
 gem "omniauth"
 gem "rack-cors"
 gem "strong_migrations"
