@@ -4,25 +4,20 @@ class Sync < ApplicationRecord
   belongs_to :connection
   has_many :sync_runs, dependent: :destroy
 
-  enum status: { active: 0, inactive: 1, failed: 2 }
+  enum status: { synced: 0, syncing: 1, queued: 2, error: 3, action_required: 4 }
   enum sync_mode: {
     full_refresh_overwrite: 0,
     full_refresh_append: 1,
     incremental_append: 2,
     incremental_dedup_history: 3
   }
+  enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }
 
-  validates :name, presence: true, uniqueness: { scope: :connection_id }
+  validates :stream_name, presence: true, uniqueness: { scope: :connection_id }, length: { maximum: 255 }
   validates :status, presence: true
   validates :sync_mode, presence: true
-  validates :sync_frequency, presence: true
-
-  serialize :schema, JSON
-  serialize :supported_sync_modes, Array
-  serialize :source_defined_cursor, :boolean
-  serialize :default_cursor_field, Array
-  serialize :source_defined_primary_key, Array
-  serialize :destination_sync_mode, String
+  validates :schedule_type, presence: true
+  validates :sync_frequency, presence: true, unless: :manual?
 
   def supports_incremental?
     supported_sync_modes.include?("incremental")

@@ -9,6 +9,10 @@ class CreateConnections < ActiveRecord::Migration[7.1]
       t.string :name, null: false
       t.integer :status, null: false, default: 0
       t.jsonb :configuration
+      t.integer :schedule_type, null: false, default: 0
+      t.string :namespace
+      t.string :stream_prefix
+      t.string :sync_frequency
 
       t.timestamps
     end

@@ -6,10 +6,17 @@ class Connection < ApplicationRecord
   belongs_to :destination, class_name: "Connector"
   has_many :syncs, dependent: :destroy
 
-  enum status: { active: 0, inactive: 1, broken: 2 }
+  enum status: { healthy: 0, failed: 1, running: 2, paused: 3 }
+  enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }
 
-  validates :name, presence: true, uniqueness: { scope: :workspace_id }
+  validates :name, presence: true, uniqueness: { scope: :workspace_id }, length: { maximum: 255 }
   validates :status, presence: true
+  validates :schedule_type, presence: true
+  validates :sync_frequency, presence: true, if: :frequency_required?
 
-  serialize :configuration, JSON
+  private
+
+  def frequency_required?
+    scheduled? || cron?
+  end
 end

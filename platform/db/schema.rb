@@ -21,6 +21,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.string "name", null: false
     t.integer "status", default: 0, null: false
     t.jsonb "configuration"
+    t.integer "schedule_type", default: 0, null: false
+    t.string "namespace"
+    t.string "stream_prefix"
+    t.string "sync_frequency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["destination_id"], name: "index_connections_on_destination_id"
@@ -64,11 +68,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
 
   create_table "sync_read_records", force: :cascade do |t|
     t.bigint "sync_run_id", null: false
+    t.bigint "sync_id", null: false
     t.jsonb "data", null: false
     t.string "signature", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["sync_run_id", "signature"], name: "index_sync_read_records_on_sync_run_id_and_signature", unique: true
+    t.index ["sync_id"], name: "index_sync_read_records_on_sync_id"
     t.index ["sync_run_id"], name: "index_sync_read_records_on_sync_run_id"
   end
 
@@ -77,6 +82,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.integer "status", default: 0, null: false
     t.datetime "started_at", null: false
     t.datetime "completed_at"
+    t.integer "total_records_read", default: 0
+    t.integer "total_records_written", default: 0
+    t.integer "successful_records_read", default: 0
+    t.integer "failed_records_read", default: 0
+    t.integer "successful_records_write", default: 0
+    t.integer "records_failed_to_write", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
@@ -84,21 +95,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
 
   create_table "sync_write_records", force: :cascade do |t|
     t.bigint "sync_run_id", null: false
+    t.bigint "sync_id", null: false
     t.jsonb "data", null: false
     t.string "signature", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["sync_run_id", "signature"], name: "index_sync_write_records_on_sync_run_id_and_signature", unique: true
+    t.index ["signature"], name: "index_sync_write_records_on_signature"
+    t.index ["sync_id"], name: "index_sync_write_records_on_sync_id"
     t.index ["sync_run_id"], name: "index_sync_write_records_on_sync_run_id"
   end
 
   create_table "syncs", force: :cascade do |t|
     t.bigint "connection_id", null: false
-    t.string "name", null: false
+    t.string "stream_name", null: false
     t.integer "status", default: 0, null: false
     t.integer "sync_mode", null: false
     t.string "sync_frequency", null: false
+    t.integer "schedule_type", default: 0, null: false
     t.jsonb "schema"
     t.string "supported_sync_modes", array: true
     t.boolean "source_defined_cursor"
@@ -107,7 +121,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.string "destination_sync_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["connection_id", "name"], name: "index_syncs_on_connection_id_and_name", unique: true
+    t.index ["connection_id", "stream_name"], name: "index_syncs_on_connection_id_and_stream_name", unique: true
     t.index ["connection_id"], name: "index_syncs_on_connection_id"
   end
 
@@ -181,8 +195,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
   add_foreign_key "connectors", "workspaces"
   add_foreign_key "sync_logs", "sync_runs"
   add_foreign_key "sync_read_records", "sync_runs"
+  add_foreign_key "sync_read_records", "syncs"
   add_foreign_key "sync_runs", "syncs"
   add_foreign_key "sync_write_records", "sync_runs"
+  add_foreign_key "sync_write_records", "syncs"
   add_foreign_key "syncs", "connections"
   add_foreign_key "user_organization_memberships", "organizations"
   add_foreign_key "user_organization_memberships", "users"

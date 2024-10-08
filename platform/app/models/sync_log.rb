@@ -8,4 +8,6 @@ class SyncLog < ApplicationRecord
   validates :log_type, presence: true
   validates :message, presence: true
   validates :emitted_at, presence: true
+
+  default_scope { order(emitted_at: :desc) }
 end

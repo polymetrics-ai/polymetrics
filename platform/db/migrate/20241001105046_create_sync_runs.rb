@@ -7,6 +7,12 @@ class CreateSyncRuns < ActiveRecord::Migration[7.1]
       t.integer :status, null: false, default: 0
       t.datetime :started_at, null: false
       t.datetime :completed_at
+      t.integer :total_records_read, default: 0
+      t.integer :total_records_written, default: 0
+      t.integer :successful_records_read, default: 0
+      t.integer :failed_records_read, default: 0
+      t.integer :successful_records_write, default: 0
+      t.integer :records_failed_to_write, default: 0
 
       t.timestamps
     end
