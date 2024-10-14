@@ -115,6 +115,7 @@ GEM
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
     date (3.3.4)
+    deepsort (0.5.0)
     devise (4.9.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -179,6 +180,8 @@ GEM
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     json (2.7.2)
+    json-schema (5.0.1)
+      addressable (~> 2.8)
     language_server-protocol (3.17.0.3)
     logger (1.6.0)
     loofah (2.22.0)
@@ -405,6 +408,7 @@ DEPENDENCIES
   concurrent-ruby
   data_migrate
   database_cleaner-active_record
+  deepsort
   devise
   devise_token_auth
   dotenv
@@ -413,6 +417,7 @@ DEPENDENCIES
   google-protobuf (~> 3.19)
   importmap-rails
   jbuilder
+  json-schema
   omniauth
   pg (~> 1.1)
   puma (>= 5.0)
