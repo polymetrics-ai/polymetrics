@@ -20,7 +20,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.bigint "destination_id", null: false
     t.string "name", null: false
     t.integer "status", default: 0, null: false
-    t.jsonb "configuration"
+    t.jsonb "configuration", null: false
     t.integer "schedule_type", default: 0, null: false
     t.string "namespace"
     t.string "stream_prefix"
@@ -59,10 +59,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
   create_table "sync_logs", force: :cascade do |t|
     t.bigint "sync_run_id", null: false
     t.integer "log_type", null: false
-    t.text "message", null: false
+    t.text "message"
     t.datetime "emitted_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["emitted_at"], name: "index_sync_logs_on_emitted_at"
     t.index ["sync_run_id"], name: "index_sync_logs_on_sync_run_id"
   end
 
@@ -90,6 +91,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.integer "records_failed_to_write", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_sync_runs_on_status"
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
   end
 

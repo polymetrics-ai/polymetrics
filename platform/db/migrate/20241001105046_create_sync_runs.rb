@@ -17,6 +17,8 @@ class CreateSyncRuns < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :sync_runs, :status
   end
   # rubocop:enable Metrics/MethodLength
 end

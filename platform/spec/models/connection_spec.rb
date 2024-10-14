@@ -92,7 +92,7 @@ RSpec.describe Connection, type: :model do
 
     it "allows the same name in different workspaces" do
       connection1 = create(:connection)
-      connection2 = build(:connection, name: connection1.name)
+      connection2 = build(:connection, name: connection1.name, workspace: create(:workspace))
       expect(connection2).to be_valid
     end
 

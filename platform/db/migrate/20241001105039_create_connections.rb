@@ -9,7 +9,7 @@ class CreateConnections < ActiveRecord::Migration[7.1]
       t.references :destination, null: false, foreign_key: { to_table: :connectors }
       t.string :name, null: false
       t.integer :status, null: false, default: 0
-      t.jsonb :configuration
+      t.jsonb :configuration, null: false
       t.integer :schedule_type, null: false, default: 0
       t.string :namespace
       t.string :stream_prefix

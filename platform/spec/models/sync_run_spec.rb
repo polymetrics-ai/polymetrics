@@ -21,7 +21,7 @@ RSpec.describe SyncRun, type: :model do
   end
 
   describe "enums" do
-    it { is_expected.to define_enum_for(:status).with_values(running: 0, succeeded: 1, failed: 2) }
+    it { is_expected.to define_enum_for(:status).with_values(running: 0, succeeded: 1, failed: 2, cancelled: 3) }
   end
 
   describe "factory" do

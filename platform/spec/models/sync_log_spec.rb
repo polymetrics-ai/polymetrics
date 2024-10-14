@@ -9,7 +9,6 @@ RSpec.describe SyncLog, type: :model do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:log_type) }
-    it { is_expected.to validate_presence_of(:message) }
     it { is_expected.to validate_presence_of(:emitted_at) }
   end
 
@@ -52,14 +51,6 @@ RSpec.describe SyncLog, type: :model do
       expect(build(:sync_log, sync_run: nil)).to be_invalid
     end
 
-    it "is invalid with an empty message" do
-      expect(build(:sync_log, message: "")).to be_invalid
-    end
-
-    it "is invalid with a nil message" do
-      expect(build(:sync_log, message: nil)).to be_invalid
-    end
-
     it "is invalid with a nil emitted_at" do
       expect(build(:sync_log, emitted_at: nil)).to be_invalid
     end
@@ -93,8 +84,8 @@ RSpec.describe SyncLog, type: :model do
     it "orders by emitted_at in descending order by default" do
       old_log = create(:sync_log, emitted_at: 2.days.ago)
       new_log = create(:sync_log, emitted_at: 1.day.ago)
-      expect(SyncLog.first).to eq(new_log)
-      expect(SyncLog.last).to eq(old_log)
+      expect(SyncLog.chronological.first).to eq(new_log)
+      expect(SyncLog.chronological.last).to eq(old_log)
     end
   end
 end

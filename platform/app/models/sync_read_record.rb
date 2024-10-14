@@ -17,10 +17,9 @@ class SyncReadRecord < ApplicationRecord
   end
 
   def sorted_data
-    case data.class.name
-    when "Hash"
-      data.deep_sort!.to_json
-    when "Array"
+    if data.is_a?(Hash)
+      data.deep_sort.to_json
+    elsif data.is_a?(Array)
       data.deep_sort_by(&:to_s).to_json
     else
       data.to_json
