@@ -3,11 +3,12 @@ import { connectorSteps } from '@/constants/constants';
 import { Button, Separator } from '../ui';
 
 export interface StepperProps {
-    // steps : Array<{id: string, title: string, description: string}>
-    stepper: any;
-}
-
-// ${index < stepper.current.index ? '' :'bg-white hover:bg-white border-2 border-emerald-600'}
+    stepper: {
+      all: Array<{id: string, title: string, description: string}>;
+      current: { id: string, index: number };
+      goTo: (id: string) => void;
+    };
+  }
 
 const VerticalStepper: React.FC<StepperProps> = ({ stepper }) => {
     return (

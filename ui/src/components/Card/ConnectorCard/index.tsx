@@ -5,7 +5,7 @@ export interface ConnectorCardProps {
     name: string;
     icon: string;
     isActive: boolean;
-    handleOnSelection: (name: object) => void;
+    handleOnSelection: (name: string) => void;
 }
 
 const ConnectorCard: React.FC<ConnectorCardProps> = ({
@@ -20,7 +20,7 @@ const ConnectorCard: React.FC<ConnectorCardProps> = ({
                 <TooltipTrigger>
                     <div
                         className={`flex gap-2.5 items-center p-4 border border-solid border-slate-300 min-h-[80px] min-w-[220px] shadow-[0px_3px_8px_-2px_rgba(203,213,225,0.60)] ${isActive ? 'bg-slate-300' : 'bg-white'}`}
-                        onClick={handleOnSelection}
+                        onClick={() => handleOnSelection(name)}
                     >
                         <div className=" flex w-11 h-11 rounded-full border border-slate-200 bg-white items-center justify-center">
                             <img className="w-4.5 h-4.5" src={icon} alt="Icon" />

@@ -129,7 +129,7 @@ function AddConnector() {
                         <Button
                             className="ml-auto"
                             onClick={onNext}
-                            disabled={stepper.isLast && !isValid ? true : false}
+                            disabled={stepper.isLast && !isValid}
                         >
                             {`${stepper.isLast ? 'Connect' : 'Next'}`}
                         </Button>

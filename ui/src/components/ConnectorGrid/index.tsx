@@ -13,7 +13,7 @@ export interface ConnectorGridProps {
     handleOnClickGrid: () => void;
 }
 
-const ConnectorGrid: React.FC = () => {
+const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive, handleOnClickGrid }) => {
     const [active, setActive] = useState<ActiveConnectorState>({ name: '', icon: '' });
 
     const handleOnSelection = (grid: ActiveConnectorState) => {
@@ -24,9 +24,9 @@ const ConnectorGrid: React.FC = () => {
     return (
         <div className="overflow-y-auto px-10">
             <div className="grid grid-flow-row grid-cols-4 gap-3 text-base font-medium tracking-normal text-slate-800 h-full flex-grow">
-                {connectors.map((item, key) => (
+                {connectors.map((item) => (
                     <ConnectorCard
-                        key={key}
+                        key={item.name}
                         name={item.name}
                         icon={item.icon}
                         isActive={active.name === item.name}

@@ -4,7 +4,6 @@ export interface ConnectorCardProps {}
 
 const ContactCard: React.FC = () => {
     return (
-        // px-4 pt-4 pb-3
         <div className="flex flex-col self-end px-4 pt-4 pb-2 bg-emerald-50 border border-emerald-200 border-solid">
             <div className="flex gap-4 items-start w-full">
                 <div className="w-14 h-14 p-2.5 bg-emerald-100 border border-emerald-200">
