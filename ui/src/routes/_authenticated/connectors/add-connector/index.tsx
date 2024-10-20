@@ -121,7 +121,8 @@ function AddConnector() {
                     )}
                     <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
                         <Button
-                            className={`${stepper.current.index === 0 ? 'hidden' : ''}`}
+                            variant={'outline'}
+                            className={`${stepper.current.index === 0 ? 'hidden' : 'border-emerald-600 hover:bg-white hover:text-emerald-600 text-emerald-600'}`}
                             onClick={onPrev}
                         >
                             Back
