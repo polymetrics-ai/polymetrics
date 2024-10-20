@@ -15,10 +15,10 @@ export interface githubConfig {
 
 export interface postConnectorPayload {
     connector: {
-        configuration: githubConfig,
+        configuration: githubConfig;
         name: string;
         connector_class_name: string;
         description: string;
         connector_language: string;
-    }
+    };
 }

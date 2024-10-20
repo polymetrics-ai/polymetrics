@@ -21,39 +21,39 @@ export const NAV_ICONS = {
         {
             label: 'Dashboard',
             value: '/dashboard',
-            icon: '/icon-dashboard.svg',
+            icon: '/icon-dashboard.svg'
         },
         {
             label: 'Charts',
             value: '/charts',
-            icon: '/icon-charts.svg',
+            icon: '/icon-charts.svg'
         },
         {
             label: 'Connectors',
             value: '/connectors',
-            icon: '/icon-connectors.svg',
+            icon: '/icon-connectors.svg'
         },
         {
             label: 'Connections',
             value: '/connections',
-            icon: '/icon-connections.svg',
+            icon: '/icon-connections.svg'
         }
     ],
     userIcons: [
         {
             label: 'Settings',
             value: '/settings',
-            icon: '/icon-settings.svg',
+            icon: '/icon-settings.svg'
         },
         {
             label: 'Documentation',
             value: '/documentation',
-            icon: '/icon-documentation.svg',
+            icon: '/icon-documentation.svg'
         },
         {
             label: 'Logout',
             value: '',
-            icon: '/icon-avatar.svg',
+            icon: '/icon-avatar.svg'
         }
     ]
 };
@@ -112,7 +112,7 @@ export const CONNECTORS_LIST = [
     {
         name: 'Google Ads',
         icon: '/connectors/google-ads.svg'
-    },
+    }
 ];
 
 export const connectorFields = [
@@ -128,4 +128,17 @@ export const connectorFields = [
         field: 'repository',
         placeholder: 'Repository name should follow the pattern */* i.e rails/rails'
     }
+];
+
+export const connectorSteps = [
+    {
+        id: 'choose-connector',
+        title: 'Choose connector',
+        description: 'Lorem ispsum something about connectors'
+    },
+    {
+        id: 'configure-connector',
+        title: 'Configure connector',
+        description: 'Lorem ispsum something about connectors'
+    },
 ];

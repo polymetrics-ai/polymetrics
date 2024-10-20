@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { z } from 'zod';
 import { createFileRoute } from '@tanstack/react-router';
@@ -8,28 +7,26 @@ import ConnectorGrid from '@/components/ConnectorGrid';
 import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
+import VerticalStepper from '@/components/VerticalStepper';
 import { ConnectorSchema } from '@/lib/schema';
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
 });
 
-
-
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
     const [steps, setSteps] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-
     const handleSubmit = (data: z.infer<typeof ConnectorSchema>) => {
         console.log('data', data);
-        const {name, description, repository, personal_access_token} = data
+        const { name, description, repository, personal_access_token } = data;
         const payload = {
             connector: {
-                configuration:{
+                configuration: {
                     repository,
-                    personal_access_token,
+                    personal_access_token
                 },
                 name,
                 description,
@@ -37,9 +34,7 @@ function AddConnector() {
                 connector_language: 'ruby'
             }
         };
-         
-     };
-
+    };
 
     const onPrev = () => {
         setSteps((prev) => prev - 1);
@@ -84,7 +79,7 @@ function AddConnector() {
                                     onSearch={() => console.log('Searching')}
                                 />
                             </div>
-                            {isLoading ? <Loader /> : <ConnectorGrid/>}
+                            {isLoading ? <Loader /> : <ConnectorGrid />}
                         </div>
                     ) : (
                         <div className="flex flex-col my-8 overflow-hidden flex-grow">
@@ -109,46 +104,16 @@ function AddConnector() {
                 </div>
             </div>
             <div className="col-span-1 gap-0 w-full overflow-hidden">
-                <div className="flex flex-col items-start justify-between pl-8 pt-8 h-full bg-white max-w-[24rem]">
-                    <div className="flex flex-col">
+                <div className="flex flex-col pl-8 pt-8 h-full bg-white max-w-[24rem]">
+                    <div className="flex flex-col h-full">
                         <div className="self-start text-xs font-medium tracking-normal text-center text-slate-400">
                             STEPS TO COMPLETE
                         </div>
-                        <div className="flex relative flex-col mt-5 w-full">
-                            <div className="absolute left-4 top-5 z-0 w-0 border-2 border-dashed bg-slate-300 border-slate-300 h-[85px] min-h-[85px]" />
-                            <div className="flex overflow-hidden z-0 gap-2 items-start w-full">
-                                <div className="flex overflow-hidden flex-col justify-center p-0.5 w-8 text-xs font-semibold tracking-normal text-emerald-600 whitespace-nowrap">
-                                    <div className="px-3 pt-1.5 pb-4 w-7 h-7 bg-white rounded-full border-2 border-emerald-600 border-solid fill-white stroke-[1.5px] stroke-emerald-600">
-                                        1
-                                    </div>
-                                </div>
-                                <div className="flex flex-col flex-1 shrink basis-0">
-                                    <div className="text-base font-medium tracking-normal text-slate-800">
-                                        Choose connector
-                                    </div>
-                                    <div className="text-sm tracking-normal leading-5 text-slate-400">
-                                        Lorem ispsum something about connectors
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex overflow-hidden z-0 gap-2 items-start mt-6 w-full">
-                                <div className="flex overflow-hidden flex-col justify-center p-0.5 w-8 text-xs font-semibold tracking-normal whitespace-nowrap text-slate-400">
-                                    <div className="px-2.5 pt-1.5 pb-3.5 w-7 h-7 bg-white rounded-full border-2 border-solid border-slate-200 fill-white stroke-[1.5px] stroke-slate-200">
-                                        2
-                                    </div>
-                                </div>
-                                <div className="flex flex-col flex-1 shrink basis-0">
-                                    <div className="text-base font-medium tracking-normal text-slate-800">
-                                        Configure connector
-                                    </div>
-                                    <div className="text-sm tracking-normal leading-5 text-slate-400">
-                                        Lorem ispsum something about configuring connectors
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="flex flex-col justify-between flex-wrap mt-5 h-full">
+                            <VerticalStepper />
+                            <ContactCard />
                         </div>
                     </div>
-                    <ContactCard />
                 </div>
             </div>
         </main>

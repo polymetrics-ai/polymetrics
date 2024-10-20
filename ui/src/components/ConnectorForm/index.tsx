@@ -20,7 +20,7 @@ export interface ConnectorFormRef {
 export interface ConnectorFormProps {
     form: UseFormReturn<z.infer<typeof ConnectorSchema>>; // Update type here
     // ref: React.Ref<HTMLFormElement>
-    onSubmit: (data: z.infer<typeof ConnectorSchema>) => void;
+    onSubmit?: (data: z.infer<typeof ConnectorSchema>) => void;
 }
 const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ onSubmit }, ref) => {
     const form = useForm<z.infer<typeof ConnectorSchema>>({
