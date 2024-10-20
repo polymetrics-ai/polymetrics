@@ -7,13 +7,12 @@ export interface ActiveConnectorState {
     icon: string;
 }
 export interface ConnectorGridProps {
-    // list: Array<object>;
-    active: ActiveConnectorState;
-    setActive: React.Dispatch<React.SetStateAction<{ name: string; icon: string }>>;
-    handleOnClickGrid: () => void;
+    active?: ActiveConnectorState;
+    setActive?: React.Dispatch<React.SetStateAction<{ name: string; icon: string }>>;
+    handleOnClickGrid?: () => void;
 }
 
-const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive, handleOnClickGrid }) => {
+const ConnectorGrid: React.FC<ConnectorGridProps> = () => {
     const [active, setActive] = useState<ActiveConnectorState>({ name: '', icon: '' });
 
     const handleOnSelection = (grid: ActiveConnectorState) => {
