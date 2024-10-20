@@ -132,7 +132,7 @@ export const connectorFields = [
 
 export const connectorSteps = [
     {
-        id: 'choose-connector',
+        id: 'select-connector',
         title: 'Choose connector',
         description: 'Lorem ispsum something about connectors'
     },
@@ -140,5 +140,5 @@ export const connectorSteps = [
         id: 'configure-connector',
         title: 'Configure connector',
         description: 'Lorem ispsum something about connectors'
-    },
+    }
 ];

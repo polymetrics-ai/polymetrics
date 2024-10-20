@@ -21,18 +21,9 @@ export interface ConnectorFormProps {
     form: UseFormReturn<z.infer<typeof ConnectorSchema>>; // Update type here
     // ref: React.Ref<HTMLFormElement>
     onSubmit?: (data: z.infer<typeof ConnectorSchema>) => void;
+    setIsDisabled: () => void;
 }
-const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ onSubmit }, ref) => {
-    const form = useForm<z.infer<typeof ConnectorSchema>>({
-        resolver: zodResolver(ConnectorSchema),
-        defaultValues: {
-            name: '',
-            description: '',
-            personal_access_token: '',
-            repository: ''
-        }
-    });
-
+const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ form, onSubmit }, ref) => {
     useImperativeHandle(ref, () => ({
         submitForm: () => form.handleSubmit(onSubmit)()
     }));

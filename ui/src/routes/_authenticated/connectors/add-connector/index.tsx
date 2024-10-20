@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import { z } from 'zod';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
 import ConnectorGrid from '@/components/ConnectorGrid';
@@ -8,16 +10,39 @@ import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
 import VerticalStepper from '@/components/VerticalStepper';
+import { connectorSteps } from '@/constants/constants';
 import { ConnectorSchema } from '@/lib/schema';
+import { defineStepper } from '@stepperize/react';
 
 export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
     component: AddConnector
 });
 
+const { useStepper } = defineStepper(...connectorSteps);
+
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
-    const [steps, setSteps] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
+    const stepper = useStepper();
+    const navigate = useNavigate();
+
+    const form = useForm<z.infer<typeof ConnectorSchema>>({
+        resolver: zodResolver(ConnectorSchema),
+        defaultValues: {
+            name: '',
+            description: '',
+            personal_access_token: '',
+            repository: ''
+        }
+    });
+
+    const {
+        formState: { isValid }
+    } = form;
+
+    console.log(isValid);
 
     const handleSubmit = (data: z.infer<typeof ConnectorSchema>) => {
         console.log('data', data);
@@ -34,15 +59,19 @@ function AddConnector() {
                 connector_language: 'ruby'
             }
         };
+
+        navigate({ to: '/connectors', replace: true });
     };
 
     const onPrev = () => {
-        setSteps((prev) => prev - 1);
+        stepper.prev();
     };
+
     const onNext = () => {
-        if (steps === 0) {
-            setSteps((prev) => prev + 1);
+        if (!stepper.isLast) {
+            stepper.next();
         } else {
+            console.log('entered');
             formRef.current?.submitForm();
         }
     };
@@ -68,7 +97,7 @@ function AddConnector() {
                         </div>
                         <div className="flex gap-4" />
                     </div>
-                    {steps === 0 ? (
+                    {stepper.current.id === 'select-connector' ? (
                         <div className="flex flex-col my-8 overflow-hidden flex-grow">
                             <div className="mx-10 text-xl font-semibold tracking-tight leading-none text-slate-800">
                                 Choose a new connector
@@ -86,19 +115,23 @@ function AddConnector() {
                             {isLoading ? (
                                 <Loader />
                             ) : (
-                                <ConnectorForm ref={formRef} onSubmit={handleSubmit} />
+                                <ConnectorForm form={form} ref={formRef} onSubmit={handleSubmit} />
                             )}
                         </div>
                     )}
                     <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
                         <Button
-                            className={`${steps === 0 ? 'hidden' : ''}`}
-                            onClick={() => onPrev()}
+                            className={`${stepper.current.index === 0 ? 'hidden' : ''}`}
+                            onClick={onPrev}
                         >
                             Back
                         </Button>
-                        <Button className="ml-auto" onClick={() => onNext()}>
-                            Next
+                        <Button
+                            className="ml-auto"
+                            onClick={onNext}
+                            disabled={stepper.isLast && !isValid ? true : false}
+                        >
+                            {`${stepper.isLast ? 'Connect' : 'Next'}`}
                         </Button>
                     </div>
                 </div>
@@ -110,7 +143,7 @@ function AddConnector() {
                             STEPS TO COMPLETE
                         </div>
                         <div className="flex flex-col justify-between flex-wrap mt-5 h-full">
-                            <VerticalStepper />
+                            <VerticalStepper stepper={stepper} />
                             <ContactCard />
                         </div>
                     </div>
