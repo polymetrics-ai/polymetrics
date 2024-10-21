@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation} from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NAV_ICONS } from '@/constants/constants';
@@ -30,14 +30,19 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${route.value}` ? 'bg-emerald-100' : ''} ${route.className ? route.className : ''}`}
+                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname === `${route.value}` ? 'bg-emerald-100' : ''} ${route.className ? route.className : ''}`}
                                         aria-label={route.label}
                                     >
                                         <img className="h-6 w-6" src={route.icon} />
                                     </Button>
                                 </Link>
                             </TooltipTrigger>
-                            <TooltipContent className="bg-emerald-600 -translate-y-5" side="right" sideOffset={5} align="start">
+                            <TooltipContent
+                                className="bg-emerald-600 -translate-y-5"
+                                side="right"
+                                sideOffset={5}
+                                align="start"
+                            >
                                 {route.label}
                             </TooltipContent>
                         </Tooltip>
@@ -49,21 +54,25 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                     <TooltipProvider delayDuration={50} key={key}>
                         <Tooltip>
                             <TooltipTrigger>
-                            <Link to={user?.value ? user?.value : ''}>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname ===`${user.value}` ? 'bg-emerald-100' : ''} ${user.className ? user.className : ''}`}
-                                    aria-label={user.label}
-                                    onClick={
-                                        user.label === 'Logout' ? () => onSignOut() : undefined
-                                    }
-                                >
-                                    <img className="h-6 w-6" src={user.icon} />
-                                </Button>
-                            </Link>
+                                <Link to={user?.value ? user?.value : ''}>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname === `${user.value}` ? 'bg-emerald-100' : ''} ${user.className ? user.className : ''}`}
+                                        aria-label={user.label}
+                                        onClick={
+                                            user.label === 'Logout' ? () => onSignOut() : undefined
+                                        }
+                                    >
+                                        <img className="h-6 w-6" src={user.icon} />
+                                    </Button>
+                                </Link>
                             </TooltipTrigger>
-                            <TooltipContent className="bg-emerald-600 -translate-y-6" side="right" sideOffset={5}>
+                            <TooltipContent
+                                className="bg-emerald-600 -translate-y-6"
+                                side="right"
+                                sideOffset={5}
+                            >
                                 {user.label}
                             </TooltipContent>
                         </Tooltip>

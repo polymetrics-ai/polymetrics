@@ -21,46 +21,39 @@ export const NAV_ICONS = {
         {
             label: 'Dashboard',
             value: '/dashboard',
-            icon: '/icon-dashboard.svg',
-            className: ''
+            icon: '/icon-dashboard.svg'
         },
         {
             label: 'Charts',
             value: '/charts',
-            icon: '/icon-charts.svg',
-            className: ''
+            icon: '/icon-charts.svg'
         },
         {
             label: 'Connectors',
             value: '/connectors',
-            icon: '/icon-connectors.svg',
-            className: ''
+            icon: '/icon-connectors.svg'
         },
         {
             label: 'Connections',
             value: '/connections',
-            icon: '/icon-connections.svg',
-            className: ''
+            icon: '/icon-connections.svg'
         }
     ],
     userIcons: [
         {
             label: 'Settings',
             value: '/settings',
-            icon: '/icon-settings.svg',
-            className: ''
+            icon: '/icon-settings.svg'
         },
         {
             label: 'Documentation',
             value: '/documentation',
-            icon: '/icon-documentation.svg',
-            className: ''
+            icon: '/icon-documentation.svg'
         },
         {
             label: 'Logout',
             value: '',
-            icon: '/icon-avatar.svg',
-            className: ''
+            icon: '/icon-avatar.svg'
         }
     ]
 };
@@ -119,42 +112,6 @@ export const CONNECTORS_LIST = [
     {
         name: 'Google Ads',
         icon: '/connectors/google-ads.svg'
-    },
-    {
-        name: 'Facebook Marketing',
-        icon: '/connectors/facebook.svg'
-    },
-    {
-        name: 'Tiktok Marketing',
-        icon: '/connectors/tiktok.svg'
-    },
-    {
-        name: 'Stripe',
-        icon: '/connectors/stripe.svg'
-    },
-    {
-        name: 'Braze',
-        icon: '/connectors/braze.svg'
-    },
-    {
-        name: 'ClickUp',
-        icon: '/connectors/clickup.svg'
-    },
-    {
-        name: 'Google Analytics 4(GA4)',
-        icon: '/connectors/google-analytics.svg'
-    },
-    {
-        name: 'Facebook Marketing',
-        icon: '/connectors/facebook.svg'
-    },
-    {
-        name: 'Klaviyo',
-        icon: '/connectors/klaviyo.svg'
-    },
-    {
-        name: 'Google Ads',
-        icon: '/connectors/google-ads.svg'
     }
 ];
 
@@ -170,5 +127,18 @@ export const connectorFields = [
         label: 'Respository',
         field: 'repository',
         placeholder: 'Repository name should follow the pattern */* i.e rails/rails'
+    }
+];
+
+export const connectorSteps = [
+    {
+        id: 'select-connector',
+        title: 'Choose connector',
+        description: 'Lorem ispsum something about connectors'
+    },
+    {
+        id: 'configure-connector',
+        title: 'Configure connector',
+        description: 'Lorem ispsum something about connectors'
     }
 ];
