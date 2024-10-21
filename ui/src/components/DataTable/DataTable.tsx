@@ -14,14 +14,16 @@ import {
 } from '@/components/ui/table';
 import { getTimeStamp } from '@/lib/date-helper';
 
-const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: function (table: Table<any>): () => RowModel<any> {
-            throw new Error('Function not implemented.');
-        }
-    });
+const DataTable: React.FC<DataTableProps> = ({ list }) => {
+    console.log({list});
+    const {data} = list;
+    // const table = useReactTable({
+    //     data,
+    //     columns,
+    //     getCoreRowModel: function (table: Table<any>): () => RowModel<any> {
+    //         throw new Error('Function not implemented.');
+    //     }
+    // });
 
     // Use the 'table' variable to render the table
     return (
@@ -31,28 +33,25 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
                     <TableHead className="text-slate-400">STATUS</TableHead>
                     <TableHead>NAME</TableHead>
                     <TableHead>CONNECTOR</TableHead>
-                    <TableHead className="">DESTINATION</TableHead>
+                    <TableHead className="">LAST UPDATED</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow>
-                    <TableCell className="font-medium pl-5">
-                        <Status isConnected={true} />
-                    </TableCell>
-                    <TableCell>Default Analytics DB</TableCell>
-                    <TableCell>
-                        <ConnectorType className="" icon={''} name={'Linkedin'} />
-                    </TableCell>
-                    <TableCell className="">
-                        <ConnectorType
-                            className=""
-                            icon={
-                                'https://raw.githubusercontent.com/polymetrics-ai/polymetrics/main/public/connector_icons/duckdb.svg'
-                            }
-                            name={'Duck DB'}
-                        />
-                    </TableCell>
-                </TableRow>
+            {data && data.map((item)=>(
+                <TableRow key={item.id}>
+                <TableCell className="font-medium pl-5">
+                    <Status isConnected={item.connected} />
+                </TableCell>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>
+                    <ConnectorType className="" icon={item.icon_url} name={item.connector_class_name} />
+                </TableCell>
+                <TableCell className="">
+                   {getTimeStamp(item.updated_at)}
+                </TableCell>
+            </TableRow>
+            ))}
+                
             </TableBody>
         </Table>
     );

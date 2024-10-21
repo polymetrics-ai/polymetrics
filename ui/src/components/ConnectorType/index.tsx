@@ -13,7 +13,7 @@ const ConnectorType: React.FC<ConnectorTypeProps> = ({ icon, name }) => {
                 <img
                     className="w-4.5 h-4.5 p-2 shrink-0"
                     src={
-                        icon
+                        icon !==''
                             ? icon
                             : 'https://raw.githubusercontent.com/polymetrics-ai/polymetrics/main/public/connector_icons/github.svg'
                     }
