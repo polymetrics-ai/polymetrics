@@ -1,8 +1,11 @@
 import React from 'react';
 import { ConnectorCard } from '../Card';
 import { CONNECTORS_LIST } from '@/constants/constants';
-import { ActiveConnectorState } from '@/routes/_authenticated/connectors/add-connector';
 
+export interface ActiveConnectorState {
+    name: string;
+    icon: string;
+}
 
 export interface ConnectorGridProps {
     active?: ActiveConnectorState;

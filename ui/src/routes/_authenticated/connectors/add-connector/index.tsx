@@ -18,19 +18,13 @@ export const Route = createFileRoute('/_authenticated/connectors/add-connector/'
     component: AddConnector
 });
 
-export interface ActiveConnectorState {
-    name: string;
-    icon: string;
-}
-
 const { useStepper } = defineStepper(...connectorSteps);
 
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
     const [active, setActive] = useState<ActiveConnectorState>({name: '' , icon: ''})
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isDisabled, setIsDisabled] = useState<boolean>(false);
-
+    
     const stepper = useStepper();
     const navigate = useNavigate();
 
@@ -48,10 +42,9 @@ function AddConnector() {
         formState: { isValid }
     } = form;
 
-    console.log(isValid);
 
     const handleSubmit = (data: z.infer<typeof ConnectorSchema>) => {
-        console.log('data', data);
+
         const { name, description, repository, personal_access_token } = data;
         const payload = {
             connector: {
@@ -77,7 +70,6 @@ function AddConnector() {
         if (!stepper.isLast) {
             stepper.next();
         } else {
-            console.log('entered');
             formRef.current?.submitForm();
         }
     };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { connectorSteps } from '@/constants/constants';
 import { Button, Separator } from '../ui';
 
 export interface StepperProps {
