@@ -1,22 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ConnectorCard } from '../Card';
 import { CONNECTORS_LIST } from '@/constants/constants';
+import { ActiveConnectorState } from '@/routes/_authenticated/connectors/add-connector';
 
-export interface ActiveConnectorState {
-    name: string;
-    icon: string;
-}
+
 export interface ConnectorGridProps {
     active?: ActiveConnectorState;
-    setActive?: React.Dispatch<React.SetStateAction<{ name: string; icon: string }>>;
+    setActive?: React.Dispatch<React.SetStateAction<ActiveConnectorState>>;
     handleOnClickGrid?: () => void;
 }
 
-const ConnectorGrid: React.FC<ConnectorGridProps> = () => {
-    const [active, setActive] = useState<ActiveConnectorState>({ name: '', icon: '' });
+const ConnectorGrid: React.FC<ConnectorGridProps> = ({active , setActive}) => {
 
     const handleOnSelection = (grid: ActiveConnectorState) => {
-        console.log({ grid });
         setActive(grid);
     };
     const connectors = CONNECTORS_LIST;

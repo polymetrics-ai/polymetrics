@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
-import ConnectorGrid from '@/components/ConnectorGrid';
+import ConnectorGrid, { ActiveConnectorState } from '@/components/ConnectorGrid';
 import { Button } from '@/components/ui';
 import Loader from '@/components/Loader';
 import ConnectorForm, { ConnectorFormRef } from '@/components/ConnectorForm';
@@ -18,10 +18,16 @@ export const Route = createFileRoute('/_authenticated/connectors/add-connector/'
     component: AddConnector
 });
 
+export interface ActiveConnectorState {
+    name: string;
+    icon: string;
+}
+
 const { useStepper } = defineStepper(...connectorSteps);
 
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
+    const [active, setActive] = useState<ActiveConnectorState>({name: '' , icon: ''})
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
@@ -108,7 +114,7 @@ function AddConnector() {
                                     onSearch={() => console.log('Searching')}
                                 />
                             </div>
-                            {isLoading ? <Loader /> : <ConnectorGrid />}
+                            {isLoading ? <Loader /> : <ConnectorGrid active={active} setActive={setActive} />}
                         </div>
                     ) : (
                         <div className="flex flex-col my-8 overflow-hidden flex-grow">
