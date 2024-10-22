@@ -13,6 +13,7 @@ import {
     TableRow
 } from '@/components/ui/table';
 import { getTimeStamp } from '@/lib/date-helper';
+import { getTitleCase } from '@/lib/helper';
 
 const DataTable: React.FC<DataTableProps> = ({ list }) => {
     console.log({list});
@@ -42,7 +43,7 @@ const DataTable: React.FC<DataTableProps> = ({ list }) => {
                 <TableCell className="font-medium pl-5">
                     <Status isConnected={item.connected} />
                 </TableCell>
-                <TableCell>{item.name}</TableCell>
+                <TableCell>{getTitleCase(item.name)}</TableCell>
                 <TableCell>
                     <ConnectorType className="" icon={item.icon_url} name={item.connector_class_name} />
                 </TableCell>

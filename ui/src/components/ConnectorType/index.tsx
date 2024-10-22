@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { getTitleCase } from '@/lib/helper';
 export interface ConnectorTypeProps {
     className?: string;
     icon: string;
@@ -19,7 +19,7 @@ const ConnectorType: React.FC<ConnectorTypeProps> = ({ icon, name }) => {
                     }
                 />
             </div>
-            <span className="text-sm font-medium text-slate-800">{name}</span>
+            <span className="text-sm font-medium text-slate-800">{getTitleCase(name)}</span>
         </div>
     );
 };

@@ -31,8 +31,8 @@ export function Connectors() {
                 Add Connectors
             </Button>
         </div>
-        <div className="flex-1 h-full flex items-start mt-10 justify-center">
-            <Loader/>
+        <div className="flex-1 h-full flex items-start justify-center">
+            
         </div>
     </main>
     )
@@ -51,8 +51,9 @@ export function Connectors() {
                     Add Connectors
                 </Button>
             </div>
-            <div className="flex-1 h-full flex items-start mt-10 justify-center">
-                <DataTable list={data} columns={[]} />
+            <div className="flex-1 h-full flex items-start  justify-center">
+                {/* <DataTable list={data} columns={[]} /> */}
+                <Loader/>
             </div>
         </main>
     );
