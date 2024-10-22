@@ -49,3 +49,6 @@ RSpec/NestedGroups:
 
 RSpec/MultipleMemoizedHelpers:
   Max: 10
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never

@@ -5,12 +5,12 @@ require "rails_helper"
 RSpec.describe Api::V1::ConnectorsController, type: :controller do
   let(:user) { create(:user) }
   let(:organization) { create(:organization) }
-  let(:workspace) { create(:workspace, organization:) }
-  let(:connector) { create(:connector, workspace:) }
+  let(:workspace) { create(:workspace, organization: organization) }
+  let(:connector) { create(:connector, workspace: workspace) }
 
   before do
     sign_in_and_set_token(user)
-    create(:user_workspace_membership, user:, workspace:, role: "owner")
+    create(:user_workspace_membership, user: user, workspace: workspace, role: "owner")
   end
 
   describe "GET #index" do
@@ -20,7 +20,7 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
     end
 
     it "returns all connectors for the current user with icon_url" do
-      create_list(:connector, 3, workspace:)
+      create_list(:connector, 3, workspace: workspace)
       get :index
       expect(response).to be_successful
       parsed_body = response.parsed_body
@@ -109,7 +109,7 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested connector" do
-      connector_to_delete = create(:connector, workspace:)
+      connector_to_delete = create(:connector, workspace: workspace)
       expect do
         delete :destroy, params: { id: connector_to_delete.id }
       end.to change(Connector, :count).by(-1)

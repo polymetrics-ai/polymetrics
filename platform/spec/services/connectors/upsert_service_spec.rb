@@ -79,7 +79,7 @@ RSpec.describe Connectors::UpsertService do
     end
 
     context "when updating an existing connector" do
-      let(:existing_connector) { create(:connector, workspace:) }
+      let(:existing_connector) { create(:connector, workspace: workspace) }
       let(:service) { described_class.new(params, current_user, existing_connector) }
 
       context "with changed configuration" do
@@ -116,7 +116,7 @@ RSpec.describe Connectors::UpsertService do
 
   describe "private methods" do
     describe "#configuration_changed?" do
-      let!(:existing_connector) { create(:connector, workspace:, configuration: { "key" => "old_value" }) }
+      let!(:existing_connector) { create(:connector, workspace: workspace, configuration: { "key" => "old_value" }) }
       let(:service) { described_class.new(params, current_user, existing_connector) }
 
       it "returns true when configuration has changed" do
@@ -141,7 +141,7 @@ RSpec.describe Connectors::UpsertService do
         workflow_id = "test_workflow_id"
         expect(service.send(:workflow_options, workflow_id)).to eq({
                                                                      task_queue: "ruby_connectors_queue",
-                                                                     workflow_id:,
+                                                                     workflow_id: workflow_id,
                                                                      workflow_execution_timeout: 30
                                                                    })
       end

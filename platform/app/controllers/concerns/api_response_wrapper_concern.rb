@@ -4,11 +4,11 @@ module ApiResponseWrapperConcern
   extend ActiveSupport::Concern
 
   def render_success(data, status = :ok)
-    render json: { data: }, status:
+    render json: { data: data }, status: status
   end
 
   def render_error(message, status: :unprocessable_entity)
-    render json: { error: { message: } }, status:
+    render json: { error: { message: message } }, status: status
   end
 
   def render_api_response(result, _status)

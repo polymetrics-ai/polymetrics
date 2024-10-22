@@ -44,8 +44,8 @@ RSpec.describe SyncReadRecord, type: :model do
   describe "signature generation" do
     it "generates a consistent signature for the same data within the same sync_id" do
       data = { "key" => "value" }
-      record1 = create(:sync_read_record, data:)
-      record2 = create(:sync_read_record, data:, sync: record1.sync, sync_run: record1.sync_run)
+      record1 = create(:sync_read_record, data: data)
+      record2 = create(:sync_read_record, data: data, sync: record1.sync, sync_run: record1.sync_run)
       expect(record1.signature).to eq(record2.signature)
     end
 
