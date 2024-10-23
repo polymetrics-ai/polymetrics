@@ -13,8 +13,7 @@ export interface ConnectorGridProps {
     handleOnClickGrid?: () => void;
 }
 
-const ConnectorGrid: React.FC<ConnectorGridProps> = ({active , setActive}) => {
-
+const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
     const handleOnSelection = (grid: ActiveConnectorState) => {
         setActive(grid);
     };

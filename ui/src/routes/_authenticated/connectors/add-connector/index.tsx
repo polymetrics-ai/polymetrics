@@ -23,9 +23,9 @@ const { useStepper } = defineStepper(...connectorSteps);
 
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
-    const [active, setActive] = useState<ActiveConnectorState>({name: '' , icon: ''})
+    const [active, setActive] = useState<ActiveConnectorState>({ name: '', icon: '' });
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    
+
     const stepper = useStepper();
     const navigate = useNavigate();
 
@@ -43,9 +43,7 @@ function AddConnector() {
         formState: { isValid }
     } = form;
 
-
     const handleSubmit = (data: z.infer<typeof ConnectorSchema>) => {
-
         const { name, description, repository, personal_access_token } = data;
         const payload = {
             connector: {
@@ -107,7 +105,11 @@ function AddConnector() {
                                     onSearch={() => console.log('Searching')}
                                 />
                             </div>
-                            {isLoading ? <Loader /> : <ConnectorGrid active={active} setActive={setActive} />}
+                            {isLoading ? (
+                                <Loader />
+                            ) : (
+                                <ConnectorGrid active={active} setActive={setActive} />
+                            )}
                         </div>
                     ) : (
                         <div className="flex flex-col my-8 overflow-hidden flex-grow">

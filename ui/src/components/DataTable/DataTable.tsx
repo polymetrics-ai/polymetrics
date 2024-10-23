@@ -16,8 +16,8 @@ import { getTimeStamp } from '@/lib/date-helper';
 import { getTitleCase } from '@/lib/helper';
 
 const DataTable: React.FC<DataTableProps> = ({ list }) => {
-    console.log({list});
-    const {data} = list;
+    console.log({ list });
+    const { data } = list;
     // const table = useReactTable({
     //     data,
     //     columns,
@@ -38,21 +38,23 @@ const DataTable: React.FC<DataTableProps> = ({ list }) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-            {data && data.map((item)=>(
-                <TableRow key={item.id}>
-                <TableCell className="font-medium pl-5">
-                    <Status isConnected={item.connected} />
-                </TableCell>
-                <TableCell>{getTitleCase(item.name)}</TableCell>
-                <TableCell>
-                    <ConnectorType className="" icon={item.icon_url} name={item.connector_class_name} />
-                </TableCell>
-                <TableCell className="">
-                   {getTimeStamp(item.updated_at)}
-                </TableCell>
-            </TableRow>
-            ))}
-                
+                {data &&
+                    data.map((item) => (
+                        <TableRow key={item.id}>
+                            <TableCell className="font-medium pl-5">
+                                <Status isConnected={item.connected} />
+                            </TableCell>
+                            <TableCell>{getTitleCase(item.name)}</TableCell>
+                            <TableCell>
+                                <ConnectorType
+                                    className=""
+                                    icon={item.icon_url}
+                                    name={item.connector_class_name}
+                                />
+                            </TableCell>
+                            <TableCell className="">{getTimeStamp(item.updated_at)}</TableCell>
+                        </TableRow>
+                    ))}
             </TableBody>
         </Table>
     );
