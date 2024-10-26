@@ -1,15 +1,19 @@
+# frozen_string_literal: true
+
 RSpec.describe Syncs::CreateService do
   let(:connection) { create(:connection) }
   let(:service) { described_class.new(connection.id) }
   let(:mock_schema) do
     {
-        stream1: { "name" => "stream1", "supported_sync_modes" => ["full_refresh", "incremental"] },
-        stream2: { "name" => "stream2", "supported_sync_modes" => ["full_refresh"] }
+      stream1: { "name" => "stream1", "supported_sync_modes" => %w[full_refresh incremental] },
+      stream2: { "name" => "stream2", "supported_sync_modes" => ["full_refresh"] }
     }
   end
 
   before do
-    allow_any_instance_of(Catalogs::FetchSchemaService).to receive(:call).and_return(mock_schema)
+    fetch_schema_service = instance_double(Catalogs::FetchSchemaService)
+    allow(Catalogs::FetchSchemaService).to receive(:new).and_return(fetch_schema_service)
+    allow(fetch_schema_service).to receive(:call).and_return(mock_schema)
   end
 
   describe "#call" do
@@ -24,7 +28,7 @@ RSpec.describe Syncs::CreateService do
       expect(syncs[0]).to have_attributes(
         stream_name: "stream1",
         sync_mode: "incremental_append",
-        supported_sync_modes: ["full_refresh", "incremental"]
+        supported_sync_modes: %w[full_refresh incremental]
       )
 
       expect(syncs[1]).to have_attributes(

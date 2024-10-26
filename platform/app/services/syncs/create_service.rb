@@ -21,15 +21,13 @@ module Syncs
 
     def create_syncs(schema)
       schema.each_key do |stream|
-        Sync.create!(
-          connection: @connection,
-          stream_name: stream,
-          status: :queued,
-          sync_mode: determine_sync_mode(schema[stream]),
-          schedule_type: :manual,
-          sync_frequency: DEFAULT_SYNC_FREQUENCY,
-          supported_sync_modes: schema[stream]["supported_sync_modes"]
-        )
+        Sync.create!(connection: @connection,
+                     stream_name: stream,
+                     status: :queued,
+                     sync_mode: determine_sync_mode(schema[stream]),
+                     schedule_type: :manual,
+                     sync_frequency: DEFAULT_SYNC_FREQUENCY,
+                     supported_sync_modes: schema[stream]["supported_sync_modes"])
       end
     end
 

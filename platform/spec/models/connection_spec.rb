@@ -30,12 +30,16 @@ RSpec.describe Connection, type: :model do
   end
 
   describe "enums" do
+    subject(:connection) { described_class.new }
+
     it { is_expected.to define_enum_for(:status).with_values(healthy: 0, failed: 1, running: 2, paused: 3, created: 4) }
     it { is_expected.to define_enum_for(:schedule_type).with_values(scheduled: 0, cron: 1, manual: 2) }
 
     it {
-      expect(subject).to define_enum_for(:namespace).with_values(system_defined: 0, source_defined: 1, destination_defined: 2,
-                                                                 user_defined: 3)
+      expect(connection).to define_enum_for(:namespace).with_values(system_defined: 0,
+                                                                    source_defined: 1,
+                                                                    destination_defined: 2,
+                                                                    user_defined: 3)
     }
   end
 
@@ -158,14 +162,26 @@ RSpec.describe Connection, type: :model do
       expect(connection.reload.namespace).to eq("source_defined")
     end
 
-    it "allows querying by namespace" do
-      user_defined_connection = create(:connection, namespace: :user_defined)
-      system_defined_connection = create(:connection, namespace: :system_defined)
+    describe "querying by namespace" do
+      let(:system_defined_connection) { create(:connection, namespace: :system_defined) }
+      let(:source_defined_connection) { create(:connection, namespace: :source_defined) }
+      let(:destination_defined_connection) { create(:connection, namespace: :destination_defined) }
 
-      expect(Connection.user_defined).to include(user_defined_connection)
-      expect(Connection.user_defined).not_to include(system_defined_connection)
-      expect(Connection.system_defined).to include(system_defined_connection)
-      expect(Connection.system_defined).not_to include(user_defined_connection)
+      it "allows querying system_defined namespace" do
+        expect(Connection.system_defined).to include(system_defined_connection)
+      end
+
+      it "allows querying source_defined namespace" do
+        expect(Connection.source_defined).to include(source_defined_connection)
+      end
+
+      it "allows querying destination_defined namespace" do
+        expect(Connection.destination_defined).to include(destination_defined_connection)
+      end
+
+      it "does not include connections from other namespaces" do
+        expect(Connection.system_defined).not_to include(source_defined_connection, destination_defined_connection)
+      end
     end
   end
 end

@@ -13,8 +13,7 @@ RSpec.describe Catalogs::FetchSchemaService do
 
     before do
       allow(service).to receive(:generate_workflow_id).and_return(workflow_id)
-      allow(Temporal).to receive(:start_workflow).and_return(run_id)
-      allow(Temporal).to receive(:await_workflow_result).and_return(mock_result)
+      allow(Temporal).to receive_messages(start_workflow: run_id, await_workflow_result: mock_result)
     end
 
     context "when the workflow succeeds" do
