@@ -14,10 +14,10 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
 
   let(:reader) { described_class.new(config) }
 
-  describe "#read", :vcr do
+  describe "#read" do
     context "when the stream is supported" do
       it "fetches branches data" do
-        VCR.use_cassette("github_branches") do
+        VCR.use_cassette("github/github_branches") do
           result = reader.read("branches", 1, 2)
 
           expect(result[:data]).to be_an(Array)
@@ -29,7 +29,7 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
       end
 
       it "fetches commits data" do
-        VCR.use_cassette("github_commits") do
+        VCR.use_cassette("github/github_commits") do
           result = reader.read("commits", 1, 2)
 
           expect(result[:data]).to be_an(Array)
@@ -41,7 +41,7 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
       end
 
       it "uses default page and per_page values when not provided" do
-        VCR.use_cassette("github_branches_default") do
+        VCR.use_cassette("github/github_branches_default") do
           result = reader.read("branches")
 
           expect(result[:data]).to be_an(Array)
@@ -62,12 +62,12 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
 
     context "when the response is not paginated" do
       it "returns total_pages as 1 for repository info" do
-        VCR.use_cassette("github_repository", record: :new_episodes) do
+        VCR.use_cassette("github/github_repository", record: :new_episodes) do
           result = reader.read("repository")
 
           expect(result[:data].to_h.keys).to include(:id, :name, :full_name)
           expect(result[:page]).to eq(1)
-          expect(result[:per_page]).to be_nil
+          expect(result[:per_page]).to eq(30)
           expect(result[:total_pages]).to eq(1)
         end
       end

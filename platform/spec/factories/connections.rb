@@ -10,7 +10,6 @@ FactoryBot.define do
     schedule_type { :scheduled }
     sync_frequency { "0 0 * * *" }
     configuration { { "key" => "value" } }
-    namespace { Faker::Internet.domain_word }
     stream_prefix { Faker::Internet.domain_word }
 
     trait :manual do

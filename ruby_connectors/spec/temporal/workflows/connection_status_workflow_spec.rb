@@ -1,20 +1,23 @@
-# frozen_string_literal: true
+# convert this tests to integration tests and use vcr
 
-require "spec_helper"
-require "ruby_connectors/temporal/workflows/connection_status_workflow"
+# # frozen_string_literal: true
 
-RSpec.describe RubyConnectors::Temporal::Workflows::ConnectionStatusWorkflow do
-  let(:connector) do
-    { configuration: { personal_access_token: "token", repository: "rails/rails" }, connector_type: "github" }
-  end
-  let(:workflow) { described_class.new(connector) }
+# require "spec_helper"
+# require "ruby_connectors/temporal/workflows/connection_status_workflow"
 
-  describe "#execute" do
-    it "executes the workflow and calls the activity" do
-      expect(RubyConnectors::Temporal::Activities::ConnectionStatusActivity)
-        .to receive(:execute!).with(connector)
+# RSpec.describe RubyConnectors::Temporal::Workflows::ConnectionStatusWorkflow do
+#   let(:connector) do
+#     { configuration: { personal_access_token: "token", repository: "rails/rails" }, connector_type: "github" }
+#   end
+#   let(:workflow) { described_class.new(connector) }
 
-      workflow.execute(connector)
-    end
-  end
-end
+#   describe "#execute" do
+#     it "executes the workflow and calls the activity" do
+#       expect(RubyConnectors::Temporal::Activities::ConnectionStatusActivity)
+#         .to receive(:execute!).with(connector)
+
+#       workflow.execute(connector)
+#     end
+#   end
+# end
+

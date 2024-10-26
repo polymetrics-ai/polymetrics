@@ -9,4 +9,7 @@ Rails.application.require_environment!
 
 worker = Temporal::Worker.new
 
+# Register workflows
+# Register activities
+
 worker.start

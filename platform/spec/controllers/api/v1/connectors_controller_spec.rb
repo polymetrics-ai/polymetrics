@@ -47,7 +47,11 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
     let(:valid_attributes) { attributes_for(:connector) }
 
     context "with valid params" do
+      let(:mock_service) { instance_double(CreateConnectionAndSyncsService) }
+
       before do
+        allow(CreateConnectionAndSyncsService).to receive(:new).and_return(mock_service)
+        allow(mock_service).to receive(:call)
         allow(Temporal).to receive_messages(start_workflow: "mock_run_id", await_workflow_result: { connected: true })
       end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_26_214017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,11 +22,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.integer "status", default: 0, null: false
     t.jsonb "configuration", null: false
     t.integer "schedule_type", default: 0, null: false
-    t.string "namespace"
     t.string "stream_prefix"
     t.string "sync_frequency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "namespace", default: 0
     t.index ["destination_id"], name: "index_connections_on_destination_id"
     t.index ["source_id"], name: "index_connections_on_source_id"
     t.index ["workspace_id", "name"], name: "index_connections_on_workspace_id_and_name", unique: true

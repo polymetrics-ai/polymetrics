@@ -16,9 +16,9 @@ RSpec.describe RubyConnectors::DuckdbConnector::Connection do
     }
   end
 
-  describe "#connect", :vcr do
+  describe "#connect" do
     it "establishes a connection and performs a simple query" do
-      VCR.use_cassette("motherduck_connect") do
+      VCR.use_cassette("duckdb/motherduck_connect") do
         expect { subject.connect }.not_to raise_error
       end
     end

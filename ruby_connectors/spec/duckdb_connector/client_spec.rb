@@ -25,9 +25,9 @@ RSpec.describe RubyConnectors::DuckdbConnector::Client do
     end
   end
 
-  describe '#connect', :vcr do
+  describe '#connect' do
     it 'connects to the database' do
-      VCR.use_cassette('motherduck_connect') do
+      VCR.use_cassette('duckdb/motherduck_connect') do
         expect(client.connect).to be true
       end
     end

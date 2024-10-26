@@ -18,11 +18,25 @@ RSpec.describe Connection, type: :model do
     it { is_expected.to validate_length_of(:name).is_at_most(255) }
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:schedule_type) }
+
+    it "is valid with a valid namespace" do
+      connection = build(:connection, namespace: :user_defined)
+      expect(connection).to be_valid
+    end
+
+    it "is invalid with an invalid namespace" do
+      expect { build(:connection, namespace: :invalid_namespace) }.to raise_error(ArgumentError)
+    end
   end
 
   describe "enums" do
     it { is_expected.to define_enum_for(:status).with_values(healthy: 0, failed: 1, running: 2, paused: 3, created: 4) }
     it { is_expected.to define_enum_for(:schedule_type).with_values(scheduled: 0, cron: 1, manual: 2) }
+
+    it {
+      expect(subject).to define_enum_for(:namespace).with_values(system_defined: 0, source_defined: 1, destination_defined: 2,
+                                                                 user_defined: 3)
+    }
   end
 
   describe "conditional validations" do
@@ -100,6 +114,58 @@ RSpec.describe Connection, type: :model do
       large_config = { "data" => "a" * 1_000_000 } # 1MB of data
       connection = create(:connection, configuration: large_config)
       expect(connection.reload.configuration).to eq(large_config)
+    end
+
+    it "handles nil namespace" do
+      connection = build(:connection, namespace: nil)
+      expect(connection).not_to be_valid
+      expect(connection.errors[:namespace]).to include("can't be blank")
+    end
+
+    it "prevents changing namespace to nil" do
+      connection = create(:connection, namespace: :user_defined)
+      connection.namespace = nil
+      expect(connection).not_to be_valid
+      expect(connection.errors[:namespace]).to include("can't be blank")
+    end
+
+    it "allows changing namespace between valid values" do
+      connection = create(:connection, namespace: :user_defined)
+      expect { connection.update!(namespace: :system_defined) }.not_to raise_error
+      expect(connection.reload.namespace).to eq("system_defined")
+    end
+
+    it "prevents setting an out-of-range integer value for namespace" do
+      expect { build(:connection, namespace: 99) }.to raise_error(ArgumentError)
+    end
+
+    it "maintains namespace value after other attribute updates" do
+      connection = create(:connection, namespace: :destination_defined)
+      connection.update!(name: "New Name")
+      expect(connection.reload.namespace).to eq("destination_defined")
+    end
+  end
+
+  describe "namespace behavior" do
+    let(:connection) { create(:connection) }
+
+    it "defaults to system_defined namespace if not specified" do
+      expect(connection.namespace).to eq("system_defined")
+    end
+
+    it "allows changing namespace" do
+      connection.update(namespace: :source_defined)
+      expect(connection.reload.namespace).to eq("source_defined")
+    end
+
+    it "allows querying by namespace" do
+      user_defined_connection = create(:connection, namespace: :user_defined)
+      system_defined_connection = create(:connection, namespace: :system_defined)
+
+      expect(Connection.user_defined).to include(user_defined_connection)
+      expect(Connection.user_defined).not_to include(system_defined_connection)
+      expect(Connection.system_defined).to include(system_defined_connection)
+      expect(Connection.system_defined).not_to include(user_defined_connection)
     end
   end
 end

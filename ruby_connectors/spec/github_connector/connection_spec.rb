@@ -12,9 +12,9 @@ RSpec.describe RubyConnectors::GithubConnector::Connection do
     }
   end
 
-  describe "#connect", :vcr do
+  describe "#connect" do
     it "establishes a connection and returns true" do
-      VCR.use_cassette("github_connect") do
+      VCR.use_cassette("github/github_connect") do
         expect(subject.connect).to be true
       end
     end
