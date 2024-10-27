@@ -1,18 +1,20 @@
+# frozen_string_literal: true
+
 # spec/ruby_connectors/core/api_cataloger_spec.rb
 
-require 'spec_helper'
-require 'ruby_connectors/core/api_cataloger'
+require "spec_helper"
+require "ruby_connectors/core/api_cataloger"
 
 RSpec.describe RubyConnectors::Core::ApiCataloger do
-  let(:schemas_directory) { File.join('spec', 'fixtures', 'github_schemas') }
+  let(:schemas_directory) { File.join("spec", "fixtures", "github_schemas") }
   let(:cataloger) { described_class.new(schemas_directory) }
 
-  describe '#catalog' do
+  describe "#catalog" do
     before do
       # Create temporary schema files for testing
       FileUtils.mkdir_p(schemas_directory)
-      File.write(File.join(schemas_directory, 'branches.json'), '{"name": "branches", "type": "object"}')
-      File.write(File.join(schemas_directory, 'commits.json'), '{"name": "commits", "type": "object"}')
+      File.write(File.join(schemas_directory, "branches.json"), '{"name": "branches", "type": "object"}')
+      File.write(File.join(schemas_directory, "commits.json"), '{"name": "commits", "type": "object"}')
     end
 
     after do
@@ -20,32 +22,42 @@ RSpec.describe RubyConnectors::Core::ApiCataloger do
       FileUtils.rm_rf(schemas_directory)
     end
 
-    it 'returns a hash of schemas' do
+    it "returns a hash of schemas" do
       result = cataloger.catalog
 
       expect(result).to be_a(Hash)
-      expect(result.keys).to contain_exactly('branches', 'commits')
+      expect(result.keys).to contain_exactly("branches", "commits")
     end
 
-    it 'correctly parses JSON schema files' do
+    it "correctly parses JSON schema files" do
       result = cataloger.catalog
 
-      expect(result['branches']).to eq({ 'name' => 'branches', 'type' => 'object' })
-      expect(result['commits']).to eq({ 'name' => 'commits', 'type' => 'object' })
+      expect(result["branches"]).to eq({ "name" => "branches", "type" => "object" })
+      expect(result["commits"]).to eq({ "name" => "commits", "type" => "object" })
     end
 
-    context 'when a schema file is invalid JSON' do
+    context "when a schema file is invalid JSON" do
+      let(:logger) { instance_double(Logger) }
+
       before do
-        File.write(File.join(schemas_directory, 'invalid.json'), 'invalid json')
+        File.write(File.join(schemas_directory, "invalid.json"), "invalid json")
+        allow(Logger).to receive(:new).and_return(logger)
+        allow(logger).to receive(:error)
       end
 
-      it 'raises a JSON::ParserError' do
-        expect { cataloger.catalog }.to raise_error(JSON::ParserError)
+      it "logs the error and continues processing" do
+        cataloger.catalog
+        expect(logger).to have_received(:error).with(/Failed to parse JSON file.*invalid.json/)
+      end
+
+      it "excludes the invalid file from the result" do
+        result = cataloger.catalog
+        expect(result.keys).not_to include("invalid")
       end
     end
 
-    context 'when the schemas directory is empty' do
-      let(:empty_directory) { File.join('spec', 'fixtures', 'empty_schemas') }
+    context "when the schemas directory is empty" do
+      let(:empty_directory) { File.join("spec", "fixtures", "empty_schemas") }
       let(:empty_cataloger) { described_class.new(empty_directory) }
 
       before do
@@ -56,7 +68,7 @@ RSpec.describe RubyConnectors::Core::ApiCataloger do
         FileUtils.rm_rf(empty_directory)
       end
 
-      it 'returns an empty hash' do
+      it "returns an empty hash" do
         expect(empty_cataloger.catalog).to eq({})
       end
     end

@@ -17,7 +17,15 @@ rescue Temporal::NamespaceAlreadyExistsFailure
   Temporal.logger.info "Namespace already exists", { namespace: namespace }
 end
 
+start_time = Time.current
+timeout = 300 # 5 minutes
+
 loop do
+  if Time.current - start_time > timeout
+    Temporal.logger.error("Namespace creation timeout", { namespace: namespace })
+    exit 1
+  end
+
   Temporal.list_custom_search_attributes(namespace: namespace)
   Temporal.logger.info("Namespace is ready", { namespace: namespace })
   break

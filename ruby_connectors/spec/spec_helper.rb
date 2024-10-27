@@ -13,8 +13,8 @@ VCR.configure do |config|
   config.configure_rspec_metadata!
   config.filter_sensitive_data("<GITHUB_ACCESS_TOKEN>") { ENV.fetch("GITHUB_ACCESS_TOKEN", nil) }
   config.filter_sensitive_data("<MOTHERDUCK_TOKEN>") { ENV.fetch("MOTHERDUCK_TOKEN", nil) }
-  
-  vcr_mode = ENV['VCR_MODE'] =~ /rec/i ? :all : :once
+
+  vcr_mode = /rec/i.match?(ENV.fetch("VCR_MODE", nil)) ? :all : :once
   config.default_cassette_options = {
     record: vcr_mode,
     match_requests_on: %i[method uri body]

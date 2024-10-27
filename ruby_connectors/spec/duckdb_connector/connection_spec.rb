@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 require "ruby_connectors/duckdb_connector/connection"
 require "vcr"
@@ -7,10 +9,10 @@ RSpec.describe RubyConnectors::DuckdbConnector::Connection do
 
   let(:config) do
     {
-      database: 'md:my_database',
+      database: "md:my_database",
       credentials: {
         motherduck: {
-          token: ENV['MOTHERDUCK_TOKEN']
+          token: ENV.fetch("MOTHERDUCK_TOKEN", nil)
         }
       }
     }

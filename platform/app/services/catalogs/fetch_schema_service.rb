@@ -15,7 +15,7 @@ module Catalogs
     private
 
     def generate_workflow_id
-      "fetch_schema_#{@connector_class_name}_#{Time.now.to_i}"
+      "fetch_schema_#{@connector_class_name}_#{SecureRandom.uuid}"
     end
 
     def start_workflow(workflow_id)
@@ -30,17 +30,13 @@ module Catalogs
       {
         task_queue: "ruby_connectors_queue",
         workflow_id: workflow_id,
-        workflow_execution_timeout: 30
+        workflow_execution_timeout: 45
       }
     end
 
     def await_workflow_result(workflow_id, run_id)
-      Temporal.await_workflow_result(
-        "RubyConnectors::Temporal::Workflows::FetchSchemaWorkflow",
-        workflow_id: workflow_id,
-        run_id: run_id,
-        timeout: 25
-      )
+      Temporal.await_workflow_result("RubyConnectors::Temporal::Workflows::FetchSchemaWorkflow",
+                                     workflow_id: workflow_id, run_id: run_id, timeout: 25)
     end
   end
 end

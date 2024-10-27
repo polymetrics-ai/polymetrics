@@ -17,8 +17,11 @@ RSpec.describe RubyConnectors::Services::ConnectorService do
   describe ".connect_and_fetch_status" do
     it "calls connect_to_connector with the connector" do
       VCR.use_cassette("connector_service/connector_service_connect_and_fetch_status") do
-        expect(described_class).to receive(:connect_to_connector).with(connector)
-        described_class.connect_and_fetch_status(connector)
+        allow(described_class).to receive(:connect_to_connector).and_return({ connected: true })
+        result = described_class.connect_and_fetch_status(connector)
+
+        expect(described_class).to have_received(:connect_to_connector).with(connector)
+        expect(result).to eq({ connected: true })
       end
     end
   end

@@ -1,6 +1,6 @@
-# convert this tests to integration tests and use vcr
+# frozen_string_literal: true
 
-# # frozen_string_literal: true
+# convert this tests to integration tests and use vcr
 
 # require "spec_helper"
 # require "ruby_connectors/temporal/workflows/connection_status_workflow"
@@ -20,4 +20,3 @@
 #     end
 #   end
 # end
-

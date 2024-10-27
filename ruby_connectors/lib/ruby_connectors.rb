@@ -11,6 +11,7 @@ require "dotenv/load"
 require "duckdb"
 require "json-schema"
 require "vcr"
+require "logger"
 
 require_relative "ruby_connectors/version"
 require_relative "ruby_connectors/temporal_worker"

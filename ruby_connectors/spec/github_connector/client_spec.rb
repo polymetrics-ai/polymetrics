@@ -70,14 +70,14 @@ RSpec.describe RubyConnectors::GithubConnector::Client do
       result = subject.catalog
 
       expect(result).to be_a(Hash)
-      expect(result.keys).to include('branches', 'commits')
+      expect(result.keys).to include("branches", "commits")
     end
 
     it "correctly parses JSON schema files" do
       result = subject.catalog
 
-      expect(result['branches']).to include('title' => 'Branches')
-      expect(result['commits']).to include('title' => 'Commits')
+      expect(result["branches"]).to include("title" => "Branches")
+      expect(result["commits"]).to include("title" => "Commits")
     end
   end
 end
