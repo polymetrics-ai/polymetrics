@@ -34,15 +34,15 @@ RSpec.describe SyncWriteRecord, type: :model do
   describe "signature generation" do
     it "generates a consistent signature for the same data within the same sync" do
       data = { "key" => "value" }
-      record1 = create(:sync_write_record, data:)
-      record2 = create(:sync_write_record, data:, sync: record1.sync)
+      record1 = create(:sync_write_record, data: data)
+      record2 = create(:sync_write_record, data: data, sync: record1.sync)
       expect(record1.signature).to eq(record2.signature)
     end
 
     it "generates different signatures for the same data with different syncs" do
       data = { "key" => "value" }
-      record1 = create(:sync_write_record, data:)
-      record2 = create(:sync_write_record, data:)
+      record1 = create(:sync_write_record, data: data)
+      record2 = create(:sync_write_record, data: data)
       expect(record1.signature).not_to eq(record2.signature)
     end
 

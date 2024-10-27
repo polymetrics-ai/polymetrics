@@ -18,13 +18,13 @@ RSpec.describe Connector, type: :model do
 
     describe "name uniqueness" do
       before do
-        create(:connector, workspace:, name: "Existing Connector", configuration: { key: "value" })
+        create(:connector, workspace: workspace, name: "Existing Connector", configuration: { key: "value" })
       end
 
       let(:workspace) { create(:workspace) }
 
       it "validates uniqueness of name scoped to workspace_id and configuration" do
-        new_connector = build(:connector, workspace:, name: "Existing Connector",
+        new_connector = build(:connector, workspace: workspace, name: "Existing Connector",
                                           configuration: { key: "value" })
         error_message = "Existing Connector already exists for this workspace with the same configuration. " \
                         "Please change the name or configuration."
@@ -33,7 +33,7 @@ RSpec.describe Connector, type: :model do
       end
 
       it "allows same name with different configuration" do
-        new_connector = build(:connector, workspace:, name: "Existing Connector",
+        new_connector = build(:connector, workspace: workspace, name: "Existing Connector",
                                           configuration: { key: "different_value" })
         expect(new_connector).to be_valid
       end
@@ -49,13 +49,13 @@ RSpec.describe Connector, type: :model do
     describe "#only_one_default_analytics_db_per_workspace" do
       let(:workspace) { create(:workspace) }
       let!(:existing_default_connector) do
-        create(:connector, workspace:, integration_type: :database, default_analytics_db: true)
+        create(:connector, workspace: workspace, integration_type: :database, default_analytics_db: true)
       end
 
       context "when setting a new database connector as default" do
         it "is valid if no other default exists" do
           existing_default_connector.update(default_analytics_db: false)
-          new_connector = build(:connector, workspace:, integration_type: :database,
+          new_connector = build(:connector, workspace: workspace, integration_type: :database,
                                             default_analytics_db: true)
           expect(new_connector).to be_valid
         end
@@ -63,7 +63,7 @@ RSpec.describe Connector, type: :model do
 
       context "when creating an API connector" do
         it "is always valid regardless of default_analytics_db value" do
-          new_connector = build(:connector, workspace:, integration_type: :api, default_analytics_db: true)
+          new_connector = build(:connector, workspace: workspace, integration_type: :api, default_analytics_db: true)
           expect(new_connector).to be_valid
         end
       end
@@ -74,14 +74,14 @@ RSpec.describe Connector, type: :model do
     describe "#unset_other_default_analytics_dbs" do
       let(:workspace) { create(:workspace) }
       let!(:existing_default_connector) do
-        create(:connector, workspace:, integration_type: :database, default_analytics_db: true)
+        create(:connector, workspace: workspace, integration_type: :database, default_analytics_db: true)
       end
       let!(:non_default_connector) do
-        create(:connector, workspace:, integration_type: :database, default_analytics_db: false)
+        create(:connector, workspace: workspace, integration_type: :database, default_analytics_db: false)
       end
 
       it "unsets other default analytics DBs in the same workspace when setting a new default" do
-        new_default_connector = create(:connector, workspace:, integration_type: :database,
+        new_default_connector = create(:connector, workspace: workspace, integration_type: :database,
                                                    default_analytics_db: true)
         expect(existing_default_connector.reload.default_analytics_db).to be false
         expect(non_default_connector.reload.default_analytics_db).to be false
@@ -93,13 +93,13 @@ RSpec.describe Connector, type: :model do
         other_workspace_connector = create(:connector, workspace: other_workspace, integration_type: :database,
                                                        default_analytics_db: true)
 
-        create(:connector, workspace:, integration_type: :database, default_analytics_db: true)
+        create(:connector, workspace: workspace, integration_type: :database, default_analytics_db: true)
 
         expect(other_workspace_connector.reload.default_analytics_db).to be true
       end
 
       it "does not change anything if setting default_analytics_db to false" do
-        new_connector = create(:connector, workspace:, integration_type: :database,
+        new_connector = create(:connector, workspace: workspace, integration_type: :database,
                                            default_analytics_db: false)
 
         expect(existing_default_connector.reload.default_analytics_db).to be true
@@ -112,18 +112,18 @@ RSpec.describe Connector, type: :model do
       let(:workspace) { create(:workspace) }
 
       it "sets default_analytics_db to true for the first database connector" do
-        connector = create(:connector, workspace:, integration_type: :database, default_analytics_db: true)
+        connector = create(:connector, workspace: workspace, integration_type: :database, default_analytics_db: true)
         expect(connector.default_analytics_db).to be true
       end
 
       it "does not set default_analytics_db to true for subsequent database connectors" do
-        create(:connector, workspace:, integration_type: :database)
-        connector = create(:connector, workspace:, integration_type: :database)
+        create(:connector, workspace: workspace, integration_type: :database)
+        connector = create(:connector, workspace: workspace, integration_type: :database)
         expect(connector.default_analytics_db).to be false
       end
 
       it "always sets default_analytics_db to false for API connectors" do
-        connector = create(:connector, workspace:, integration_type: :api, default_analytics_db: true)
+        connector = create(:connector, workspace: workspace, integration_type: :api, default_analytics_db: true)
         expect(connector.default_analytics_db).to be false
       end
     end

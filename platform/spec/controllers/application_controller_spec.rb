@@ -32,7 +32,7 @@ RSpec.describe ApplicationController, type: :controller do
     let(:devise_parameter_sanitizer) { instance_double(Devise::ParameterSanitizer) }
 
     before do
-      allow(controller).to receive_messages(devise_parameter_sanitizer:,
+      allow(controller).to receive_messages(devise_parameter_sanitizer: devise_parameter_sanitizer,
                                             devise_controller?: true)
     end
 

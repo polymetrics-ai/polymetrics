@@ -34,4 +34,6 @@ Style/FrozenStringLiteralComment:
 Style/QuotedSymbols:
   EnforcedStyle: double_quotes
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
 # Add more custom rule configurations

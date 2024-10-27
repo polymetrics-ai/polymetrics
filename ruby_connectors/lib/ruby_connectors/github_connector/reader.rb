@@ -18,11 +18,11 @@ module RubyConnectors
         method_name = stream_name.to_sym
         raise ArgumentError, "Unsupported stream: #{stream_name}" unless @client.respond_to?(method_name)
 
-        result = @client.send(method_name, @config[:repository], page:, per_page:)
+        result = @client.send(method_name, @config[:repository], page: page, per_page: per_page)
         {
           data: result,
-          page:,
-          per_page: result&.length,
+          page: page,
+          per_page: per_page,
           total_pages: last_page(result)
         }
       end

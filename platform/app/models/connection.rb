@@ -8,10 +8,12 @@ class Connection < ApplicationRecord
 
   enum status: { healthy: 0, failed: 1, running: 2, paused: 3, created: 4 }
   enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }
+  enum namespace: { system_defined: 0, source_defined: 1, destination_defined: 2, user_defined: 3 }
 
   validates :name, presence: true, uniqueness: { scope: :workspace_id }, length: { maximum: 255 }
   validates :status, presence: true
   validates :schedule_type, presence: true
+  validates :namespace, presence: true
   validates :sync_frequency, presence: true, if: :frequency_required?
 
   private
