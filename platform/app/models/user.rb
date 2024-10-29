@@ -8,6 +8,18 @@ class User < ApplicationRecord
 
   include DeviseTokenAuth::Concerns::User
 
+  # Add this method to ensure tokens are removed on sign out
+  def revoke_token(client)
+    tokens.delete(client)
+    save!
+  end
+
+  # Override sign_out to ensure proper token cleanup
+  def sign_out(client)
+    revoke_token(client)
+    super
+  end
+
   validates :email, presence: true,
                     uniqueness: { case_sensitive: false, scope: :provider }
 

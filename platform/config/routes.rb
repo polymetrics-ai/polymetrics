@@ -10,6 +10,13 @@ Rails.application.routes.draw do
           get "definitions"
         end
       end
+
+      resources :connections do
+        collection do
+          get "start_sync"
+          get "stop_sync"
+        end
+      end
     end
   end
 
