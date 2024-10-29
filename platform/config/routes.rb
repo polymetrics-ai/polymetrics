@@ -13,8 +13,8 @@ Rails.application.routes.draw do
 
       resources :connections do
         collection do
-          get "start_sync"
-          get "stop_sync"
+          post "start_sync"
+          post "stop_sync"
         end
       end
     end

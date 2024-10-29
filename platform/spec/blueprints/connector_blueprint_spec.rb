@@ -17,7 +17,6 @@ RSpec.describe ConnectorBlueprint do
       connector_class_name: connector.connector_class_name,
       connector_language: connector.connector_language,
       integration_type: connector.integration_type,
-      configuration: connector.configuration,
       created_at: connector.created_at,
       updated_at: connector.updated_at,
       icon_url: connector.icon_url
@@ -37,7 +36,7 @@ RSpec.describe ConnectorBlueprint do
       serialized_connectors.each do |connector_data|
         expect(connector_data.keys).to contain_exactly(
           :id, :name, :connector_class_name, :connector_language,
-          :integration_type, :configuration, :created_at, :updated_at,
+          :integration_type, :created_at, :updated_at,
           :icon_url
         )
       end

@@ -68,6 +68,5 @@ DeviseTokenAuth.setup do |config|
   config.batch_request_buffer_throttle = 5.seconds
   config.default_password_reset_url = "http://localhost:3000/password-reset"
   config.enable_standard_devise_support = true
-  config.remove_tokens_after_password_reset = true
-  config.check_current_password_before_update = :password
+  config.check_current_password_before_update = :attributes
 end

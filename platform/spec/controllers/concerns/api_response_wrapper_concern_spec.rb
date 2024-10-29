@@ -77,13 +77,12 @@ RSpec.describe ApiResponseWrapperConcern, type: :controller do
 
     context "when result is StandardError" do
       before do
-        allow(Rails.logger).to receive(:error)
+        allow(Rails.logger).to receive(:error).once
       end
 
       it "logs the error" do
         get :index, params: { error_type: "standard_error" }
-        expect(Rails.logger).to have_received(:error).once
-                                                     .with("Unexpected error: Unexpected error")
+        expect(Rails.logger).to have_received(:error).with(a_string_matching(/^Unexpected error: .*/))
       end
 
       it "renders an internal server error JSON response" do

@@ -26,7 +26,8 @@ module Api
       def set_connection
         @connection = current_workspace.connections.find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        render_error("Connection not found", status: :not_found)
+        render_error("Connection with ID #{params[:id]} not found in workspace #{current_workspace.id}",
+                     status: :not_found)
       end
 
       def fetch_workspace_connections

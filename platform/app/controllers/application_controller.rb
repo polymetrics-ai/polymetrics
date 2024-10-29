@@ -9,8 +9,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :validate_token_presence!
 
-  rescue_from StandardError, with: :handle_error
   rescue_from SecurityError, with: :handle_unauthorized
+  rescue_from StandardError, with: :handle_error
 
   protected
 
