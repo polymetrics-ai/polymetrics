@@ -8,6 +8,12 @@ class User < ApplicationRecord
 
   include DeviseTokenAuth::Concerns::User
 
+  # Override sign_out to ensure proper token cleanup
+  def sign_out(client)
+    revoke_token(client)
+    super
+  end
+
   validates :email, presence: true,
                     uniqueness: { case_sensitive: false, scope: :provider }
 
@@ -31,5 +37,20 @@ class User < ApplicationRecord
     end
 
     raise ActiveRecord::Rollback if errors.any?
+  end
+
+  # Revokes the authentication token for the specified client
+  # @param client [String] the client identifier
+  # @return [Boolean] true if token was revoked successfully
+  protected
+
+  def revoke_token(client)
+    return true if tokens.blank?
+
+    tokens.delete(client)
+    save!
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error("Failed to revoke token: #{e.message}")
+    false
   end
 end
