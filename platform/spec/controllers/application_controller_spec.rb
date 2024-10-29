@@ -54,12 +54,16 @@ RSpec.describe ApplicationController, type: :controller do
       end
     end
 
+    before do
+      allow(Rails.error).to receive(:report)
+    end
+
     it "renders API response and reports error" do
       routes.draw { get "index" => "anonymous#index" }
 
-      expect(Rails.error).to receive(:report)
       get :index
 
+      expect(Rails.error).to have_received(:report)
       expect(response).to have_http_status(:internal_server_error)
       expect(response.parsed_body).to include(
         "error" => include("message" => "Test error")

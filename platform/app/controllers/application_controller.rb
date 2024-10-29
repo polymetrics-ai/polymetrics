@@ -43,18 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_workspace
-    @current_workspace ||= begin
-      workspace_id = request.headers["Workspace-Id"]
-      workspace = if workspace_id
-                    current_user&.workspaces&.find_by(id: workspace_id)
-                  else
-                    current_user&.workspaces&.find_by(name: "default")
-                  end
-
-      raise SecurityError, "Access denied: Invalid workspace" unless workspace
-
-      workspace
-    end
+    @current_workspace ||= find_workspace
   end
 
   private
@@ -66,5 +55,27 @@ class ApplicationController < ActionController::Base
   def handle_error(error)
     render_api_response(error, :internal_server_error)
     Rails.error.report(error)
+  end
+
+  def find_workspace
+    return nil unless user_signed_in?
+
+    find_workspace_by_header ||
+      find_workspace_by_name ||
+      find_default_workspace
+  end
+
+  def find_workspace_by_header
+    return nil unless request.headers["Workspace-Id"]
+
+    current_user.workspaces.find_by(id: request.headers["Workspace-Id"])
+  end
+
+  def find_workspace_by_name
+    current_user.workspaces.find_by(name: "default")
+  end
+
+  def find_default_workspace
+    current_user.workspaces.first
   end
 end

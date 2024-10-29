@@ -15,14 +15,13 @@ RSpec.describe Api::V1::ConnectionsController, type: :controller do
 
   describe "GET #index" do
     context "when user has connections" do
-      let!(:connections) do
+      before do
         create_list(:connection, 3,
                     workspace: workspace,
                     source: source_connector,
                     destination: destination_connector)
+        get :index
       end
-
-      before { get :index }
 
       it "returns http success" do
         expect(response).to have_http_status(:success)
