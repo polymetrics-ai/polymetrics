@@ -1,9 +1,13 @@
+import { useMemo } from 'react';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/DataTable';
-import { getConnectorList } from '@/service';
+import { Table } from '@/components/Table';
+import Status from '@/components/Status';
 import Loader from '@/components/Loader';
+import ConnectorType from '@/components/ConnectorType';
+import { getConnectorList } from '@/service';
+import { getTimeStamp } from '@/lib/date-helper';
 
 export const Route = createLazyFileRoute('/_authenticated/connectors/')({
     component: Connectors
@@ -17,7 +21,33 @@ export function Connectors() {
         queryFn: getConnectorList
     });
 
-    const list = getConnectors?.data?.data;
+    const list = getConnectors?.data?.data || [];
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'STATUS',
+                accessorKey: 'connected',
+                cell: (row: { getValue: () => boolean }) => (<Status isConnected={row.getValue()}/>)
+            },
+            {
+                header: 'NAME',
+                accessorKey: 'name',
+                // accessorFn: (row) => row.name,
+            },
+            {
+                header: 'CONNECTOR',
+                accessorKey: 'connector_class_name',
+                cell: (row) => (<ConnectorType icon={row.icon_url} name={row.getValue()}></ConnectorType>)
+            },
+            {
+                header: 'LAST UPDATED',
+                accessorKey: 'updated_at',
+                cell: (row) => getTimeStamp(row.getValue().toString())
+            }
+        ],
+        []
+    );
 
     return (
         <main className="flex-1 flex flex-col my-8 mr-8 px-10 py-8 bg-slate-100">
@@ -32,7 +62,7 @@ export function Connectors() {
                 </Button>
             </div>
             <div className="flex-1 h-full flex items-start mt-10 justify-center">
-                {getConnectors.isLoading ? <Loader /> : <DataTable list={list} columns={[]} />}
+                {getConnectors.isLoading ? <Loader /> : <Table data={list} columns={columns} />}
             </div>
         </main>
     );
