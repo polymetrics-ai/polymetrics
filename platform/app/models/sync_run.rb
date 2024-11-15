@@ -3,6 +3,7 @@
 class SyncRun < ApplicationRecord
   belongs_to :sync
   has_many :sync_logs, dependent: :destroy
+  has_many :sync_read_records, dependent: :destroy
 
   enum status: { running: 0, succeeded: 1, failed: 2, cancelled: 3 }
 
@@ -21,6 +22,16 @@ class SyncRun < ApplicationRecord
   end
 
   validate :completed_at_after_started_at, if: -> { started_at.present? && completed_at.present? }
+
+  def extraction_completed?
+    extraction_completed
+  end
+
+  def extraction_progress
+    return 0 if total_records_read.zero?
+
+    (successful_records_read.to_f / total_records_read * 100).round(2)
+  end
 
   private
 

@@ -10,6 +10,12 @@ Rails.application.require_environment!
 worker = Temporal::Worker.new
 
 # Register workflows
-# Register activities
+worker.register_workflow(Temporal::Workflows::ConnectionDataSyncWorkflow)
+worker.register_workflow(Temporal::Workflows::SyncWorkflow)
 
+# Register activities
+worker.register_activity(Temporal::Activities::StartSyncWorkflowsActivity)
+worker.register_activity(Temporal::Activities::ExtractDataActivity)
+worker.register_activity(Temporal::Activities::LogSyncErrorActivity)
+worker.register_activity(Temporal::Activities::ConvertReadRecordActivity)
 worker.start

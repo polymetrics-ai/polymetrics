@@ -5,8 +5,7 @@ module RubyConnectors
     module Workflows
       class FetchSchemaWorkflow < ::Temporal::Workflow
         def execute(connector_id)
-
-        RubyConnectors::Temporal::Activities::FetchSchemaActivity.execute!(connector_id)
+          RubyConnectors::Temporal::Activities::FetchSchemaActivity.execute!(connector_id)
         end
       end
     end

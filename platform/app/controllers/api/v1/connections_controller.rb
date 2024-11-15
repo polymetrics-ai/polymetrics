@@ -12,8 +12,11 @@ module Api
       end
 
       def start_sync
-        # SyncManager.start(@connection)
+        Connections::StartDataSyncService.new(@connection).call
         render_sync_status_response("started")
+      rescue StandardError => e
+        @connection.fail!
+        render_error(e.message)
       end
 
       def stop_sync

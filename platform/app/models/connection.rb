@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Connection < ApplicationRecord
+  include AASM
+
   belongs_to :workspace
   belongs_to :source, class_name: "Connector"
   belongs_to :destination, class_name: "Connector"
@@ -16,7 +18,46 @@ class Connection < ApplicationRecord
   validates :namespace, presence: true
   validates :sync_frequency, presence: true, if: :frequency_required?
 
+  aasm column: :status, whiny_transitions: true  do
+    state :created, initial: true
+    state :healthy, :failed, :running, :paused
+
+    event :start do
+      transitions from: %i[created healthy failed paused], to: :running
+    end
+
+    event :pause do
+      transitions from: %i[running healthy], to: :paused
+    end
+
+    event :resume do
+      transitions from: :paused, to: :running
+    end
+
+    event :complete do
+      transitions from: :running, to: :healthy
+    end
+
+    event :fail do
+      transitions from: %i[running healthy], to: :failed,
+                  after: :log_failure
+    end
+
+    event :recover do
+      transitions from: :failed, to: :healthy,
+                  after: :log_recovery
+    end
+  end
+
   private
+
+  def log_failure
+    Rails.logger.error("Connection #{id} failed at #{Time.current}")
+  end
+
+  def log_recovery
+    Rails.logger.info("Connection #{id} recovered at #{Time.current}")
+  end
 
   def frequency_required?
     scheduled? || cron?

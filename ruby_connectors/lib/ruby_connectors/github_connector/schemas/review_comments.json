@@ -4,6 +4,7 @@
   "title": "Review Comments",
   "description": "Detailed information about a review comment in a GitHub repository, including its repository, URL, pull request review ID, ID, node ID, diff hunk, path, position, original position, commit ID, original commit ID, in reply to ID, user, body, creation timestamp, update timestamp, HTML URL, pull request URL, author association, and reactions.",
   "x-stream_name": "review_comments",
+  "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {
       "description": "Information about the repository where the comment was made",

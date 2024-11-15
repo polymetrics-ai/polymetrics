@@ -34,3 +34,7 @@ gem "dotenv"
 gem "duckdb"
 
 gem "json-schema"
+
+gem "redis"
+
+gem "hiredis"

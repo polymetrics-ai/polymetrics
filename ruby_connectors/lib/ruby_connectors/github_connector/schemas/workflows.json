@@ -4,6 +4,7 @@
   "title": "Workflows",
   "description": "Detailed information about a workflow in a GitHub repository, including its ID, node ID, name, path, state, creation timestamp, update timestamp, URL, HTML URL, badge URL, repository, and protection rules.",
   "x-stream_name": "workflows",
+  "x-source_defined_primary_key": ["id", "repository"],
   "properties": {
     "id": {
       "description": "Unique identifier for the workflow",

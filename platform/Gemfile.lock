@@ -10,6 +10,8 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (5.5.0)
+      concurrent-ruby (~> 1.0)
     actioncable (7.1.3.4)
       actionpack (= 7.1.3.4)
       activesupport (= 7.1.3.4)
@@ -167,6 +169,7 @@ GEM
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
     hashie (5.0.0)
+    hiredis (0.6.3)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.0.1)
@@ -403,6 +406,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  aasm
   blueprinter
   bootsnap
   byebug
@@ -417,6 +421,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   google-protobuf (~> 3.19)
+  hiredis
   importmap-rails
   jbuilder
   json-schema

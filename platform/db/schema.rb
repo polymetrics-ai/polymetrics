@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_26_214017) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_14_085504) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,6 +74,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_26_214017) do
     t.string "signature", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "extraction_completed_at"
+    t.index ["signature", "sync_id"], name: "index_sync_read_records_on_signature_and_sync_id", unique: true
     t.index ["sync_id"], name: "index_sync_read_records_on_sync_id"
     t.index ["sync_run_id"], name: "index_sync_read_records_on_sync_run_id"
   end
@@ -91,7 +93,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_26_214017) do
     t.integer "records_failed_to_write", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "current_page", default: 1
+    t.integer "total_pages"
+    t.integer "current_offset", default: 0
+    t.integer "batch_size", default: 1000
+    t.string "last_cursor_value"
+    t.datetime "last_extracted_at"
+    t.boolean "extraction_completed", default: false
+    t.integer "records_extracted", default: 0
     t.index ["status"], name: "index_sync_runs_on_status"
+    t.index ["sync_id", "current_page"], name: "index_sync_runs_on_sync_id_and_current_page"
+    t.index ["sync_id", "last_cursor_value"], name: "index_sync_runs_on_sync_id_and_last_cursor_value"
+    t.index ["sync_id", "last_extracted_at"], name: "index_sync_runs_on_sync_id_and_last_extracted_at"
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
   end
 
@@ -103,8 +116,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_26_214017) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "extraction_completed_at"
+    t.bigint "sync_read_record_id"
     t.index ["signature"], name: "index_sync_write_records_on_signature"
     t.index ["sync_id"], name: "index_sync_write_records_on_sync_id"
+    t.index ["sync_read_record_id"], name: "index_sync_write_records_on_sync_read_record_id"
     t.index ["sync_run_id"], name: "index_sync_write_records_on_sync_run_id"
   end
 

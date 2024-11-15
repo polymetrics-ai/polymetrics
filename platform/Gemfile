@@ -43,6 +43,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
+gem "aasm"
 gem "blueprinter"
 gem "concurrent-ruby", require: "concurrent"
 gem "data_migrate"
@@ -51,6 +52,7 @@ gem "devise"
 gem "devise_token_auth"
 gem "dotenv"
 gem "google-protobuf", "~> 3.19"
+gem "hiredis"
 gem "json-schema"
 gem "omniauth"
 gem "rack-cors"
