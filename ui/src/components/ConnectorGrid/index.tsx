@@ -3,8 +3,8 @@ import { ConnectorCard } from '../Card';
 import { CONNECTORS_LIST } from '@/constants/constants';
 
 export interface ActiveConnectorState {
-    name: string;
-    icon: string;
+    connector_class_name: string;
+    icon_url: string;
 }
 
 export interface ConnectorGridProps {
@@ -14,8 +14,11 @@ export interface ConnectorGridProps {
 }
 
 const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
+    
     const handleOnSelection = (grid: ActiveConnectorState) => {
-        setActive(grid);
+        if (setActive) {
+            setActive(grid);
+        }
     };
     const connectors = CONNECTORS_LIST;
     return (
@@ -26,8 +29,11 @@ const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
                         key={item.name}
                         name={item.name}
                         icon={item.icon}
-                        isActive={active.name === item.name}
-                        handleOnSelection={() => handleOnSelection(item)}
+                        isActive={active?.connector_class_name?.toLocaleLowerCase() === item.name.toLocaleLowerCase()}
+                        handleOnSelection={() => handleOnSelection({ 
+                            connector_class_name: item.name.toLowerCase(),
+                            icon_url: item.icon 
+                        })}
                     />
                 ))}
             </div>

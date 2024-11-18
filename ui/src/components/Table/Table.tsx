@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { DataTableProps } from '@/types/datatable';
 import {
@@ -9,15 +10,17 @@ import {
     TableHeader,
     TableRow
 } from '@/components/ui/table';
+
 const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
-    console.log({ data });
+    const navigate = useNavigate();
+    
+    // Use the 'table' variable to render the table
     const table = useReactTable({
-        data: data?.data ? data.data : [],
+        data: data?.data ?? [],
         columns,
-        getCoreRowModel: getCoreRowModel(),
+        getCoreRowModel: getCoreRowModel()
     });
 
-    // Use the 'table' variable to render the table
     return (
         <Table>
             <TableHeader className="[&_tr]:border-b-0">
@@ -32,17 +35,21 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
                 ))}
             </TableHeader>
             <TableBody>
-                {table.getRowModel().rows.map((rowEl) => (
-                    <TableRow key={rowEl.id}>
+                {table.getRowModel().rows.map((rowEl) =>{
+                    return (<TableRow
+                        key={rowEl.id}
+                        onClick={() => navigate({ to: `/connectors/${rowEl?.original?.id}`, state: rowEl.original })}
+                    >
                         {rowEl.getVisibleCells().map((cellEl) => {
-                            console.log(cellEl.getValue())
-                            return(<TableCell key={cellEl.id}>
-                                {flexRender(cellEl.column.columnDef.cell, cellEl.getContext())}
-                            </TableCell>)
-                            
-})}
+                            console.log(cellEl.getValue());
+                            return (
+                                <TableCell key={cellEl.id}>
+                                    {flexRender(cellEl.column.columnDef.cell, cellEl.getContext())}
+                                </TableCell>
+                            );
+                        })}
                     </TableRow>
-                ))}
+)})}
             </TableBody>
         </Table>
     );

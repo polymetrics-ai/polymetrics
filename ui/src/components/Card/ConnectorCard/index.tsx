@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { getTitleCase } from '@/lib/helper';
 
 export interface ConnectorCardProps {
     name: string;
@@ -26,11 +27,11 @@ const ConnectorCard: React.FC<ConnectorCardProps> = ({
                             <img className="w-4.5 h-4.5" src={icon} alt="Icon" />
                         </div>
                         <div className="flex flex-1 min-w-0 items-start justify-start whitespace-pre-wrap">
-                            <div className="text-sm text-slate-800 truncate">{name}</div>
+                            <div className="text-sm text-slate-800 truncate">{getTitleCase(name)}</div>
                         </div>
                     </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-zinc-800 text-white py-2 px-2">{name}</TooltipContent>
+                <TooltipContent className="bg-zinc-800 text-white py-2 px-2">{getTitleCase(name)}</TooltipContent>
             </Tooltip>
         </TooltipProvider>
     );

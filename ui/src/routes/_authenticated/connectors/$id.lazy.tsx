@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
+import { useMutation , useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createLazyFileRoute, useNavigate, useParams, useRouterState } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
@@ -14,28 +14,52 @@ import VerticalStepper from '@/components/VerticalStepper';
 import { connectorSteps } from '@/constants/constants';
 import { ConnectorSchema } from '@/lib/schema';
 import { defineStepper } from '@stepperize/react';
+import { putConnector } from '@/service';
+import { postConnectorPayload } from '@/types/payload';
 
-export const Route = createFileRoute('/_authenticated/connectors/add-connector/')({
-    component: AddConnector
+export const Route = createLazyFileRoute('/_authenticated/connectors/$id')({
+    component: EditConnector
 });
 
 const { useStepper } = defineStepper(...connectorSteps);
 
-function AddConnector() {
+function EditConnector() {
+   
+    // State Variables
+    const connectorState = useRouterState({select: s=>s.location.state});
+    const [active, setActive] = useState<ActiveConnectorState>({ connector_class_name : connectorState?.connector_class_name, icon_url: connectorState?.icon_url });
     const formRef = useRef<ConnectorFormRef>(null);
-    const [active, setActive] = useState<ActiveConnectorState>({ name: '', icon: '' });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    // Hook Functions
+    const id = useParams({
+        from: '/_authenticated/connectors/$id',
+        select: (params) => params.id,
+    });
     const stepper = useStepper();
     const navigate = useNavigate();
+
+    const queryClient = useQueryClient();
+    
+    const mutation = useMutation({
+        mutationFn: async (payload: {id: string, data: postConnectorPayload}) => {
+            const {id , data} = payload;
+            const response = await putConnector(id, data);
+            return response;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['connectors'] , refetchType: 'active'});
+            navigate({ to: '/connectors', replace: true });
+        }
+    });
 
     const form = useForm<z.infer<typeof ConnectorSchema>>({
         resolver: zodResolver(ConnectorSchema),
         defaultValues: {
-            name: '',
-            description: '',
-            personal_access_token: '',
-            repository: ''
+            name:  connectorState?.name || '',
+            description: connectorState?.description || '',
+            personal_access_token: connectorState?.configuration?.personal_access_token || '',
+            repository: connectorState?.configuration?.repository || '',
         }
     });
 
@@ -53,12 +77,11 @@ function AddConnector() {
                 },
                 name,
                 description,
-                connector_class_name: name.toLowerCase(),
+                connector_class_name: active?.connector_class_name,
                 connector_language: 'ruby'
             }
         };
-
-        navigate({ to: '/connectors', replace: true });
+        mutation.mutate({ id, data: payload });
     };
 
     const onPrev = () => {
@@ -88,7 +111,7 @@ function AddConnector() {
                                 <div className="">Connectors</div>
                                 <div className="">/</div>
                                 <div className=" text-base font-semibold tracking-normal text-slate-800">
-                                    Add Connector
+                                    Edit Connectors
                                 </div>
                             </div>
                         </div>
@@ -116,7 +139,7 @@ function AddConnector() {
                             {isLoading ? (
                                 <Loader />
                             ) : (
-                                <ConnectorForm form={form} ref={formRef} onSubmit={handleSubmit} />
+                                <ConnectorForm form={form} ref={formRef} onSubmit={handleSubmit} connectorData={connectorState} isEditMode={true} />
                             )}
                         </div>
                     )}

@@ -18,15 +18,18 @@ export interface ConnectorFormRef {
     submitForm: () => void;
 }
 export interface ConnectorFormProps {
-    form: UseFormReturn<z.infer<typeof ConnectorSchema>>; // Update type here
-    // ref: React.Ref<HTMLFormElement>
+    form: UseFormReturn<z.infer<typeof ConnectorSchema>>;
     onSubmit?: (data: z.infer<typeof ConnectorSchema>) => void;
     setIsDisabled: () => void;
+    connectorData: Array<object>;
+    isEditMode?: boolean;
 }
-const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ form, onSubmit }, ref) => {
+const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ form, onSubmit, connectorData, isEditMode = false }, ref) => {
     useImperativeHandle(ref, () => ({
         submitForm: () => form.handleSubmit(onSubmit)()
     }));
+
+    const initialValues: Record<string, any> = isEditMode ? connectorData : {};
 
     return (
         <div className="flex flex-col w-full px-10">
@@ -37,7 +40,9 @@ const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ form, onSubmit
                             key={index}
                             control={form.control}
                             name={input.field || input.label?.toLowerCase()}
-                            render={({ field }) => (
+                            render={({ field }) =>{
+                                // console.log(field, initialValues[field.name]);
+                                return (
                                 <FormItem className="flex mt-6 flex-col items-start self-stretch">
                                     <FormLabel className="text-sm font-semibold tracking-tighter">
                                         {input.label}
@@ -55,7 +60,7 @@ const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ form, onSubmit
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
-                            )}
+                            )}}
                         />
                     ))}
                 </form>
