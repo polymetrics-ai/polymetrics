@@ -49,7 +49,8 @@ function EditConnector() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['connectors'] , refetchType: 'active'});
-            navigate({ to: '/connectors', replace: true });
+
+            navigate({ to: '/connectors', replace: true, state: {showToast : true , message: 'Connector Successfully Updated'} });
         }
     });
 

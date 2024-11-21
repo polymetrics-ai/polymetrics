@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router';
 import useAuthStore from '@/store/authStore';
 import NavBar from '@/components/NavBar';
+import { Toaster } from '@/components/ui/toaster';
 import { signOut } from '@/service';
 
 export const Route = createFileRoute('/_authenticated')({
@@ -43,7 +44,7 @@ function AuthLayout() {
     return (
         <div className="h-dvh w-full flex">
             <NavBar onSignOut={onSignOut} />
-            <Outlet />
+            <Outlet/>
         </div>
     );
 }

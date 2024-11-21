@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
+import { useEffect, useMemo } from 'react';
+import { createLazyFileRoute, useNavigate, useRouterState } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Table } from '@/components/Table';
@@ -8,6 +8,9 @@ import Loader from '@/components/Loader';
 import ConnectorType from '@/components/ConnectorType';
 import { getConnectors } from '@/service';
 import { getTimeStamp } from '@/lib/date-helper';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast"
+import { Toaster } from '@/components/ui';
 
 // Define the expected response type
 interface ConnectorResponse {
@@ -20,12 +23,27 @@ export const Route = createLazyFileRoute('/_authenticated/connectors/')({
 
 export function Connectors() {
     
+    const { toast} = useToast();
     const navigate = useNavigate();
+
+    const state = useRouterState({select: s=>s.location.state});
 
     const { data: { data } = { data: [] }, isLoading } = useQuery<ConnectorResponse>({
         queryKey: ['connectors'],
         queryFn: getConnectors 
     });
+
+    useEffect(()=>{
+        if(state.showToast){
+            toast({
+                title: "",
+                description: state?.message,
+                // action: (
+                //     <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+                // ),
+                })
+        }
+    },[state])
 
 
     const columns = useMemo(
@@ -69,6 +87,7 @@ export function Connectors() {
             </div>
             <div className="flex-1 h-full flex items-start mt-10 justify-center">
                 {isLoading ? <Loader /> : <Table data={data} columns={columns} />}
+                <Toaster/>
             </div>
         </main>
     );
