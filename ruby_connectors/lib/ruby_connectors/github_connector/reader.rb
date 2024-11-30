@@ -10,8 +10,8 @@ module RubyConnectors
       def initialize(config)
         @config = config.deep_symbolize_keys
         @client = Connection.new(config).authorize_connection
-        # TODO: uncomment after the implementation of syncs
-        # @client.auto_paginate = true
+
+        @client.auto_paginate = true
       end
 
       def read(stream_name, page = 1, per_page = DEFAULT_PER_PAGE)
@@ -31,10 +31,18 @@ module RubyConnectors
       private
 
       def last_page(result)
+        return 1 if @client.auto_paginate
         return 1 unless paginated_response?(result)
 
-        last_page_link = @client.last_response.rels[:last]
-        extract_page_number(last_page_link) || 1
+        if @client.last_response.rels[:last]
+          extract_page_number(@client.last_response.rels[:last])
+        elsif @client.last_response.rels[:prev]
+          # If we're on the last page, use prev link to determine total
+          extract_page_number(@client.last_response.rels[:prev]) + 1
+        else
+          # If there's only one page
+          1
+        end
       end
 
       def paginated_response?(result)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_14_085504) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_28_210845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -93,19 +93,25 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_14_085504) do
     t.integer "records_failed_to_write", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "current_page", default: 1
-    t.integer "total_pages"
+    t.integer "current_page", default: 0
+    t.integer "total_pages", default: 0
     t.integer "current_offset", default: 0
     t.integer "batch_size", default: 1000
     t.string "last_cursor_value"
     t.datetime "last_extracted_at"
     t.boolean "extraction_completed", default: false
     t.integer "records_extracted", default: 0
+    t.string "temporal_workflow_id"
+    t.string "temporal_run_id"
+    t.jsonb "temporal_read_data_workflow_ids", default: []
     t.index ["status"], name: "index_sync_runs_on_status"
     t.index ["sync_id", "current_page"], name: "index_sync_runs_on_sync_id_and_current_page"
     t.index ["sync_id", "last_cursor_value"], name: "index_sync_runs_on_sync_id_and_last_cursor_value"
     t.index ["sync_id", "last_extracted_at"], name: "index_sync_runs_on_sync_id_and_last_extracted_at"
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
+    t.index ["temporal_read_data_workflow_ids"], name: "index_sync_runs_on_temporal_read_data_workflow_ids", using: :gin
+    t.index ["temporal_run_id"], name: "index_sync_runs_on_temporal_run_id"
+    t.index ["temporal_workflow_id"], name: "index_sync_runs_on_temporal_workflow_id"
   end
 
   create_table "sync_write_records", force: :cascade do |t|

@@ -26,12 +26,12 @@ module Connections
       {
         workflow_id: workflow_id,
         task_queue: "platform_queue",
-        workflow_execution_timeout: 86_400 # 24 hours
+        workflow_execution_timeout: 86_400
       }
     end
 
     def generate_workflow_id
-      "connection_data_sync_#{@connection.id}_#{SecureRandom.uuid}"
+      "connection_data_sync_connection_id_#{@connection.id}"
     end
   end
 end

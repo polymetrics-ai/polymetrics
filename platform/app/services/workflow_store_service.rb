@@ -1,7 +1,6 @@
-# frozen_string_literal: true
+  # frozen_string_literal: true
 
-module Redis
-  class WorkflowStoreService
+class WorkflowStoreService
     WORKFLOW_KEY_PREFIX = "workflow:read_data:"
     EXPIRATION_TIME = 1.hour
 
@@ -49,5 +48,4 @@ module Redis
     def workflow_key(workflow_id)
       "#{WORKFLOW_KEY_PREFIX}#{workflow_id}"
     end
-  end
 end

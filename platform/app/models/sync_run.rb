@@ -14,6 +14,8 @@ class SyncRun < ApplicationRecord
             :successful_records_write, :records_failed_to_write,
             presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  validate :total_pages_greater_than_or_equal_to_current_page, if: -> { total_pages.present? }
+
   before_save :update_completed_at, if: :status_changed?
   before_create :set_started_at
 
@@ -33,7 +35,29 @@ class SyncRun < ApplicationRecord
     (successful_records_read.to_f / total_records_read * 100).round(2)
   end
 
+  def add_read_data_workflow(workflow_id, run_id)
+    current_workflows = temporal_read_data_workflow_ids || []
+    workflow_data = { workflow_id => run_id }
+    update!(
+      temporal_read_data_workflow_ids: current_workflows + [workflow_data]
+    )
+  end
+
+  def get_run_id_for_workflow(workflow_id)
+    return nil if temporal_read_data_workflow_ids.blank?
+    
+    workflow_data = temporal_read_data_workflow_ids.find { |data| data.key?(workflow_id) }
+    workflow_data&.[](workflow_id)
+  end
+
   private
+
+  def total_pages_greater_than_or_equal_to_current_page
+    return unless total_pages && current_page
+    return if total_pages >= current_page
+
+    errors.add(:total_pages, "must be greater than or equal to current page")
+  end
 
   def completed_at_after_started_at
     return if started_at < completed_at

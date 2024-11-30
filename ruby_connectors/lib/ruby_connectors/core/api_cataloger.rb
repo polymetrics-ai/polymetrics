@@ -13,7 +13,9 @@ module RubyConnectors
         Dir.glob(File.join(@schemas_directory, "*.json")).each do |file|
           process_schema_file(file, schemas)
         end
-        schemas
+
+        # Filter out schemas that don't have x-stream_name
+        schemas.select { |_, schema| schema.key?("x-stream_name") }
       end
 
       private
@@ -25,9 +27,8 @@ module RubyConnectors
 
         stream_name = File.basename(file, ".json")
         begin
-          schemas[stream_name] = File.open(file) do |f|
-            JSON.parse(f.read)
-          end
+          schema = File.open(file) { |f| JSON.parse(f.read) }
+          schemas[stream_name] = schema if schema.key?("x-stream_name")
         rescue JSON::ParserError => e
           @logger.error("Failed to parse JSON file #{file}: #{e.message}")
         rescue StandardError => e

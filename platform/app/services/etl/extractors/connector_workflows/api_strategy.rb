@@ -8,10 +8,10 @@ module Etl
           "RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow"
         end
 
-        def build_params(sync:, page:, workflow_id:)
-          super(sync: sync).merge(
-            page: page,
-            workflow_id: workflow_id
+        def build_params(sync_run:, **options)
+          super(sync_run: sync_run).merge(
+            page: sync_run.current_page || 1,
+            workflow_id: options[:workflow_id]
           ).as_json
         end
       end

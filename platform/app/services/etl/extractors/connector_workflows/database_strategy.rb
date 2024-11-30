@@ -8,10 +8,10 @@ module Etl
           "RubyConnectors::Temporal::Workflows::DatabaseReadDataWorkflow"
         end
 
-        def build_params(sync:, batch_size: nil)
-          super(sync: sync).merge(
-            batch_size: batch_size || sync.connection.source.batch_size,
-            query_timeout: sync.connection.source.query_timeout
+        def build_params(sync_run:, batch_size: nil)
+          super(sync_run: sync_run).merge(
+            batch_size: batch_size || sync_run.sync.connection.source.batch_size,
+            query_timeout: sync_run.sync.connection.source.query_timeout
           ).as_json
         end
       end
