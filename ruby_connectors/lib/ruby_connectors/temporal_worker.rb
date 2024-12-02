@@ -26,6 +26,7 @@ module RubyConnectors
       worker.register_workflow(RubyConnectors::Temporal::Workflows::ConnectionStatusWorkflow)
       worker.register_workflow(RubyConnectors::Temporal::Workflows::FetchSchemaWorkflow)
       worker.register_workflow(RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow)
+      worker.register_workflow(RubyConnectors::Temporal::Workflows::ReadFirstPageApiDataWorkflow)
 
       # Register activities here
       worker.register_activity(RubyConnectors::Temporal::Activities::ConnectionStatusActivity)

@@ -11,7 +11,7 @@ module Temporal
 
       def execute(connection_id:, status:)
         connection = ::Connection.find(connection_id)
-        
+
         case status
         when :completed
           connection.update(status: "healthy")
@@ -21,4 +21,4 @@ module Temporal
       end
     end
   end
-end 
+end

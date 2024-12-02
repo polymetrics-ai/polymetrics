@@ -10,8 +10,8 @@ module Temporal
       )
 
       def execute(connection_id:, error_message:)
-        connection = ::Connection.find(connection_id)
-        
+        ::Connection.find(connection_id)
+
         # connection.connection_logs.create!(
         #   log_type: :error,
         #   message: error_message,
@@ -22,4 +22,4 @@ module Temporal
       end
     end
   end
-end 
+end

@@ -3,11 +3,6 @@
 module Temporal
   module Workflows
     class ConnectionDataSyncWorkflow < ::Temporal::Workflow
-      timeouts(
-        execution: 86_400,  # 24 hours
-        run: 21_600       # 6 hours
-      )
-
       def execute(connection_id)
         @connection = ::Connection.find(connection_id)
 
@@ -51,7 +46,7 @@ module Temporal
         workflow.on_signal("terminate_connection_#{@connection.id}") do |signal, input|
           # TODO: Implement termination logic
         end
-        
+
         workflow.wait_until { @connection.status == "completed" }
       end
 

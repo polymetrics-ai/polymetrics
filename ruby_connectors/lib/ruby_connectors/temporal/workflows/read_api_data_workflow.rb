@@ -1,89 +1,74 @@
+# frozen_string_literal: true
+
 module RubyConnectors
   module Temporal
     module Workflows
       class ReadApiDataWorkflow < ::Temporal::Workflow
-        timeouts execution: 24.hours, run: 23.hours, task: 5.minutes
-
         def execute(params)
-          @input = params.transform_keys(&:to_s)
-          @completed_pages = Set.new
-          @signaled_pages = Set.new
-          @total_pages = nil
-
-          process_page(@input) if @input["page"] == 1
+          initialize_workflow_state(params)
+          setup_signal_handlers
           
-          # Setup signal handler for fetch_page
-          workflow.on_signal('fetch_page') do |input|
-            workflow.logger.info("received signal for page: #{input}")
-            page_number = input[:page_number]
-            new_params = @input.merge("page" => page_number)
-            process_page(new_params)
-          end
-
-          # Wait until all pages are processed
           workflow.wait_until { extraction_complete? }
-          
-          { status: 'completed', total_pages: @total_pages }
+
+          signal_batch_completion(@completed_pages)
+          { status: "completed", pages: @completed_pages }
         end
 
         private
 
-        def process_page(params)
-          result = Activities::ReadApiDataActivity.execute!(params)
-          
-          if result[:status] == 'success'
-            total_pages = result[:total_pages]
-            page_number = params["page"]
-            
-            @completed_pages.add(page_number)
-            
-            if page_number == 1 && !@signaled_pages.include?(page_number)
-              @total_pages = total_pages
-              signal_first_page_completion(params, total_pages)
-            elsif !@signaled_pages.include?(page_number)
-              signal_page_completion(params, page_number)
-            end
+        def initialize_workflow_state(params)
+          @input = params.transform_keys(&:to_s)
+          @total_pages = @input["total_pages"]
+          @completed_pages = Set.new
+          @signaled_pages = Set.new
+          @paged_to_be_completed = Set.new((2..@total_pages).to_a)
+        end
 
-            @signaled_pages.add(page_number)
+        def setup_signal_handlers
+          workflow.on_signal("fetch_page_batch") do |signal_data|
+            workflow.logger.info("Received fetch_page_batch signal: #{signal_data}")
+            process_page_batch(signal_data[:pages])
           end
+        end
+
+        def process_page_batch(pages)
+          workflow.logger.info("Processing page batch: #{pages}")
           
-          result
+          pages.each do |page_number|
+            next if @completed_pages.include?(page_number)
+            
+            new_params = @input.merge("page" => page_number)
+            result = Activities::ReadApiDataActivity.execute!(new_params)
+            
+            if result[:status] == "success"
+              @completed_pages.add(result[:page_number])
+            else
+              workflow.logger.error("Failed to process page #{page_number}: #{result[:error]}")
+            end
+          end
         end
 
-        def signal_first_page_completion(params, total_pages)
-          workflow.logger.info("sending signal for processing page: 1")
+        def signal_batch_completion(pages)
+          workflow.logger.info("Signaling read api data workflow completion for workflow: #{@input["workflow_id"]}")
+          
           ::Temporal.signal_workflow(
             "Temporal::Workflows::Extractors::ApiDataExtractorWorkflow",
-            "page_one_completed",
-            params["api_extractor_workflow_id"],
-            params["api_extractor_workflow_run_id"],
-            { 
-              workflow_id: params["workflow_id"],
-              page_number: 1,
-              total_pages: total_pages
-            }
-          )
-        end
-
-        def signal_page_completion(params, page_number)
-          workflow.logger.info("sending signal for processing page: #{page_number}")
-          ::Temporal.signal_workflow(
-            "Temporal::Workflows::Extractors::ApiDataExtractorWorkflow",
-            "page_processed",
-            params["api_extractor_workflow_id"],
-            params["api_extractor_workflow_run_id"],
-            { 
-              workflow_id: params["workflow_id"],
-              page_number: page_number
+            "page_batch_completed",
+            @input["api_extractor_workflow_id"],
+            @input["api_extractor_workflow_run_id"],
+            {
+              workflow_id: @input["workflow_id"],
+              pages: pages,
+              batch_id: Digest::SHA256.hexdigest(pages.to_s)
             }
           )
         end
 
         def extraction_complete?
-          return false unless @total_pages
+          workflow.logger.info("Completed pages: #{@completed_pages}")
+          workflow.logger.info("Paged to be completed: #{@paged_to_be_completed}")
 
-          expected_pages = (1..@total_pages).to_set
-          @completed_pages == expected_pages
+          @completed_pages == @paged_to_be_completed
         end
       end
     end

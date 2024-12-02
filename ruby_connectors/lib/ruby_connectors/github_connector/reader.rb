@@ -5,13 +5,13 @@ require_relative "connection"
 module RubyConnectors
   module GithubConnector
     class Reader
-      DEFAULT_PER_PAGE = 30
+      DEFAULT_PER_PAGE = 100
 
       def initialize(config)
         @config = config.deep_symbolize_keys
         @client = Connection.new(config).authorize_connection
 
-        @client.auto_paginate = true
+        # @client.auto_paginate = true
       end
 
       def read(stream_name, page = 1, per_page = DEFAULT_PER_PAGE)

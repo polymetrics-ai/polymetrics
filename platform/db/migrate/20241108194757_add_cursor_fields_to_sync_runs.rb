@@ -3,18 +3,22 @@
 class AddCursorFieldsToSyncRuns < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
+  # rubocop:disable Metrics/MethodLength
   def change
-    add_column :sync_runs, :current_page, :integer, default: 1
-    add_column :sync_runs, :total_pages, :integer
-    add_column :sync_runs, :current_offset, :integer, default: 0
-    add_column :sync_runs, :batch_size, :integer, default: 1000
-    add_column :sync_runs, :last_cursor_value, :string
-    add_column :sync_runs, :last_extracted_at, :datetime
-    add_column :sync_runs, :extraction_completed, :boolean, default: false
-    add_column :sync_runs, :records_extracted, :integer, default: 0
+    change_table :sync_runs, bulk: true do |t|
+      t.integer :current_page, default: 1
+      t.integer :total_pages
+      t.integer :current_offset, default: 0
+      t.integer :batch_size, default: 1000
+      t.string :last_cursor_value
+      t.datetime :last_extracted_at
+      t.boolean :extraction_completed, default: false, null: false
+      t.integer :records_extracted, default: 0
+    end
 
     add_index :sync_runs, %i[sync_id last_cursor_value], algorithm: :concurrently
     add_index :sync_runs, %i[sync_id current_page], algorithm: :concurrently
     add_index :sync_runs, %i[sync_id last_extracted_at], algorithm: :concurrently
   end
+  # rubocop:enable Metrics/MethodLength
 end

@@ -14,6 +14,7 @@ worker.register_workflow(Temporal::Workflows::ConnectionDataSyncWorkflow)
 worker.register_workflow(Temporal::Workflows::SyncWorkflow)
 worker.register_workflow(Temporal::Workflows::Extractors::ApiDataExtractorWorkflow)
 worker.register_workflow(Temporal::Workflows::Extractors::StartConnectorDataFetchWorkflow)
+worker.register_workflow(Temporal::Workflows::Extractors::StartFirstPageWorkflow)
 
 # Register activities
 worker.register_activity(Temporal::Activities::LogSyncErrorActivity)
@@ -29,5 +30,6 @@ worker.register_activity(Temporal::Activities::RequestNextPageActivity)
 worker.register_activity(Temporal::Activities::UpdateSyncStatusActivity)
 worker.register_activity(Temporal::Activities::RegisterWorkflowRunActivity)
 worker.register_activity(Temporal::Activities::RequestFirstPageActivity)
+worker.register_activity(Temporal::Activities::RequestPageBatchActivity)
 
 worker.start

@@ -10,7 +10,7 @@ module Etl
         @sync = sync_run.sync
         @options = options
         @workflow_id = generate_workflow_id
-        @options.merge!(workflow_id: @workflow_id)
+        @options[:workflow_id] = @workflow_id
         @workflow_strategy = workflow_strategy_for(@sync.connection.source.integration_type)
       end
 
@@ -20,8 +20,8 @@ module Etl
           workflow_params: workflow_params,
           workflow_options: workflow_options
         }
-      rescue StandardError => error
-        log_error(error, context = {})
+      rescue StandardError => e
+        log_error(e, {})
       end
 
       private
@@ -51,7 +51,7 @@ module Etl
       end
 
       def generate_workflow_id
-         "read_data_sync_id_#{@sync.id}_sync_run_id_#{@sync_run.id}"
+        "read_data_sync_id_#{@sync.id}_sync_run_id_#{@sync_run.id}"
       end
 
       def handle_workflow_error(error)

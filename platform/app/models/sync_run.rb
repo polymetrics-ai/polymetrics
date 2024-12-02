@@ -45,7 +45,7 @@ class SyncRun < ApplicationRecord
 
   def get_run_id_for_workflow(workflow_id)
     return nil if temporal_read_data_workflow_ids.blank?
-    
+
     workflow_data = temporal_read_data_workflow_ids.find { |data| data.key?(workflow_id) }
     workflow_data&.[](workflow_id)
   end

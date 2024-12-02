@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RubyConnectors
   module Services
     module Redis
@@ -7,44 +9,42 @@ module RubyConnectors
 
         def initialize
           @redis = ::Redis.new(
-            url: ENV.fetch('REDIS_URL', 'redis://localhost:6379/1')
+            url: ENV.fetch("REDIS_URL", "redis://localhost:6379/1")
           )
         end
 
-        def store_workflow_data(workflow_id, result)
-          key = workflow_key(workflow_id)
+        def store_workflow_data(workflow_key, result)
+          key = workflow_key(workflow_key)
           @redis.multi do |multi|
-            multi.hmset(key, 
-              'status', 'pending',
-              'result', result.to_json,
-              'created_at', Time.current.to_i
-            )
+            multi.hmset(key,
+                        "status", "pending",
+                        "result", result.to_json,
+                        "created_at", Time.current.to_i)
             multi.expire(key, EXPIRATION_TIME)
           end
         end
 
-        def update_workflow_status(workflow_id, status, result = nil)
-          key = workflow_key(workflow_id)
+        def update_workflow_status(workflow_key, status, result = nil)
+          key = workflow_key(workflow_key)
           @redis.multi do |multi|
-            multi.hmset(key, 
-              'status', status,
-              'result', result&.to_json,
-              'updated_at', Time.current.to_i
-            )
+            multi.hmset(key,
+                        "status", status,
+                        "result", result&.to_json,
+                        "updated_at", Time.current.to_i)
             multi.expire(key, EXPIRATION_TIME)
           end
         end
 
-        def get_workflow_data(workflow_id)
-          key = workflow_key(workflow_id)
+        def get_workflow_data(workflow_key)
+          key = workflow_key(workflow_key)
           data = @redis.hgetall(key)
           return nil if data.empty?
 
           {
-            status: data['status'],
-            result: data['result'] ? JSON.parse(data['result']) : nil,
-            created_at: Time.at(data['created_at'].to_i),
-            updated_at: data['updated_at'] ? Time.at(data['updated_at'].to_i) : nil
+            status: data["status"],
+            result: data["result"] ? JSON.parse(data["result"]) : nil,
+            created_at: Time.zone.at(data["created_at"].to_i),
+            updated_at: data["updated_at"] ? Time.zone.at(data["updated_at"].to_i) : nil
           }.with_indifferent_access
         end
 
@@ -56,4 +56,4 @@ module RubyConnectors
       end
     end
   end
-end 
+end

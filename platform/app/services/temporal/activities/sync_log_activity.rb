@@ -11,7 +11,7 @@ module Temporal
 
       def execute(sync_run_id:, message:, log_type: :info)
         sync_run = SyncRun.find(sync_run_id)
-        
+
         sync_run.sync_logs.create!(
           log_type: log_type,
           message: message,
@@ -22,4 +22,4 @@ module Temporal
       end
     end
   end
-end 
+end

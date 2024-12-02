@@ -26,7 +26,7 @@ RSpec.describe SyncWriteRecord, type: :model do
         record.valid?
         expect(record.signature).not_to be_nil
         expect(record.signature).to be_a(String)
-        expect(record.signature.length).to be > 0
+        expect(record.signature.length).to be.positive?
       end
     end
   end

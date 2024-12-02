@@ -12,21 +12,25 @@ module Temporal
       def execute(sync_run_id)
         sync_run = SyncRun.find(sync_run_id)
         return if sync_run.extraction_completed
+        return if sync_run.sync_read_records.empty?
 
-        sync_read_records = sync_run.sync_read_records
+        process_read_records(sync_run)
+        update_sync_run_status(sync_run)
+      end
 
-        return if sync_read_records.empty?
+      private
 
+      def process_read_records(sync_run)
         ActiveRecord::Base.transaction do
-          sync_read_records.each do |sync_read_record|
+          sync_run.sync_read_records.each do |sync_read_record|
             create_write_records(sync_read_record)
             sync_read_record.update!(extraction_completed_at: Time.current)
           end
         end
+      end
 
-        extraction_completed = sync_read_records.all? do |sync_read_record|
-          sync_read_record.extraction_completed_at.present?
-        end
+      def update_sync_run_status(sync_run)
+        extraction_completed = all_records_extracted?(sync_run.sync_read_records)
 
         sync_run.update!(
           extraction_completed: extraction_completed,
@@ -37,18 +41,23 @@ module Temporal
         { extraction_completed: extraction_completed, status: "success" }
       end
 
-      private
+      def all_records_extracted?(sync_read_records)
+        sync_read_records.all? { |record| record.extraction_completed_at.present? }
+      end
 
       def create_write_records(sync_read_record)
-        records = Array(sync_read_record.data)
-        records.each do |record_data|
-          SyncWriteRecord.create!(
-            sync: sync_read_record.sync,
-            sync_run: sync_read_record.sync_run,
-            sync_read_record: sync_read_record,
-            data: record_data
-          )
+        Array(sync_read_record.data).each do |record_data|
+          create_single_write_record(sync_read_record, record_data)
         end
+      end
+
+      def create_single_write_record(sync_read_record, record_data)
+        SyncWriteRecord.create!(
+          sync: sync_read_record.sync,
+          sync_run: sync_read_record.sync_run,
+          sync_read_record: sync_read_record,
+          data: record_data
+        )
       end
     end
   end

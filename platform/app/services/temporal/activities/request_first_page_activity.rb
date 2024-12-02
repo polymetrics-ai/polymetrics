@@ -10,30 +10,43 @@ module Temporal
       )
 
       def execute(workflow_id:, sync_run_id:)
-        sync_run = SyncRun.find(sync_run_id)
-        run_id = sync_run.get_run_id_for_workflow(workflow_id)
+        @workflow_id = workflow_id
+        @sync_run = SyncRun.find(sync_run_id)
 
-        begin
-          Temporal.signal_workflow(
-            "RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow",
-            'fetch_page',
-            workflow_id,
-            run_id,
-            { page_number: 1 }
-          )
+        signal_first_page
+      end
 
-          { status: 'success', page_number: 1 }
-        rescue Temporal::Error => e
-          activity.logger.error("Failed to signal first page", {
-            workflow_id: workflow_id,
-            sync_run_id: sync_run_id,
-            page_number: page_number,
-            error: e.message
-          })
+      private
 
-          { status: 'error', page_number: 1, error: e.message }
-        end
+      def signal_first_page
+        run_id = @sync_run.get_run_id_for_workflow(@workflow_id)
+        send_fetch_page_signal(run_id)
+      rescue Temporal::Error => e
+        handle_signal_error(e)
+      end
+
+      def send_fetch_page_signal(run_id)
+        Temporal.signal_workflow(
+          "RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow",
+          "fetch_page",
+          @workflow_id,
+          run_id,
+          { page_number: 1 }
+        )
+
+        { status: "success", page_number: 1 }
+      end
+
+      def handle_signal_error(error)
+        activity.logger.error("Failed to signal first page", {
+                                workflow_id: @workflow_id,
+                                sync_run_id: @sync_run.id,
+                                page_number: 1,
+                                error: error.message
+                              })
+
+        { status: "error", page_number: 1, error: error.message }
       end
     end
   end
-end 
+end

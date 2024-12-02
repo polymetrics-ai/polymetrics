@@ -24,7 +24,7 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
           expect(result[:data].first.to_h.keys).to include(:name, :commit)
           expect(result[:page]).to eq(1)
           expect(result[:per_page]).to eq(2)
-          expect(result[:total_pages]).to be > 0
+          expect(result[:total_pages]).to be.positive?
         end
       end
 
@@ -36,7 +36,7 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
           expect(result[:data].first.to_h.keys).to include(:sha, :commit)
           expect(result[:page]).to eq(1)
           expect(result[:per_page]).to eq(2)
-          expect(result[:total_pages]).to be > 0
+          expect(result[:total_pages]).to be.positive?
         end
       end
 
@@ -47,7 +47,7 @@ RSpec.describe RubyConnectors::GithubConnector::Reader do
           expect(result[:data]).to be_an(Array)
           expect(result[:page]).to eq(1)
           expect(result[:per_page]).to eq(30)
-          expect(result[:total_pages]).to be > 0
+          expect(result[:total_pages]).to be.positive?
         end
       end
     end

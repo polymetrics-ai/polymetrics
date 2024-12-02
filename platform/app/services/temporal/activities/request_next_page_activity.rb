@@ -17,10 +17,10 @@ module Temporal
 
         signal_workflow(workflow_id, run_id, next_page)
 
-        { status: 'success', page_number: next_page } 
+        { status: "success", page_number: next_page }
       rescue Temporal::Error => e
         activity.logger.error("Failed to signal next page: #{e.message}")
-        { status: 'error', page_number: next_page, error: e.message }
+        { status: "error", page_number: next_page, error: e.message }
       end
 
       private
@@ -28,7 +28,7 @@ module Temporal
       def signal_workflow(workflow_id, run_id, page_number)
         Temporal.signal_workflow(
           "RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow",
-          'fetch_page',
+          "fetch_page",
           workflow_id,
           run_id,
           { page_number: page_number }
@@ -36,4 +36,4 @@ module Temporal
       end
     end
   end
-end 
+end
