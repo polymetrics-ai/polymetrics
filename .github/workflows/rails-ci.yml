@@ -52,6 +52,6 @@ jobs:
         run: |
           bundle exec rails db:create db:schema:load
       - name: Run RuboCop
-        run: bundle exec rubocop
+        run: bundle exec rubocop 
       - name: Run RSpec
-        run: bundle exec rspec
+        run: bundle exec rspec --fail-fast

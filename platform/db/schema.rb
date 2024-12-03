@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -12,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_28_210845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -31,7 +29,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.integer "namespace", default: 0
     t.index ["destination_id"], name: "index_connections_on_destination_id"
     t.index ["source_id"], name: "index_connections_on_source_id"
-    t.index %w[workspace_id name], name: "index_connections_on_workspace_id_and_name", unique: true
+    t.index ["workspace_id", "name"], name: "index_connections_on_workspace_id_and_name", unique: true
     t.index ["workspace_id"], name: "index_connections_on_workspace_id"
   end
 
@@ -47,7 +45,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.datetime "updated_at", null: false
     t.boolean "default_analytics_db", default: false, null: false
     t.integer "integration_type", default: 0, null: false
-    t.index %w[workspace_id name configuration], name: "index_connectors_on_workspace_name_config", unique: true
+    t.index ["workspace_id", "name", "configuration"], name: "index_connectors_on_workspace_name_config", unique: true
     t.index ["workspace_id"], name: "index_connectors_on_workspace_id"
   end
 
@@ -77,7 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "extraction_completed_at"
-    t.index %w[signature sync_id], name: "index_sync_read_records_on_signature_and_sync_id", unique: true
+    t.index ["signature", "sync_id"], name: "index_sync_read_records_on_signature_and_sync_id", unique: true
     t.index ["sync_id"], name: "index_sync_read_records_on_sync_id"
     t.index ["sync_run_id"], name: "index_sync_read_records_on_sync_run_id"
   end
@@ -107,9 +105,9 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.string "temporal_run_id"
     t.jsonb "temporal_read_data_workflow_ids", default: []
     t.index ["status"], name: "index_sync_runs_on_status"
-    t.index %w[sync_id current_page], name: "index_sync_runs_on_sync_id_and_current_page"
-    t.index %w[sync_id last_cursor_value], name: "index_sync_runs_on_sync_id_and_last_cursor_value"
-    t.index %w[sync_id last_extracted_at], name: "index_sync_runs_on_sync_id_and_last_extracted_at"
+    t.index ["sync_id", "current_page"], name: "index_sync_runs_on_sync_id_and_current_page"
+    t.index ["sync_id", "last_cursor_value"], name: "index_sync_runs_on_sync_id_and_last_cursor_value"
+    t.index ["sync_id", "last_extracted_at"], name: "index_sync_runs_on_sync_id_and_last_extracted_at"
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
     t.index ["temporal_read_data_workflow_ids"], name: "index_sync_runs_on_temporal_read_data_workflow_ids", using: :gin
     t.index ["temporal_run_id"], name: "index_sync_runs_on_temporal_run_id"
@@ -147,7 +145,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.string "destination_sync_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[connection_id stream_name], name: "index_syncs_on_connection_id_and_stream_name", unique: true
+    t.index ["connection_id", "stream_name"], name: "index_syncs_on_connection_id_and_stream_name", unique: true
     t.index ["connection_id"], name: "index_syncs_on_connection_id"
   end
 
@@ -158,7 +156,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_user_organization_memberships_on_organization_id"
-    t.index %w[user_id organization_id], name: "index_user_org_memberships_on_user_id_and_org_id", unique: true
+    t.index ["user_id", "organization_id"], name: "index_user_org_memberships_on_user_id_and_org_id", unique: true
     t.index ["user_id"], name: "index_user_organization_memberships_on_user_id"
   end
 
@@ -168,8 +166,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.string "role", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[user_id workspace_id], name: "index_user_workspace_memberships_on_user_id_and_workspace_id",
-                                      unique: true
+    t.index ["user_id", "workspace_id"], name: "index_user_workspace_memberships_on_user_id_and_workspace_id", unique: true
     t.index ["user_id"], name: "index_user_workspace_memberships_on_user_id"
     t.index ["workspace_id"], name: "index_user_workspace_memberships_on_workspace_id"
   end
@@ -200,11 +197,11 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.string "last_sign_in_ip"
     t.string "organization_name"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index %w[email provider], name: "index_users_on_email_and_provider", unique: true
+    t.index ["email", "provider"], name: "index_users_on_email_and_provider", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["organization_name"], name: "index_users_on_organization_name"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index %w[uid provider], name: "index_users_on_uid_and_provider", unique: true
+    t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
   create_table "workspaces", force: :cascade do |t|
@@ -212,7 +209,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_128_210_845) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[name organization_id], name: "index_workspaces_on_name_and_organization_id", unique: true
+    t.index ["name", "organization_id"], name: "index_workspaces_on_name_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_workspaces_on_organization_id"
   end
 
