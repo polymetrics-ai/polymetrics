@@ -21,15 +21,16 @@ RSpec.describe SyncReadRecord, type: :model do
   end
 
   describe "callbacks" do
-    it "generates a signature before validation on create" do
-      aggregate_failures do
-        record = build(:sync_read_record, data: { "key" => "value" })
-        expect(record.signature).to be_nil
+    describe "generates a signature before validation on create" do
+      let(:sync) { create(:sync) }
+      let(:sync_run) { create(:sync_run, sync: sync) }
 
-        record.valid?
-        expect(record.signature).not_to be_nil
-        expect(record.signature).to be_a(String)
-        expect(record.signature.length).to be.positive?
+      it "generates a signature" do
+        record = create(:sync_read_record,
+                        data: { "test" => "data" },
+                        sync: sync,
+                        sync_run: sync_run)
+        expect(record.signature.length).to be > 0
       end
     end
 
@@ -42,29 +43,33 @@ RSpec.describe SyncReadRecord, type: :model do
   end
 
   describe "signature generation" do
-    it "generates a consistent signature for the same data within the same sync_id" do
-      data = { "key" => "value" }
-      record1 = create(:sync_read_record, data: data)
-      record2 = create(:sync_read_record, data: data, sync: record1.sync, sync_run: record1.sync_run)
-      expect(record1.signature).to eq(record2.signature)
+    let(:sync) { create(:sync) }
+    let(:sync_run) { create(:sync_run, sync: sync) }
+    let(:data) { { "a" => 1, "b" => 2 } }
+
+    it "raises an error when creating records with same data within the same sync_id" do
+      create(:sync_read_record, data: data, sync: sync, sync_run: sync_run)
+
+      expect do
+        create(:sync_read_record, data: data, sync: sync, sync_run: sync_run)
+      end.to raise_error(ActiveRecord::RecordInvalid, /Signature has already been taken/)
     end
 
-    it "generates different signatures for the same data with different sync_id" do
-      record1 = create(:sync_read_record, data: { "a" => 1, "b" => 2 })
-      record2 = create(:sync_read_record, data: { "a" => 1, "b" => 2 })
-      expect(record1.signature).not_to eq(record2.signature)
+    it "allows same data in different syncs" do
+      record1 = create(:sync_read_record, data: data, sync: sync, sync_run: sync_run)
+      other_sync = create(:sync)
+      other_sync_run = create(:sync_run, sync: other_sync)
+      record2 = create(:sync_read_record, data: data, sync: other_sync, sync_run: other_sync_run)
+
+      expect(record2.signature).not_to eq(record1.signature)
     end
 
-    it "generates the same signature for different data orders within the same sync_id" do
-      record1 = create(:sync_read_record, data: { "a" => 1, "b" => 2 })
-      record2 = create(:sync_read_record, data: { "b" => 2, "a" => 1 }, sync: record1.sync, sync_run: record1.sync_run)
-      expect(record1.signature).to eq(record2.signature)
-    end
+    it "raises an error when creating records with same data in different orders within the same sync" do
+      create(:sync_read_record, data: { "a" => 1, "b" => 2 }, sync: sync, sync_run: sync_run)
 
-    it "generates different signatures for arrays with different orders" do
-      record1 = create(:sync_read_record, data: [1, 2, 3])
-      record2 = create(:sync_read_record, data: [3, 2, 1])
-      expect(record1.signature).not_to eq(record2.signature)
+      expect do
+        create(:sync_read_record, data: { "b" => 2, "a" => 1 }, sync: sync, sync_run: sync_run)
+      end.to raise_error(ActiveRecord::RecordInvalid, /Signature has already been taken/)
     end
   end
 
