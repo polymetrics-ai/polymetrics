@@ -10,44 +10,46 @@ module Temporal
       )
 
       def execute(workflow_id:, sync_run_id:, pages:)
-        @workflow_id = workflow_id
-        @sync_run = SyncRun.find(sync_run_id)
-        @pages = pages
+        sync_run = SyncRun.find(sync_run_id)
 
         activity.logger.info("Requesting batch of pages: #{pages}")
 
-        run_id = @sync_run.get_run_id_for_workflow(workflow_id)
-        signal_workflow(run_id)
+        run_id = sync_run.get_run_id_for_workflow(workflow_id)
+        signal_workflow(workflow_id, run_id, pages)
 
         { status: "success", pages: pages }
+      rescue ActiveRecord::RecordNotFound => e
+        handle_error(e, workflow_id, sync_run_id, pages, "SyncRun not found")
+      rescue Temporal::Error => e
+        handle_error(e, workflow_id, sync_run_id, pages, "Temporal workflow signaling failed")
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, workflow_id, sync_run_id, pages, "Unexpected error")
       end
 
       private
 
-      def signal_workflow(run_id)
+      def signal_workflow(workflow_id, run_id, pages)
         Temporal.signal_workflow(
           "RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow",
           "fetch_page_batch",
-          @workflow_id,
+          workflow_id,
           run_id,
-          { pages: @pages }
+          { pages: pages }
         )
       end
 
-      def handle_error(error)
-        activity.logger.error(
-          "Failed to signal page batch",
-          {
-            workflow_id: @workflow_id,
-            sync_run_id: @sync_run.id,
-            pages: @pages,
-            error: error.message
-          }
-        )
+      def handle_error(error, workflow_id, sync_run_id, pages, context)
+        error_message = {
+          workflow_id: workflow_id,
+          sync_run_id: sync_run_id,
+          pages: pages,
+          error: error.message,
+          context: context
+        }
 
-        { status: "error", pages: @pages, error: error.message }
+        activity.logger.error("Failed to signal page batch: #{error_message}")
+
+        { status: "error", pages: pages, error: error.message }
       end
     end
   end

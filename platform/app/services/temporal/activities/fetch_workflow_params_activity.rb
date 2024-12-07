@@ -12,9 +12,11 @@ module Temporal
       def execute(sync_run_id)
         sync_run = SyncRun.find(sync_run_id)
 
-        ::Etl::Extractors::WorkflowExecutionParamsService.new(
+        result = ::Etl::Extractors::WorkflowExecutionParamsService.new(
           sync_run: sync_run
-        ).call.with_indifferent_access
+        ).call
+
+        (result || {}).with_indifferent_access
       end
     end
   end

@@ -8,7 +8,7 @@ class Connection < ApplicationRecord
   belongs_to :destination, class_name: "Connector"
   has_many :syncs, dependent: :destroy
 
-  enum status: { healthy: 0, failed: 1, running: 2, paused: 3, created: 4 }
+  enum status: { created: 0, failed: 1, running: 2, paused: 3, healthy: 4 }
   enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }
   enum namespace: { system_defined: 0, source_defined: 1, destination_defined: 2, user_defined: 3 }
 

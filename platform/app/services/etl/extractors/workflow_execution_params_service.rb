@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../etl/errors"
+
 module Etl
   module Extractors
     class WorkflowExecutionParamsService
@@ -11,7 +13,12 @@ module Etl
         @options = options
         @workflow_id = generate_workflow_id
         @options[:workflow_id] = @workflow_id
-        @workflow_strategy = workflow_strategy_for(@sync.connection.source.integration_type)
+        begin
+          @workflow_strategy = workflow_strategy_for(@sync.connection.source.integration_type)
+        rescue Etl::UnsupportedIntegrationType => e
+          log_error(e)
+          raise
+        end
       end
 
       def call
@@ -21,7 +28,8 @@ module Etl
           workflow_options: workflow_options
         }
       rescue StandardError => e
-        log_error(e, {})
+        log_error(e)
+        nil
       end
 
       private
@@ -33,14 +41,14 @@ module Etl
         when :database
           ConnectorWorkflows::DatabaseStrategy.new
         else
-          raise UnsupportedIntegrationType, "Unsupported integration type: #{integration_type}"
+          raise Etl::UnsupportedIntegrationType, "Unsupported integration type: #{integration_type}"
         end
       end
 
       def workflow_params
         @workflow_strategy.build_params(
           sync_run: @sync_run,
-          **@options
+          **@options.except(:workflow_id)
         )
       end
 
@@ -54,14 +62,6 @@ module Etl
         "read_data_sync_id_#{@sync.id}_sync_run_id_#{@sync_run.id}"
       end
 
-      def handle_workflow_error(error)
-        ::Activities::SyncLogActivity.execute!(
-          sync_run_id: @sync_run_id,
-          message: error.message,
-          log_type: :error
-        )
-      end
-
       def workflow_namespace
         ENV["TEMPORAL_NAMESPACE"] || "default-namespace"
       end
@@ -69,10 +69,11 @@ module Etl
       def log_error(error, context = {})
         Rails.logger.error(
           "Workflow execution error: #{error.message}",
-          workflow_id: @workflow_id,
-          sync_id: @sync.id,
-          connector_type: @sync.connection.source.connector_type,
-          **context
+          {
+            workflow_id: @workflow_id,
+            sync_id: @sync.id,
+            connector_type: @sync.connection.source.integration_type
+          }.merge(context)
         )
       end
     end

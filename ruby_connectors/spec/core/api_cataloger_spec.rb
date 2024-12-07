@@ -13,8 +13,10 @@ RSpec.describe RubyConnectors::Core::ApiCataloger do
     before do
       # Create temporary schema files for testing
       FileUtils.mkdir_p(schemas_directory)
-      File.write(File.join(schemas_directory, "branches.json"), '{"name": "branches", "type": "object", "x-stream_name": "branches"}')
-      File.write(File.join(schemas_directory, "commits.json"), '{"name": "commits", "type": "object", "x-stream_name": "commits"}')
+      File.write(File.join(schemas_directory, "branches.json"),
+                 '{"name": "branches", "type": "object", "x-stream_name": "branches"}')
+      File.write(File.join(schemas_directory, "commits.json"),
+                 '{"name": "commits", "type": "object", "x-stream_name": "commits"}')
     end
 
     after do

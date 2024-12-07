@@ -34,7 +34,17 @@ module Temporal
 
       def perform_extraction
         integration_type = @sync.connection.source.integration_type
-        execute_api_extraction if integration_type == "api"
+
+        case integration_type
+        when "api"
+          execute_api_extraction
+        else
+          {
+            success: false,
+            error: "Unsupported integration type: #{integration_type}",
+            integration_type: integration_type
+          }
+        end
       end
 
       def execute_api_extraction
@@ -47,10 +57,13 @@ module Temporal
       end
 
       def process_extraction_result(result)
+        return handle_error("Extraction result is nil") unless result
+        return handle_error("Invalid extraction result format") unless result.is_a?(Hash)
+
         if result[:success]
           handle_successful_extraction
         else
-          handle_error(result[:error])
+          handle_error(result[:error] || "Unknown extraction error")
         end
       end
 
@@ -72,11 +85,13 @@ module Temporal
       end
 
       def handle_error(error)
+        @sync.error!
+        error_message = error.is_a?(String) ? error : error.message
         update_sync_status_activity("error")
         Activities::LogSyncErrorActivity.execute!(
           sync_run_id: @sync_run_id,
           sync_id: @sync_run&.sync_id,
-          error_message: error.message
+          error_message: error_message
         )
       end
     end

@@ -18,6 +18,35 @@ RSpec.describe SyncReadRecord, type: :model do
         expect(record.errors[:data]).to include("can't be blank")
       end
     end
+
+    context "when validating signature" do
+      it "validates presence of signature" do
+        record = build(:sync_read_record)
+        allow(record).to receive(:generate_signature)
+        record.signature = nil
+
+        expect(record).not_to be_valid
+        expect(record.errors[:signature]).to include("can't be blank")
+      end
+
+      it "validates uniqueness of signature within the same sync" do
+        original = create(:sync_read_record)
+        duplicate = build(:sync_read_record, sync: original.sync)
+        duplicate.signature = original.signature
+
+        expect(duplicate).not_to be_valid
+        expect(duplicate.errors[:signature]).to include("has already been taken")
+      end
+
+      it "allows same signature across different syncs" do
+        original = create(:sync_read_record)
+        different_sync = create(:sync)
+        duplicate = build(:sync_read_record, sync: different_sync)
+        duplicate.signature = original.signature
+
+        expect(duplicate).to be_valid
+      end
+    end
   end
 
   describe "callbacks" do

@@ -16,8 +16,8 @@ class SyncRun < ApplicationRecord
 
   validate :total_pages_greater_than_or_equal_to_current_page, if: -> { total_pages.present? }
 
+  before_validation :set_started_at, on: :create
   before_save :update_completed_at, if: :status_changed?
-  before_create :set_started_at
 
   def self.chronological
     order(started_at: :desc)
@@ -36,8 +36,14 @@ class SyncRun < ApplicationRecord
   end
 
   def add_read_data_workflow(workflow_id, run_id)
+    raise ArgumentError, "workflow_id cannot be nil" if workflow_id.nil?
+    raise ArgumentError, "run_id cannot be nil" if run_id.nil?
+
     current_workflows = temporal_read_data_workflow_ids || []
     workflow_data = { workflow_id => run_id }
+
+    raise "Workflow ID #{workflow_id} already exists" if current_workflows.any? { |data| data.key?(workflow_id) }
+
     update!(
       temporal_read_data_workflow_ids: current_workflows + [workflow_data]
     )

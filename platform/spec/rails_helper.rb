@@ -50,7 +50,8 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Devise::Test::IntegrationHelpers, type: :feature
 
-  config.include Module.new {
+  # Include the auth module for both controller and integration tests
+  auth_module = Module.new do
     def sign_in_and_set_token(user)
       @request.env["devise.mapping"] = Devise.mappings[:user]
       sign_in user
@@ -65,7 +66,10 @@ RSpec.configure do |config|
                                "uid" => nil
                              })
     end
-  }, type: :controller
+  end
+
+  config.include auth_module, type: :controller
+  config.include auth_module, type: :integration
 end
 
 Shoulda::Matchers.configure do |config|

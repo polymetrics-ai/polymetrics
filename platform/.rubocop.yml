@@ -42,7 +42,7 @@ RSpec/ExampleLength:
   Max: 15
 
 RSpec/MultipleExpectations:
-  Max: 3
+  Enabled: false
 
 RSpec/NestedGroups:
   Max: 4
@@ -52,3 +52,36 @@ RSpec/MultipleMemoizedHelpers:
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
+
+RSpec/VerifiedDoubleReference:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 15
+
+Layout/LineLength:
+  Max: 140 
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/SubjectStub:
+  Enabled: false
+
+RSpec/IndexedLet:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false

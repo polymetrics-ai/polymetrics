@@ -7,7 +7,7 @@ module RubyConnectors
         def execute(params)
           initialize_workflow_state(params)
           setup_signal_handlers
-          
+
           workflow.wait_until { extraction_complete? }
 
           signal_batch_completion(@completed_pages)
@@ -33,13 +33,13 @@ module RubyConnectors
 
         def process_page_batch(pages)
           workflow.logger.info("Processing page batch: #{pages}")
-          
+
           pages.each do |page_number|
             next if @completed_pages.include?(page_number)
-            
+
             new_params = @input.merge("page" => page_number)
             result = Activities::ReadApiDataActivity.execute!(new_params)
-            
+
             if result[:status] == "success"
               @completed_pages.add(result[:page_number])
             else
@@ -50,7 +50,7 @@ module RubyConnectors
 
         def signal_batch_completion(pages)
           workflow.logger.info("Signaling read api data workflow completion for workflow: #{@input["workflow_id"]}")
-          
+
           ::Temporal.signal_workflow(
             "Temporal::Workflows::Extractors::ApiDataExtractorWorkflow",
             "page_batch_completed",

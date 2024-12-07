@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :sync_run do
-    sync
+    association :sync
     status { :running }
     started_at { Time.current }
     completed_at { nil }
@@ -21,6 +21,10 @@ FactoryBot.define do
     trait :failed do
       status { :failed }
       completed_at { Time.current }
+    end
+
+    trait :without_started_at do
+      started_at { nil }
     end
   end
 end

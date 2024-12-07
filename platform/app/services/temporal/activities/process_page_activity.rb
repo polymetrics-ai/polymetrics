@@ -50,11 +50,10 @@ module Temporal
         SyncReadRecord.create!(
           sync_run: @sync_run,
           sync: @sync,
-          data: records,
-          signature: generate_signature(records)
+          data: records
         )
       rescue ActiveRecord::RecordInvalid => e
-        raise unless e.message.include?("Signature has already been taken")
+        raise unless e.record.errors[:signature]&.include?("has already been taken")
 
         activity.logger.info("Skipping duplicate page for sync_id: #{@sync.id}")
       end

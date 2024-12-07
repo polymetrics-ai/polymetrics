@@ -50,11 +50,9 @@ module Temporal
           }
         end
 
-        def handle_already_running_workflow(workflow_params, error)
+        def handle_already_running_workflow(workflow_params, _error)
           workflow.logger.info(
-            "Workflow already running",
-            workflow_id: workflow_params[:workflow_options][:workflow_id],
-            message: error.message
+            "Workflow already running #{workflow_params[:workflow_options][:workflow_id]}"
           )
 
           { success: true, message: "Workflow already running" }
@@ -62,9 +60,7 @@ module Temporal
 
         def handle_error(workflow_params, error)
           workflow.logger.error(
-            "Failed to start child workflow",
-            workflow_id: workflow_params[:workflow_options][:workflow_id],
-            error: error.message
+            "Failed to start child workflow #{workflow_params[:workflow_options][:workflow_id]} and error: #{error.message}"
           )
 
           { success: false, error: error.message }

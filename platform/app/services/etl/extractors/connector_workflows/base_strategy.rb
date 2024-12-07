@@ -31,6 +31,8 @@ module Etl
         private
 
         def task_queue_for(language)
+          return LANGUAGE_TASK_QUEUES[:ruby] if language.nil?
+
           LANGUAGE_TASK_QUEUES[language.to_sym] || LANGUAGE_TASK_QUEUES[:ruby]
         end
       end
