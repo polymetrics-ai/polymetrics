@@ -14,9 +14,12 @@ module Temporal
         @sync = @sync_run.sync
         @workflow_store = ::WorkflowStoreService.new
 
-        workflow_data = fetch_workflow_data(signal_data[:workflow_id])
+        # Fetch required values from signal_data with explicit key access
+        workflow_id = signal_data.fetch(:workflow_id)
+        total_pages = signal_data.fetch(:total_pages)
+
+        workflow_data = fetch_workflow_data(workflow_id)
         page_data = workflow_data[:data]
-        total_pages = signal_data[:total_pages]
 
         process_page_data(page_data, total_pages)
 
@@ -45,7 +48,7 @@ module Temporal
           data: records
         )
       rescue ActiveRecord::RecordInvalid => e
-        raise unless e.message.include?("Signature has already been taken")
+        raise unless e.record.errors[:signature]&.include?("has already been taken")
 
         activity.logger.info("Skipping duplicate page for sync_id: #{@sync.id}")
       end

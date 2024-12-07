@@ -38,12 +38,14 @@ module Temporal
       end
 
       def handle_signal_error(error)
-        activity.logger.error("Failed to signal first page", {
-                                workflow_id: @workflow_id,
-                                sync_run_id: @sync_run.id,
-                                page_number: 1,
-                                error: error.message
-                              })
+        error_message = {
+          workflow_id: @workflow_id,
+          sync_run_id: @sync_run.id,
+          page_number: 1,
+          error: error.message
+        }
+
+        activity.logger.error("Failed to signal first page: #{error_message}")
 
         { status: "error", page_number: 1, error: error.message }
       end

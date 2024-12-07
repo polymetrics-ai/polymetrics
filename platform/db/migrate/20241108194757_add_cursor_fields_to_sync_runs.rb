@@ -3,7 +3,6 @@
 class AddCursorFieldsToSyncRuns < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
-  # rubocop:disable Metrics/MethodLength
   def change
     change_table :sync_runs, bulk: true do |t|
       t.integer :current_page, default: 1
@@ -20,5 +19,4 @@ class AddCursorFieldsToSyncRuns < ActiveRecord::Migration[7.1]
     add_index :sync_runs, %i[sync_id current_page], algorithm: :concurrently
     add_index :sync_runs, %i[sync_id last_extracted_at], algorithm: :concurrently
   end
-  # rubocop:enable Metrics/MethodLength
 end

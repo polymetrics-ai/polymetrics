@@ -32,7 +32,7 @@ RSpec.describe Connection, type: :model do
   describe "enums" do
     subject(:connection) { described_class.new }
 
-    it { is_expected.to define_enum_for(:status).with_values(healthy: 0, failed: 1, running: 2, paused: 3, created: 4) }
+    it { is_expected.to define_enum_for(:status).with_values(created: 0, failed: 1, running: 2, paused: 3, healthy: 4) }
     it { is_expected.to define_enum_for(:schedule_type).with_values(scheduled: 0, cron: 1, manual: 2) }
 
     it {
@@ -74,30 +74,105 @@ RSpec.describe Connection, type: :model do
   end
 
   describe "status transitions" do
-    let(:connection) { create(:connection, status: :created) }
+    let(:connection) { create(:connection) }
 
-    it "starts with created status" do
-      expect(connection.status).to eq("created")
+    it "has initial state of created" do
+      expect(connection.created?).to be true
     end
 
-    it "can transition to healthy status" do
-      connection.healthy!
-      expect(connection.status).to eq("healthy")
+    describe "#start" do
+      it "transitions from created to running" do
+        expect(connection.start!).to be true
+        expect(connection.running?).to be true
+      end
+
+      it "transitions from healthy to running" do
+        connection.status = :healthy
+        expect(connection.start!).to be true
+        expect(connection.running?).to be true
+      end
+
+      it "transitions from failed to running" do
+        connection.status = :failed
+        expect(connection.start!).to be true
+        expect(connection.running?).to be true
+      end
+
+      it "transitions from paused to running" do
+        connection.status = :paused
+        expect(connection.start!).to be true
+        expect(connection.running?).to be true
+      end
     end
 
-    it "can transition to failed status" do
-      connection.failed!
-      expect(connection.status).to eq("failed")
+    describe "#pause" do
+      it "transitions from running to paused" do
+        connection.status = :running
+        expect(connection.pause!).to be true
+        expect(connection.paused?).to be true
+      end
+
+      it "transitions from healthy to paused" do
+        connection.status = :healthy
+        expect(connection.pause!).to be true
+        expect(connection.paused?).to be true
+      end
     end
 
-    it "can transition to running status" do
-      connection.running!
-      expect(connection.status).to eq("running")
+    describe "#resume" do
+      it "transitions from paused to running" do
+        connection.status = :paused
+        expect(connection.resume!).to be true
+        expect(connection.running?).to be true
+      end
     end
 
-    it "can transition to paused status" do
-      connection.paused!
-      expect(connection.status).to eq("paused")
+    describe "#complete" do
+      it "transitions from running to healthy" do
+        connection.status = :running
+        expect(connection.complete!).to be true
+        expect(connection.healthy?).to be true
+      end
+    end
+
+    describe "#fail" do
+      it "transitions from running to failed" do
+        connection.status = :running
+        expect(connection.fail!).to be true
+        expect(connection.failed?).to be true
+      end
+
+      it "transitions from healthy to failed" do
+        connection.status = :healthy
+        expect(connection.fail!).to be true
+        expect(connection.failed?).to be true
+      end
+
+      it "logs failure message" do
+        connection.status = :running
+        current_time = Time.current
+        allow(Time).to receive(:current).and_return(current_time)
+
+        expect(Rails.logger).to receive(:error).with("Connection #{connection.id} failed at #{current_time}")
+        connection.fail!
+      end
+    end
+
+    describe "#recover" do
+      it "transitions from failed to healthy" do
+        connection.status = :failed
+        expect(connection.recover!).to be true
+        expect(connection.healthy?).to be true
+      end
+
+      it "logs recovery message" do
+        connection.status = :failed
+        current_time = Time.current
+        allow(Time).to receive(:current).and_return(current_time)
+
+        expect(Rails.logger).to receive(:info).with("Connection #{connection.id} recovered at #{current_time}")
+        connection.recover!
+      end
     end
   end
 

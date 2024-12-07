@@ -21,8 +21,8 @@ module Temporal
       private
 
       def process_read_records(sync_run)
-        ActiveRecord::Base.transaction do
-          sync_run.sync_read_records.each do |sync_read_record|
+        sync_run.sync_read_records.find_each(batch_size: 1000) do |sync_read_record|
+          ActiveRecord::Base.transaction do
             create_write_records(sync_read_record)
             sync_read_record.update!(extraction_completed_at: Time.current)
           end
@@ -46,6 +46,13 @@ module Temporal
       end
 
       def create_write_records(sync_read_record)
+        return if sync_read_record.data.nil?
+
+        unless sync_read_record.data.is_a?(Array)
+          Rails.logger.error "Invalid data format for sync_read_record #{sync_read_record.id}"
+          return
+        end
+
         Array(sync_read_record.data).each do |record_data|
           create_single_write_record(sync_read_record, record_data)
         end
