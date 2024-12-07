@@ -5,21 +5,21 @@ class SyncReadRecord < ApplicationRecord
   belongs_to :sync
 
   validates :data, presence: true
+  validates :signature, presence: true, uniqueness: { scope: :sync_id }
 
   before_validation :generate_signature
 
   private
 
-  # We need to add uniqueness to signature for only particular sync like
-  # incremental sync where we don't need duplicates
   def generate_signature
     self.signature = Digest::SHA256.hexdigest(normalized_data) if data.present?
   end
 
   def sorted_data
-    if data.is_a?(Hash)
+    case data
+    when Hash
       data.deep_sort.to_json
-    elsif data.is_a?(Array)
+    when Array
       data.deep_sort_by(&:to_s).to_json
     else
       data.to_json

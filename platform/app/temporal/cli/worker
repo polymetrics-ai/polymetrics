@@ -10,6 +10,25 @@ Rails.application.require_environment!
 worker = Temporal::Worker.new
 
 # Register workflows
+worker.register_workflow(Temporal::Workflows::ConnectionDataSyncWorkflow)
+worker.register_workflow(Temporal::Workflows::SyncWorkflow)
+worker.register_workflow(Temporal::Workflows::Extractors::ApiDataExtractorWorkflow)
+worker.register_workflow(Temporal::Workflows::Extractors::StartConnectorDataFetchWorkflow)
+worker.register_workflow(Temporal::Workflows::Extractors::StartFirstPageWorkflow)
+
 # Register activities
+worker.register_activity(Temporal::Activities::LogSyncErrorActivity)
+worker.register_activity(Temporal::Activities::ConvertReadRecordActivity)
+worker.register_activity(Temporal::Activities::PrepareSyncRunsActivity)
+worker.register_activity(Temporal::Activities::UpdateConnectionStatusActivity)
+worker.register_activity(Temporal::Activities::LogConnectionErrorActivity)
+worker.register_activity(Temporal::Activities::SyncLogActivity)
+worker.register_activity(Temporal::Activities::FetchWorkflowParamsActivity)
+worker.register_activity(Temporal::Activities::ProcessFirstPageActivity)
+worker.register_activity(Temporal::Activities::ProcessPageActivity)
+worker.register_activity(Temporal::Activities::UpdateSyncStatusActivity)
+worker.register_activity(Temporal::Activities::RegisterWorkflowRunActivity)
+worker.register_activity(Temporal::Activities::RequestFirstPageActivity)
+worker.register_activity(Temporal::Activities::RequestPageBatchActivity)
 
 worker.start

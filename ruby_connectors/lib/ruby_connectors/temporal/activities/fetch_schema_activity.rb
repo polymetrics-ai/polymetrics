@@ -11,6 +11,12 @@ module RubyConnectors
       # @raise [ArgumentError] if connector_name is empty
       # @raise [StandardError] if connector is invalid or schema fetch fails
       class FetchSchemaActivity < ::Temporal::Activity
+        retry_policy(
+          interval: 1,
+          backoff: 1,
+          max_attempts: 3
+        )
+
         def execute(connector_name)
           client_class = Object.const_get("RubyConnectors::#{connector_name.capitalize}Connector::Client")
           client_class.new.catalog

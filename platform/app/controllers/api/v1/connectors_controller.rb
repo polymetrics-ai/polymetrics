@@ -42,8 +42,8 @@ module Api
       private
 
       def connector_params
-        params.require(:connector).permit(:name, :connector_class_name, :description, :connector_language,
-                                          configuration: {})
+        params.require(:connector).permit(:name, :integration_type, :connector_class_name, :description,
+                                          :connector_language, configuration: {})
       end
 
       def set_connector

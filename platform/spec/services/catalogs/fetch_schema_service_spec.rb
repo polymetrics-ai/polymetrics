@@ -37,8 +37,7 @@ RSpec.describe Catalogs::FetchSchemaService do
         expect(Temporal).to have_received(:await_workflow_result).with(
           "RubyConnectors::Temporal::Workflows::FetchSchemaWorkflow",
           workflow_id: workflow_id,
-          run_id: run_id,
-          timeout: 25
+          run_id: run_id
         )
       end
     end

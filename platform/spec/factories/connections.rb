@@ -6,7 +6,6 @@ FactoryBot.define do
     association :source, factory: :connector
     association :destination, factory: :connector
     name { Faker::Name.unique.name }
-    status { :healthy }
     schedule_type { :scheduled }
     sync_frequency { "0 0 * * *" }
     configuration { { "key" => "value" } }

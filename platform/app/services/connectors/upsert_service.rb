@@ -47,8 +47,7 @@ module Connectors
     def workflow_options(workflow_id)
       {
         task_queue: "ruby_connectors_queue",
-        workflow_id: workflow_id,
-        workflow_execution_timeout: 30
+        workflow_id: workflow_id
       }
     end
 
@@ -56,8 +55,7 @@ module Connectors
       Temporal.await_workflow_result(
         "RubyConnectors::Temporal::Workflows::ConnectionStatusWorkflow",
         workflow_id: workflow_id,
-        run_id: run_id,
-        timeout: 25
+        run_id: run_id
       )
     end
 

@@ -12,8 +12,11 @@ module Api
       end
 
       def start_sync
-        # SyncManager.start(@connection)
+        Connections::StartDataSyncService.new(@connection).call
         render_sync_status_response("started")
+      rescue StandardError => e
+        @connection.fail!
+        render_error(e.message)
       end
 
       def stop_sync
@@ -26,8 +29,7 @@ module Api
       def set_connection
         @connection = current_workspace.connections.find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        render_error("Connection with ID #{params[:id]} not found in workspace #{current_workspace.id}",
-                     status: :not_found)
+        render_error("Connection with ID #{params[:id]} not found in workspace #{current_workspace&.id}")
       end
 
       def fetch_workspace_connections

@@ -3,6 +3,7 @@
 class SyncWriteRecord < ApplicationRecord
   belongs_to :sync_run
   belongs_to :sync
+  belongs_to :sync_read_record
 
   validates :data, presence: true
   validates :status, presence: true

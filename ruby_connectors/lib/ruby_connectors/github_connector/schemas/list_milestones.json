@@ -4,6 +4,7 @@
   "title": "List Milestones",
   "description": "Detailed information about a list of milestones in a GitHub repository, including their repository, URL, HTML URL, labels URL, ID, node ID, number, state, title, description, creator, open issues, closed issues, creation timestamp, update timestamp, closed timestamp, and due timestamp.",
   "x-stream_name": "list_milestones",
+  "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {
       "description": "The full name or identifier of the repository containing the milestone",

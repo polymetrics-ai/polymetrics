@@ -5,12 +5,12 @@ require_relative "connection"
 module RubyConnectors
   module GithubConnector
     class Reader
-      DEFAULT_PER_PAGE = 30
+      DEFAULT_PER_PAGE = 100
 
       def initialize(config)
-        @config = config
+        @config = config.deep_symbolize_keys
         @client = Connection.new(config).authorize_connection
-        # TODO: uncomment after the implementation of syncs
+
         # @client.auto_paginate = true
       end
 
@@ -19,8 +19,9 @@ module RubyConnectors
         raise ArgumentError, "Unsupported stream: #{stream_name}" unless @client.respond_to?(method_name)
 
         result = @client.send(method_name, @config[:repository], page: page, per_page: per_page)
+
         {
-          data: result,
+          data: sawyer_to_hash(result),
           page: page,
           per_page: per_page,
           total_pages: last_page(result)
@@ -30,10 +31,18 @@ module RubyConnectors
       private
 
       def last_page(result)
+        return 1 if @client.auto_paginate
         return 1 unless paginated_response?(result)
 
-        last_page_link = @client.last_response.rels[:last]
-        extract_page_number(last_page_link) || 1
+        if @client.last_response.rels[:last]
+          extract_page_number(@client.last_response.rels[:last])
+        elsif @client.last_response.rels[:prev]
+          # If we're on the last page, use prev link to determine total
+          extract_page_number(@client.last_response.rels[:prev]) + 1
+        else
+          # If there's only one page
+          1
+        end
       end
 
       def paginated_response?(result)
@@ -45,6 +54,21 @@ module RubyConnectors
 
         match = link.href.match(/page=(\d+)/)
         match[1].to_i if match
+      end
+
+      def sawyer_to_hash(resource)
+        case resource
+        when Sawyer::Resource
+          result = {}
+          resource.to_hash.each do |key, value|
+            result[key] = sawyer_to_hash(value)
+          end
+          result
+        when Array
+          resource.map { |item| sawyer_to_hash(item) }
+        else
+          resource
+        end
       end
     end
   end
