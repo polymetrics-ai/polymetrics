@@ -24,6 +24,7 @@ module ApiResponseWrapperConcern
         message: message
       }
     }
+
     render json: response_body, status: status
   end
 

@@ -13,8 +13,10 @@ RSpec.describe RubyConnectors::Core::ApiCataloger do
     before do
       # Create temporary schema files for testing
       FileUtils.mkdir_p(schemas_directory)
-      File.write(File.join(schemas_directory, "branches.json"), '{"name": "branches", "type": "object"}')
-      File.write(File.join(schemas_directory, "commits.json"), '{"name": "commits", "type": "object"}')
+      File.write(File.join(schemas_directory, "branches.json"),
+                 '{"name": "branches", "type": "object", "x-stream_name": "branches"}')
+      File.write(File.join(schemas_directory, "commits.json"),
+                 '{"name": "commits", "type": "object", "x-stream_name": "commits"}')
     end
 
     after do
@@ -32,8 +34,8 @@ RSpec.describe RubyConnectors::Core::ApiCataloger do
     it "correctly parses JSON schema files" do
       result = cataloger.catalog
 
-      expect(result["branches"]).to eq({ "name" => "branches", "type" => "object" })
-      expect(result["commits"]).to eq({ "name" => "commits", "type" => "object" })
+      expect(result["branches"]).to eq({ "name" => "branches", "type" => "object", "x-stream_name" => "branches" })
+      expect(result["commits"]).to eq({ "name" => "commits", "type" => "object", "x-stream_name" => "commits" })
     end
 
     context "when a schema file is invalid JSON" do

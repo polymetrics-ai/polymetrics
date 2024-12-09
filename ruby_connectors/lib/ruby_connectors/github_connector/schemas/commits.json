@@ -4,6 +4,7 @@
   "title": "Commits",
   "description": "Detailed information about a commit in a GitHub repository, including its repository, branch, creation timestamp, URL, SHA, and detailed commit metadata.",
   "x-stream_name": "commits",
+  "x-source_defined_primary_key": ["sha"],
   "properties": {
     "repository": {
       "description": "The fully qualified name or unique identifier of the repository containing the commit, typically in the format 'owner/repo'.",

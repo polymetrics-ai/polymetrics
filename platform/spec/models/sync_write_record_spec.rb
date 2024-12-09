@@ -26,7 +26,7 @@ RSpec.describe SyncWriteRecord, type: :model do
         record.valid?
         expect(record.signature).not_to be_nil
         expect(record.signature).to be_a(String)
-        expect(record.signature.length).to be > 0
+        expect(record.signature.length).to be_positive
       end
     end
   end
@@ -88,22 +88,20 @@ RSpec.describe SyncWriteRecord, type: :model do
   end
 
   describe "scopes" do
-    before do
-      create(:sync_write_record, status: :pending)
-      create(:sync_write_record, status: :written)
-      create(:sync_write_record, status: :failed)
-    end
+    let!(:pending_record) { create(:sync_write_record, status: :pending) }
+    let!(:written_record) { create(:sync_write_record, status: :written) }
+    let!(:failed_record) { create(:sync_write_record, status: :failed) }
 
     it "has a scope for pending records" do
-      expect(SyncWriteRecord.pending.count).to eq(1)
+      expect(described_class.pending).to contain_exactly(pending_record)
     end
 
     it "has a scope for written records" do
-      expect(SyncWriteRecord.written.count).to eq(1)
+      expect(described_class.written).to contain_exactly(written_record)
     end
 
     it "has a scope for failed records" do
-      expect(SyncWriteRecord.failed.count).to eq(1)
+      expect(described_class.failed).to contain_exactly(failed_record)
     end
   end
 

@@ -4,6 +4,8 @@
 require "factory_bot"
 require "faker"
 require "shoulda/matchers"
+require "webmock/rspec"
+require "vcr"
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
@@ -21,4 +23,35 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
+end
+
+VCR.configure do |config|
+  config.cassette_library_dir = "spec/fixtures/vcr_cassettes"
+  config.hook_into :webmock
+  config.configure_rspec_metadata!
+
+  # Allow localhost requests for API endpoints
+  config.ignore_hosts "localhost", "127.0.0.1"
+
+  # Filter sensitive data
+  config.filter_sensitive_data("<TEMPORAL_HOST>") { ENV.fetch("TEMPORAL_HOST", nil) }
+  config.filter_sensitive_data("<TEMPORAL_PORT>") { ENV.fetch("TEMPORAL_PORT", nil) }
+  config.filter_sensitive_data("<TEMPORAL_NAMESPACE>") { ENV.fetch("TEMPORAL_NAMESPACE", nil) }
+  config.filter_sensitive_data("<GITHUB_TOKEN>") { ENV.fetch("GITHUB_ACCESS_TOKEN", nil) }
+
+  # Filter JWT token from Authorization header
+  config.filter_sensitive_data("<AUTH_TOKEN>") do |interaction|
+    auth_header = interaction.request.headers["Authorization"]&.first
+    auth_header&.gsub(/^Bearer\s+/, "")
+  end
+
+  # Configure GitHub API endpoint
+  config.filter_sensitive_data("<GITHUB_API>") { "https://api.github.com" }
+
+  # Default cassette options
+  config.default_cassette_options = {
+    record: ENV["VCR_RECORD"] ? :all : :once,
+    match_requests_on: %i[method uri body],
+    allow_unused_http_interactions: false
+  }
 end
