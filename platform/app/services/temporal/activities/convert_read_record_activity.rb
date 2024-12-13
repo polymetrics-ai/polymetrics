@@ -23,9 +23,27 @@ module Temporal
       def process_read_records(sync_run)
         sync_run.sync_read_records.find_each(batch_size: 1000) do |sync_read_record|
           ActiveRecord::Base.transaction do
-            create_write_records(sync_read_record)
+            if sync_run.sync.incremental_dedup?
+              Etl::Extractors::ConvertReadRecord::IncrementalDedupService.new(
+                sync_run,
+                sync_read_record.id,
+                sync_read_record.data
+              ).call
+            else
+              create_write_records(sync_read_record)
+            end
+            
             sync_read_record.update!(extraction_completed_at: Time.current)
           end
+        end
+
+        # Process deletions after all records are processed
+        if sync_run.sync.incremental_dedup?
+          Etl::Extractors::ConvertReadRecord::ProcessDeletionsService.new(
+            sync_run,
+            sync_run.sync_read_records.last&.id,
+            sync_run.sync_read_records.last&.data
+          ).call
         end
       end
 

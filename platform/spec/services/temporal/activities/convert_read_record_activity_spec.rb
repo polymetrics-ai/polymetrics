@@ -28,30 +28,60 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
     end
 
     context "when sync_run has read records to process" do
-      let!(:sync_read_record) do
-        create(:sync_read_record, sync: sync, sync_run: sync_run, data: [{ "key" => "value" }])
-      end
+      context "with incremental_dedup sync" do
+        let(:sync) { create(:sync, sync_mode: :incremental_dedup) }
+        let!(:sync_read_record) do
+          create(:sync_read_record, sync: sync, sync_run: sync_run, data: [{ "id" => 1, "name" => "Test" }])
+        end
 
-      it "processes records and updates sync_run status" do
-        activity.execute(sync_run.id)
+        let(:mock_incremental_service) { instance_double(Etl::Extractors::ConvertReadRecord::IncrementalDedupService) }
+        let(:mock_deletions_service) { instance_double(Etl::Extractors::ConvertReadRecord::ProcessDeletionsService) }
 
-        sync_run.reload
-        expect(sync_run.extraction_completed).to be true
-        expect(sync_run.last_extracted_at).to be_present
-        expect(sync_run.records_extracted).to eq(1)
-      end
+        before do
+          allow(Etl::Extractors::ConvertReadRecord::IncrementalDedupService)
+            .to receive(:new)
+            .and_return(mock_incremental_service)
+          allow(mock_incremental_service).to receive(:call)
 
-      it "creates write records for each data entry" do
-        expect do
+          allow(Etl::Extractors::ConvertReadRecord::ProcessDeletionsService)
+            .to receive(:new)
+            .and_return(mock_deletions_service)
+          allow(mock_deletions_service).to receive(:call)
+        end
+
+        it "processes records using incremental dedup service" do
           activity.execute(sync_run.id)
-        end.to change(SyncWriteRecord, :count).by(1)
+          expect(mock_incremental_service).to have_received(:call)
+          expect(mock_deletions_service).to have_received(:call)
+        end
       end
 
-      it "marks read record as extracted" do
-        activity.execute(sync_run.id)
+      context "with full refresh sync" do
+        let!(:sync_read_record) do
+          create(:sync_read_record, sync: sync, sync_run: sync_run, data: [{ "key" => "value" }])
+        end
 
-        sync_read_record.reload
-        expect(sync_read_record.extraction_completed_at).to be_present
+        it "processes records and updates sync_run status" do
+          activity.execute(sync_run.id)
+
+          sync_run.reload
+          expect(sync_run.extraction_completed).to be true
+          expect(sync_run.last_extracted_at).to be_present
+          expect(sync_run.records_extracted).to eq(1)
+        end
+
+        it "creates write records for each data entry" do
+          expect do
+            activity.execute(sync_run.id)
+          end.to change(SyncWriteRecord, :count).by(1)
+        end
+
+        it "marks read record as extracted" do
+          activity.execute(sync_run.id)
+
+          sync_read_record.reload
+          expect(sync_read_record.extraction_completed_at).to be_present
+        end
       end
     end
   end

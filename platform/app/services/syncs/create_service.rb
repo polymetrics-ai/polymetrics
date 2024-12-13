@@ -21,19 +21,29 @@ module Syncs
 
     def create_syncs(schema)
       schema.each_key do |stream|
-        Sync.create!(connection: @connection,
-                     stream_name: stream,
-                     status: :queued,
-                     sync_mode: determine_sync_mode(schema[stream]),
-                     schedule_type: :manual,
-                     sync_frequency: DEFAULT_SYNC_FREQUENCY,
-                     supported_sync_modes: schema[stream]["supported_sync_modes"])
+        Sync.create!(
+          connection: @connection,
+          stream_name: stream,
+          status: :queued,
+          sync_mode: determine_sync_mode(schema[stream]),
+          schedule_type: :manual,
+          schema: schema[stream],
+          sync_frequency: DEFAULT_SYNC_FREQUENCY,
+          supported_sync_modes: schema[stream]["x-supported_sync_modes"],
+          source_defined_cursor: schema[stream]["x-source_defined_cursor"] || false,
+          default_cursor_field: schema[stream]["x-default_cursor_field"],
+          source_defined_primary_key: schema[stream]["x-source_defined_primary_key"]
+        )
       end
     end
 
     def determine_sync_mode(stream)
-      if stream["supported_sync_modes"]&.include?("incremental")
-        :incremental_append
+      supported_modes = stream["x-supported_sync_modes"] || []
+      default_mode = stream["x-default_sync_mode"]
+
+      if supported_modes.any? { |mode| mode.to_s.include?("incremental") } && 
+         default_mode&.to_s&.include?("incremental")
+        :incremental_dedup
       else
         :full_refresh_overwrite
       end

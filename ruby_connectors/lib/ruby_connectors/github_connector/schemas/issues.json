@@ -4,6 +4,8 @@
   "title": "Issues",
   "description": "Detailed information about an issue in a GitHub repository, including its repository, ID, node ID, URL, repository URL, labels URL, comments URL, events URL, HTML URL, number, state, title, user, body, user ID, labels, assignee, assignees, milestone, locked status, active lock reason, comments count, pull request details, closed at timestamp, created at timestamp, author association, draft status, reactions, timeline URL, and performed via GitHub App details.",
   "x-stream_name": "issues",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
   "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {

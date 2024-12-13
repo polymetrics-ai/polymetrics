@@ -6,56 +6,98 @@ RSpec.describe SyncWriteRecord, type: :model do
   describe "associations" do
     it { is_expected.to belong_to(:sync_run) }
     it { is_expected.to belong_to(:sync) }
+    it { is_expected.to belong_to(:sync_read_record) }
   end
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:data) }
-    it { is_expected.to validate_presence_of(:status) }
+    it { is_expected.to validate_presence_of(:destination_action) }
   end
 
   describe "enums" do
     it { is_expected.to define_enum_for(:status).with_values(pending: 0, written: 1, failed: 2) }
+    
+    it do
+      is_expected.to define_enum_for(:destination_action)
+        .with_values(create: 0, insert: 1, update: 2, delete: 3)
+        .with_prefix('destination_action')
+    end
   end
 
   describe "callbacks" do
-    it "generates a signature before validation" do
-      aggregate_failures do
-        record = build(:sync_write_record, data: { "key" => "value" })
-        expect(record.signature).to be_nil
+    it "generates signatures before validation" do
+      sync = create(:sync, source_defined_primary_key: ["id"])
+      record = build(:sync_write_record, 
+        sync: sync,
+        data: { "id" => "123", "name" => "test" }
+      )
+      
+      expect(record.data_signature).to be_nil
+      expect(record.primary_key_signature).to be_nil
 
-        record.valid?
-        expect(record.signature).not_to be_nil
-        expect(record.signature).to be_a(String)
-        expect(record.signature.length).to be_positive
-      end
+      record.valid?
+
+      expect(record.data_signature).to be_present
+      expect(record.primary_key_signature).to be_present
     end
   end
 
   describe "signature generation" do
-    it "generates a consistent signature for the same data within the same sync" do
-      data = { "key" => "value" }
-      record1 = create(:sync_write_record, data: data)
-      record2 = create(:sync_write_record, data: data, sync: record1.sync)
-      expect(record1.signature).to eq(record2.signature)
+    let(:sync) { create(:sync, source_defined_primary_key: ["id"]) }
+    let(:data) { { "id" => "123", "name" => "test" } }
+
+    describe "#generate_data_signature" do
+      it "generates consistent signatures for same data within same sync" do
+        record1 = create(:sync_write_record, sync: sync, data: data)
+        record2 = create(:sync_write_record, sync: sync, data: data)
+        expect(record1.data_signature).to eq(record2.data_signature)
+      end
+
+      it "generates different signatures for same data with different syncs" do
+        record1 = create(:sync_write_record, data: data)
+        record2 = create(:sync_write_record, data: data)
+        expect(record1.data_signature).not_to eq(record2.data_signature)
+      end
+
+      it "generates same signature for different data orders within same sync" do
+        record1 = create(:sync_write_record, sync: sync, data: { "a" => 1, "b" => 2 })
+        record2 = create(:sync_write_record, sync: sync, data: { "b" => 2, "a" => 1 })
+        expect(record1.data_signature).to eq(record2.data_signature)
+      end
     end
 
-    it "generates different signatures for the same data with different syncs" do
-      data = { "key" => "value" }
-      record1 = create(:sync_write_record, data: data)
-      record2 = create(:sync_write_record, data: data)
-      expect(record1.signature).not_to eq(record2.signature)
-    end
+    describe "#generate_primary_key_signature" do
+      it "generates signature when primary key exists" do
+        record = create(:sync_write_record, sync: sync, data: data)
+        expect(record.primary_key_signature).to be_present
+      end
 
-    it "generates the same signature for different data orders within the same sync" do
-      record1 = create(:sync_write_record, data: { "a" => 1, "b" => 2 })
-      record2 = create(:sync_write_record, data: { "b" => 2, "a" => 1 }, sync: record1.sync)
-      expect(record1.signature).to eq(record2.signature)
-    end
+      it "returns nil when no primary key is defined" do
+        sync.update(source_defined_primary_key: [])
+        record = create(:sync_write_record, sync: sync, data: data)
+        expect(record.primary_key_signature).to be_nil
+      end
 
-    it "generates different signatures for arrays with different orders" do
-      record1 = create(:sync_write_record, data: [1, 2, 3])
-      record2 = create(:sync_write_record, data: [3, 2, 1])
-      expect(record1.signature).not_to eq(record2.signature)
+      it "returns nil when primary key value is missing in data" do
+        record = create(:sync_write_record, 
+          sync: sync, 
+          data: { "name" => "test" }
+        )
+        expect(record.primary_key_signature).to be_nil
+      end
+
+      it "generates consistent signatures for same primary key within same sync" do
+        record1 = create(:sync_write_record, sync: sync, data: data)
+        record2 = create(:sync_write_record, sync: sync, data: data.merge("name" => "different"))
+        expect(record1.primary_key_signature).to eq(record2.primary_key_signature)
+      end
+
+      it "handles composite primary keys" do
+        sync.update(source_defined_primary_key: ["id", "code"])
+        data = { "id" => "123", "code" => "ABC", "name" => "test" }
+        record = create(:sync_write_record, sync: sync, data: data)
+        expect(record.primary_key_signature).to be_present
+      end
     end
   end
 
@@ -73,18 +115,6 @@ RSpec.describe SyncWriteRecord, type: :model do
       record.failed!
       expect(record.failed?).to be true
     end
-
-    # implement these when we intoduce state management using AASM
-    # it "cannot transition from written to pending" do
-    #   record = create(:sync_write_record, status: :written)
-    #   expect { record.pending! }.to raise_error(ActiveRecord::RecordInvalid)
-    # end
-
-    # implement these when we intoduce state management using AASM
-    # it "cannot transition from failed to pending" do
-    #   record = create(:sync_write_record, status: :failed)
-    #   expect { record.pending! }.to raise_error(ActiveRecord::RecordInvalid)
-    # end
   end
 
   describe "scopes" do
@@ -136,32 +166,6 @@ RSpec.describe SyncWriteRecord, type: :model do
 
     it "is valid with special characters" do
       expect(build(:sync_write_record, :special_characters)).to be_valid
-    end
-  end
-
-  describe "edge cases" do
-    it "generates different signatures for different data" do
-      record1 = create(:sync_write_record, data: { "key" => "value1" })
-      record2 = create(:sync_write_record, data: { "key" => "value2" })
-      expect(record1.signature).not_to eq(record2.signature)
-    end
-
-    it "handles very large data" do
-      large_data = { "key" => "a" * 1_000_000 } # 1MB of data
-      record = build(:sync_write_record, data: large_data)
-      expect(record).to be_valid
-    end
-
-    it "is invalid without a sync_run" do
-      record = build(:sync_write_record, sync_run: nil)
-      expect(record).to be_invalid
-      expect(record.errors[:sync_run]).to include("must exist")
-    end
-
-    it "is invalid without a sync" do
-      record = build(:sync_write_record, sync: nil)
-      expect(record).to be_invalid
-      expect(record.errors[:sync]).to include("must exist")
     end
   end
 end

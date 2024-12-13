@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_28_210845) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -118,13 +118,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_28_210845) do
     t.bigint "sync_run_id", null: false
     t.bigint "sync_id", null: false
     t.jsonb "data", null: false
-    t.string "signature", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "extraction_completed_at"
     t.bigint "sync_read_record_id"
-    t.index ["signature"], name: "index_sync_write_records_on_signature"
+    t.string "primary_key_signature"
+    t.string "data_signature"
+    t.integer "destination_action", default: 0, null: false
+    t.index ["data_signature"], name: "index_sync_write_records_on_data_signature"
+    t.index ["primary_key_signature"], name: "index_sync_write_records_on_primary_key_signature"
     t.index ["sync_id"], name: "index_sync_write_records_on_sync_id"
     t.index ["sync_read_record_id"], name: "index_sync_write_records_on_sync_read_record_id"
     t.index ["sync_run_id"], name: "index_sync_write_records_on_sync_run_id"

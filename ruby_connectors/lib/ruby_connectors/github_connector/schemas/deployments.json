@@ -5,6 +5,8 @@
   "description": "Detailed information about a deployment in a GitHub repository, including its URL, ID, node ID, task, original environment, environment, description, creation timestamp, update timestamp, statuses URL, repository URL, creator, SHA, ref, payload, transient environment flag, production environment flag, performed via GitHub App, and repository.",
   "x-stream_name": "deployments",
   "x-source_defined_primary_key": ["id"],
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
   "properties": {
     "url": {
       "description": "The fully qualified API endpoint URL for retrieving detailed information about this specific deployment.",

@@ -4,6 +4,8 @@
   "title": "Pull Requests",
   "description": "Detailed information about a pull request in a GitHub repository, including its repository, URL, ID, node ID, HTML URL, diff URL, patch URL, issue URL, commits URL, review comments URL, review comment URL, comments URL, statuses URL, number, state, locked status, title, user, body, labels, milestone, active lock reason, creation timestamp, update timestamp, closed timestamp, merged timestamp, merge commit SHA, assignee, assignees, requested reviewers, requested teams, head branch information, base branch information, links, author association, auto merge details, and draft status.",
   "x-stream_name": "pull_requests",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
   "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {
