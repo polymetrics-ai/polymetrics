@@ -6,7 +6,7 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
   let(:activity) { described_class.new(double("context")) }
   let(:sync) { create(:sync) }
   let(:sync_run) { create(:sync_run, sync: sync) }
-  let(:sync_read_record) { create(:sync_read_record, sync: sync, sync_run: sync_run) }
+  let(:sync_read_record_data) { [{ "id" => 1, "name" => "Test" }] }
 
   describe "#execute" do
     context "when sync_run is already completed" do
@@ -30,14 +30,14 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
     context "when sync_run has read records to process" do
       context "with incremental_dedup sync" do
         let(:sync) { create(:sync, sync_mode: :incremental_dedup) }
-        let!(:sync_read_record) do
-          create(:sync_read_record, sync: sync, sync_run: sync_run, data: [{ "id" => 1, "name" => "Test" }])
-        end
-
         let(:mock_incremental_service) { instance_double(Etl::Extractors::ConvertReadRecord::IncrementalDedupService) }
         let(:mock_deletions_service) { instance_double(Etl::Extractors::ConvertReadRecord::ProcessDeletionsService) }
 
         before do
+          create(:sync_read_record,
+                 sync: sync,
+                 sync_run: sync_run,
+                 data: [{ "id" => 1, "name" => "Test" }])
           allow(Etl::Extractors::ConvertReadRecord::IncrementalDedupService)
             .to receive(:new)
             .and_return(mock_incremental_service)

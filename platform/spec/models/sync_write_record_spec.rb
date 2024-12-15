@@ -16,22 +16,21 @@ RSpec.describe SyncWriteRecord, type: :model do
 
   describe "enums" do
     it { is_expected.to define_enum_for(:status).with_values(pending: 0, written: 1, failed: 2) }
-    
+
     it do
-      is_expected.to define_enum_for(:destination_action)
+      expect(subject).to define_enum_for(:destination_action)
         .with_values(create: 0, insert: 1, update: 2, delete: 3)
-        .with_prefix('destination_action')
+        .with_prefix("destination_action")
     end
   end
 
   describe "callbacks" do
     it "generates signatures before validation" do
       sync = create(:sync, source_defined_primary_key: ["id"])
-      record = build(:sync_write_record, 
-        sync: sync,
-        data: { "id" => "123", "name" => "test" }
-      )
-      
+      record = build(:sync_write_record,
+                     sync: sync,
+                     data: { "id" => "123", "name" => "test" })
+
       expect(record.data_signature).to be_nil
       expect(record.primary_key_signature).to be_nil
 
@@ -79,10 +78,9 @@ RSpec.describe SyncWriteRecord, type: :model do
       end
 
       it "returns nil when primary key value is missing in data" do
-        record = create(:sync_write_record, 
-          sync: sync, 
-          data: { "name" => "test" }
-        )
+        record = create(:sync_write_record,
+                        sync: sync,
+                        data: { "name" => "test" })
         expect(record.primary_key_signature).to be_nil
       end
 
@@ -93,7 +91,7 @@ RSpec.describe SyncWriteRecord, type: :model do
       end
 
       it "handles composite primary keys" do
-        sync.update(source_defined_primary_key: ["id", "code"])
+        sync.update(source_defined_primary_key: %w[id code])
         data = { "id" => "123", "code" => "ABC", "name" => "test" }
         record = create(:sync_write_record, sync: sync, data: data)
         expect(record.primary_key_signature).to be_present

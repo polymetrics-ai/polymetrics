@@ -15,7 +15,7 @@ module Etl
 
         def call
           return unless previous_sync_run_id
-          return unless @sync.source_defined_primary_key.present?
+          return if @sync.source_defined_primary_key.blank?
 
           deleted_signatures = find_deleted_signatures
           return if deleted_signatures&.empty?
@@ -32,9 +32,9 @@ module Etl
 
           # Exclude records that were already processed as deletions or creates in this sync run
           existing_processed_signatures = SyncWriteRecord
-            .where(sync_run_id: @sync_run.id)
-            .where(destination_action: [:delete, :create, :insert])
-            .pluck(:primary_key_signature)
+                                          .where(sync_run_id: @sync_run.id)
+                                          .where(destination_action: %i[delete create insert])
+                                          .pluck(:primary_key_signature)
 
           deleted_signatures - existing_processed_signatures
         end
@@ -42,9 +42,9 @@ module Etl
         def create_delete_records(signatures)
           # Fetch the last known state of these records
           last_known_records = SyncWriteRecord
-            .where(sync_id: @sync.id, primary_key_signature: signatures)
-            .where.not(destination_action: :delete)
-            .order(created_at: :desc)
+                               .where(sync_id: @sync.id, primary_key_signature: signatures)
+                               .where.not(destination_action: :delete)
+                               .order(created_at: :desc)
 
           last_known_records.each do |record|
             SyncWriteRecord.create!(
@@ -75,14 +75,13 @@ module Etl
 
         def previous_sync_run_id
           @previous_sync_run_id ||= SyncRun
-            .where(sync_id: @sync.id, extraction_completed: true)
-            .where('id < ?', @sync_run.id)
-            .order(id: :desc)
-            .limit(1)
-            .pluck(:id)
-            .first
+                                    .where(sync_id: @sync.id, extraction_completed: true)
+                                    .where(id: ...@sync_run.id)
+                                    .order(id: :desc)
+                                    .limit(1)
+                                    .pick(:id)
         end
       end
     end
   end
-end 
+end

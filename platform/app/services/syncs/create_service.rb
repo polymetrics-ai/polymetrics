@@ -41,7 +41,7 @@ module Syncs
       supported_modes = stream["x-supported_sync_modes"] || []
       default_mode = stream["x-default_sync_mode"]
 
-      if supported_modes.any? { |mode| mode.to_s.include?("incremental") } && 
+      if supported_modes.any? { |mode| mode.to_s.include?("incremental") } &&
          default_mode&.to_s&.include?("incremental")
         :incremental_dedup
       else

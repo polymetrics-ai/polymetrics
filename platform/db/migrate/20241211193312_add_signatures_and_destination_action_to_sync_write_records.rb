@@ -4,29 +4,33 @@ class AddSignaturesAndDestinationActionToSyncWriteRecords < ActiveRecord::Migrat
   disable_ddl_transaction!
 
   def up
-    # Add columns one by one
-    add_column :sync_write_records, :primary_key_signature, :string
-    add_column :sync_write_records, :data_signature, :string
-    add_column :sync_write_records, :destination_action, :integer, default: 0, null: false
+    # Add columns in bulk
+    change_table :sync_write_records, bulk: true do |t|
+      t.string :primary_key_signature
+      t.string :data_signature
+      t.integer :destination_action, default: 0, null: false
+    end
 
     # Add indexes after columns are created
-    add_index :sync_write_records, :primary_key_signature, 
-              algorithm: :concurrently, 
-              name: 'index_sync_write_records_on_primary_key_signature'
-              
-    add_index :sync_write_records, :data_signature, 
+    add_index :sync_write_records, :primary_key_signature,
               algorithm: :concurrently,
-              name: 'index_sync_write_records_on_data_signature'
+              name: "index_sync_write_records_on_primary_key_signature"
+
+    add_index :sync_write_records, :data_signature,
+              algorithm: :concurrently,
+              name: "index_sync_write_records_on_data_signature"
   end
 
   def down
     # Remove indexes first
-    remove_index :sync_write_records, name: 'index_sync_write_records_on_primary_key_signature'
-    remove_index :sync_write_records, name: 'index_sync_write_records_on_data_signature'
+    remove_index :sync_write_records, name: "index_sync_write_records_on_primary_key_signature"
+    remove_index :sync_write_records, name: "index_sync_write_records_on_data_signature"
 
-    # Then remove columns
-    remove_column :sync_write_records, :primary_key_signature
-    remove_column :sync_write_records, :data_signature
-    remove_column :sync_write_records, :destination_action
+    # Remove columns in bulk
+    change_table :sync_write_records, bulk: true do |t|
+      t.remove :primary_key_signature
+      t.remove :data_signature
+      t.remove :destination_action
+    end
   end
 end
