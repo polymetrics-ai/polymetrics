@@ -4,6 +4,8 @@
   "title": "Releases",
   "description": "Detailed information about a release in a GitHub repository, including its repository, URL, HTML URL, assets URL, upload URL, tarball URL, zipball URL, ID, node ID, tag name, target commitish, name, body, draft status, prerelease status, creation timestamp, publication timestamp, author, assets, body HTML, body text, mentions count, discussion URL, and reactions.",
   "x-stream_name": "releases",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
   "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {

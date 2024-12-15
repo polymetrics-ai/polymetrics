@@ -29,8 +29,13 @@ RSpec.describe Sync, type: :model do
     }
 
     it {
-      expect(sync).to define_enum_for(:sync_mode).with_values(full_refresh_overwrite: 0, full_refresh_append: 1,
-                                                              incremental_append: 2, incremental_dedup_history: 3)
+      expect(sync).to define_enum_for(:sync_mode).with_values(
+        full_refresh_overwrite: 0,
+        full_refresh_append: 1,
+        incremental_append: 2,
+        incremental_dedup_history: 3,
+        incremental_dedup: 4
+      )
     }
 
     it { is_expected.to define_enum_for(:schedule_type).with_values(scheduled: 0, cron: 1, manual: 2) }

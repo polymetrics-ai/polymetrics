@@ -21,12 +21,51 @@ module Temporal
       private
 
       def process_read_records(sync_run)
+        process_sync_records(sync_run)
+        process_deletions(sync_run)
+      end
+
+      def process_sync_records(sync_run)
         sync_run.sync_read_records.find_each(batch_size: 1000) do |sync_read_record|
-          ActiveRecord::Base.transaction do
-            create_write_records(sync_read_record)
-            sync_read_record.update!(extraction_completed_at: Time.current)
-          end
+          process_single_record(sync_run, sync_read_record)
         end
+      end
+
+      def process_single_record(sync_run, sync_read_record)
+        ActiveRecord::Base.transaction do
+          process_record_data(sync_run, sync_read_record)
+          mark_record_as_processed(sync_read_record)
+        end
+      end
+
+      def process_record_data(sync_run, sync_read_record)
+        if sync_run.sync.incremental_dedup?
+          process_with_dedup(sync_run, sync_read_record)
+        else
+          create_write_records(sync_read_record)
+        end
+      end
+
+      def process_with_dedup(sync_run, sync_read_record)
+        Etl::Extractors::ConvertReadRecord::IncrementalDedupService.new(
+          sync_run,
+          sync_read_record.id,
+          sync_read_record.data
+        ).call
+      end
+
+      def mark_record_as_processed(sync_read_record)
+        sync_read_record.update!(extraction_completed_at: Time.current)
+      end
+
+      def process_deletions(sync_run)
+        return unless sync_run.sync.incremental_dedup?
+
+        Etl::Extractors::ConvertReadRecord::ProcessDeletionsService.new(
+          sync_run,
+          sync_run.sync_read_records.last&.id,
+          sync_run.sync_read_records.last&.data
+        ).call
       end
 
       def update_sync_run_status(sync_run)

@@ -9,7 +9,8 @@ class Sync < ApplicationRecord
     full_refresh_overwrite: 0,
     full_refresh_append: 1,
     incremental_append: 2,
-    incremental_dedup_history: 3
+    incremental_dedup_history: 3,
+    incremental_dedup: 4
   }
   enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }
 
