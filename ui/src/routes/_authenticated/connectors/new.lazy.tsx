@@ -139,7 +139,8 @@ function AddConnector() {
                 </div>
             </div>
             <div className="col-span-1 gap-0 w-full overflow-hidden">
-                <div className="flex flex-col pl-8 pt-8 h-full bg-white max-w-[24rem]">
+                {/* <!-- max-w-[24rem] --> */}
+                <div className="flex flex-col pl-8 pt-8 h-full bg-white">
                     <div className="flex flex-col h-full">
                         <div className="self-start text-xs font-medium tracking-normal text-center text-slate-400">
                             STEPS TO COMPLETE

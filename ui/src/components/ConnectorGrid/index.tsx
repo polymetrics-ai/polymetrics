@@ -1,6 +1,7 @@
 import React from 'react';
+import Loader from '../Loader';
 import { ConnectorCard } from '../Card';
-import { CONNECTORS_LIST } from '@/constants/constants';
+import { useDefinitionQuery } from '@/hooks/useConnectorDefinitions'
 
 export interface ActiveConnectorState {
     connector_class_name: string;
@@ -15,25 +16,36 @@ export interface ConnectorGridProps {
 
 const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
     
+    /* Load the definitions for the Grid to be rendered */
+    let {data, error, isLoading } = useDefinitionQuery();
+    const definitons = data?.data
+    
     const handleOnSelection = (grid: ActiveConnectorState) => {
         if (setActive) {
             setActive(grid);
         }
     };
-    const connectors = CONNECTORS_LIST;
+    
+    if (isLoading) return <Loader/>;
+    if (error) return <>Error:{error.message}</>;
+
     return (
         <div className="overflow-y-auto px-10">
             <div className="grid grid-flow-row grid-cols-4 gap-3 text-base font-medium tracking-normal text-slate-800 h-full flex-grow">
-                {connectors.map((item) => (
+                {definitons.map((def: any) => (
                     <ConnectorCard
-                        key={item.name}
-                        name={item.name}
-                        icon={item.icon}
-                        isActive={active?.connector_class_name?.toLocaleLowerCase() === item.name.toLocaleLowerCase()}
-                        handleOnSelection={() => handleOnSelection({ 
-                            connector_class_name: item.name.toLowerCase(),
-                            icon_url: item.icon 
-                        })}
+                        key={def.name}
+                        definition={def}
+                        isActive={  
+                            active?.connector_class_name?.toLocaleLowerCase() ===
+                            def.name.toLocaleLowerCase()
+                        }
+                        handleOnSelection={() =>
+                            handleOnSelection({
+                                connector_class_name: def.name.toLowerCase(),
+                                icon_url: def.icon
+                            })
+                        }
                     />
                 ))}
             </div>

@@ -8,13 +8,12 @@ import Loader from '@/components/Loader';
 import ConnectorType from '@/components/ConnectorType';
 import { getConnectors } from '@/service';
 import { getTimeStamp } from '@/lib/date-helper';
-import { useToast } from '@/hooks/use-toast';
-import { ToastAction } from "@/components/ui/toast"
+import { useToast } from '@/hooks/useToast';
 import { Toaster } from '@/components/ui';
 
 // Define the expected response type
 interface ConnectorResponse {
-    data: unknown // Adjust the type as necessary
+    data: unknown; // Adjust the type as necessary
 }
 
 export const Route = createLazyFileRoute('/_authenticated/connectors/')({
@@ -22,29 +21,28 @@ export const Route = createLazyFileRoute('/_authenticated/connectors/')({
 });
 
 export function Connectors() {
-    
-    const { toast} = useToast();
+    const { toast } = useToast();
     const navigate = useNavigate();
 
-    const state = useRouterState({select: s=>s.location.state});
+    const state = useRouterState({ select: (s) => s.location.state });
 
     const { data: { data } = { data: [] }, isLoading } = useQuery<ConnectorResponse>({
         queryKey: ['connectors'],
-        queryFn: getConnectors 
+        queryFn: getConnectors
     });
 
-    useEffect(()=>{
-        if(state.showToast){
+
+    useEffect(() => {
+        if (state.showToast) {
             toast({
-                title: "",
-                description: state?.message,
+                title: '',
+                description: state?.message
                 // action: (
                 //     <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
                 // ),
-                })
+            });
         }
-    },[state])
-
+    }, [state]);
 
     const columns = useMemo(
         () => [
@@ -60,7 +58,7 @@ export function Connectors() {
             {
                 header: 'CONNECTOR',
                 accessorKey: 'connector_class_name',
-                cell: (row:{getValue: () => string; icon_url: string }) => (
+                cell: (row: { getValue: () => string; icon_url: string }) => (
                     <ConnectorType icon={row.icon_url} name={row.getValue()}></ConnectorType>
                 )
             },
@@ -87,7 +85,7 @@ export function Connectors() {
             </div>
             <div className="flex-1 h-full flex items-start mt-10 justify-center">
                 {isLoading ? <Loader /> : <Table data={data} columns={columns} />}
-                <Toaster/>
+                <Toaster />
             </div>
         </main>
     );

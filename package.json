@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@react-formgen/json-schema": "^0.0.0-alpha.19"
+  }
+}

@@ -3,18 +3,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { getTitleCase } from '@/lib/helper';
 
 export interface ConnectorCardProps {
-    name: string;
-    icon: string;
+    key: string;
+    definition: any;
     isActive: boolean;
     handleOnSelection: (name: string) => void;
 }
 
 const ConnectorCard: React.FC<ConnectorCardProps> = ({
-    name,
-    icon,
+    definition,
     isActive,
     handleOnSelection
 }) => {
+    const {name, definition_status, icon_url, } = definition;
     return (
         <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -24,14 +24,18 @@ const ConnectorCard: React.FC<ConnectorCardProps> = ({
                         onClick={() => handleOnSelection(name)}
                     >
                         <div className=" flex w-11 h-11 rounded-full border border-slate-200 bg-white items-center justify-center">
-                            <img className="w-4.5 h-4.5" src={icon} alt="Icon" />
+                            <img className="w-4.5 h-4.5" src={icon_url} alt="Icon" />
                         </div>
                         <div className="flex flex-1 min-w-0 items-start justify-start whitespace-pre-wrap">
-                            <div className="text-sm text-slate-800 truncate">{getTitleCase(name)}</div>
+                            <div className="text-sm text-slate-800 truncate">
+                                {getTitleCase(name)}
+                            </div>
                         </div>
                     </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-zinc-800 text-white py-2 px-2">{getTitleCase(name)}</TooltipContent>
+                <TooltipContent className="bg-zinc-800 text-white py-2 px-2">
+                    {getTitleCase(name)}
+                </TooltipContent>
             </Tooltip>
         </TooltipProvider>
     );

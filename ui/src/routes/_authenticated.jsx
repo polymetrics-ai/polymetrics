@@ -44,7 +44,7 @@ function AuthLayout() {
     return (
         <div className="h-dvh w-full flex">
             <NavBar onSignOut={onSignOut} />
-            <Outlet/>
+            <Outlet />
         </div>
     );
 }

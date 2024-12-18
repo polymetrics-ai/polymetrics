@@ -13,7 +13,7 @@ import {
 
 const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
     const navigate = useNavigate();
-    
+
     // Use the 'table' variable to render the table
     const table = useReactTable({
         data: data?.data ?? [],
@@ -35,21 +35,31 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
                 ))}
             </TableHeader>
             <TableBody>
-                {table.getRowModel().rows.map((rowEl) =>{
-                    return (<TableRow
-                        key={rowEl.id}
-                        onClick={() => navigate({ to: `/connectors/${rowEl?.original?.id}`, state: rowEl.original })}
-                    >
-                        {rowEl.getVisibleCells().map((cellEl) => {
-                            console.log(cellEl.getValue());
-                            return (
-                                <TableCell key={cellEl.id}>
-                                    {flexRender(cellEl.column.columnDef.cell, cellEl.getContext())}
-                                </TableCell>
-                            );
-                        })}
-                    </TableRow>
-)})}
+                {table.getRowModel().rows.map((rowEl) => {
+                    return (
+                        <TableRow
+                            key={rowEl.id}
+                            onClick={() =>
+                                navigate({
+                                    to: `/connectors/${rowEl?.original?.id}`,
+                                    state: rowEl.original
+                                })
+                            }
+                        >
+                            {rowEl.getVisibleCells().map((cellEl) => {
+                                console.log(cellEl.getValue());
+                                return (
+                                    <TableCell key={cellEl.id}>
+                                        {flexRender(
+                                            cellEl.column.columnDef.cell,
+                                            cellEl.getContext()
+                                        )}
+                                    </TableCell>
+                                );
+                            })}
+                        </TableRow>
+                    );
+                })}
             </TableBody>
         </Table>
     );

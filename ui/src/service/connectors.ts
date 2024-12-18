@@ -1,8 +1,12 @@
 import apiClient from './apiClient';
 import { postConnectorPayload } from '@/types/payload';
 
-const getConnectors = () : Promise<void> => {
+const getConnectors = (): Promise<void> => {
     return apiClient.get('api/v1/connectors');
+};
+
+const getDefinitions = (): Promise<void> => {
+    return apiClient.get('api/v1/connectors/definitions');
 };
 
 const postConnector = (payload: postConnectorPayload): Promise<void> => {
@@ -11,6 +15,6 @@ const postConnector = (payload: postConnectorPayload): Promise<void> => {
 
 const putConnector = (id: string, payload: postConnectorPayload): Promise<void> => {
     return apiClient.put(`api/v1/connectors/${id}`, payload);
-}
+};
 
-export { getConnectors, postConnector , putConnector };
+export { getConnectors, getDefinitions, postConnector, putConnector };

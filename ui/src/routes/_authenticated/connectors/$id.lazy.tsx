@@ -1,8 +1,13 @@
 import { useState, useRef } from 'react';
-import { useMutation , useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createLazyFileRoute, useNavigate, useParams, useRouterState } from '@tanstack/react-router';
+import {
+    createLazyFileRoute,
+    useNavigate,
+    useParams,
+    useRouterState
+} from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { ContactCard } from '@/components/Card';
 import SearchBar from '@/components/Search';
@@ -24,43 +29,49 @@ export const Route = createLazyFileRoute('/_authenticated/connectors/$id')({
 const { useStepper } = defineStepper(...connectorSteps);
 
 function EditConnector() {
-   
     // State Variables
-    const connectorState = useRouterState({select: s=>s.location.state});
-    const [active, setActive] = useState<ActiveConnectorState>({ connector_class_name : connectorState?.connector_class_name, icon_url: connectorState?.icon_url });
+    const connectorState = useRouterState({ select: (s) => s.location.state });
+    const [active, setActive] = useState<ActiveConnectorState>({
+        connector_class_name: connectorState?.connector_class_name,
+        icon_url: connectorState?.icon_url
+    });
     const formRef = useRef<ConnectorFormRef>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Hook Functions
     const id = useParams({
         from: '/_authenticated/connectors/$id',
-        select: (params) => params.id,
+        select: (params) => params.id
     });
     const stepper = useStepper();
     const navigate = useNavigate();
 
     const queryClient = useQueryClient();
-    
+
     const mutation = useMutation({
-        mutationFn: async (payload: {id: string, data: postConnectorPayload}) => {
-            const {id , data} = payload;
+        mutationFn: async (payload: { id: string; data: postConnectorPayload }) => {
+            const { id, data } = payload;
             const response = await putConnector(id, data);
             return response;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['connectors'] , refetchType: 'active'});
+            queryClient.invalidateQueries({ queryKey: ['connectors'], refetchType: 'active' });
 
-            navigate({ to: '/connectors', replace: true, state: {showToast : true , message: 'Connector Successfully Updated'} });
+            navigate({
+                to: '/connectors',
+                replace: true,
+                state: { showToast: true, message: 'Connector Successfully Updated' }
+            });
         }
     });
 
     const form = useForm<z.infer<typeof ConnectorSchema>>({
         resolver: zodResolver(ConnectorSchema),
         defaultValues: {
-            name:  connectorState?.name || '',
+            name: connectorState?.name || '',
             description: connectorState?.description || '',
             personal_access_token: connectorState?.configuration?.personal_access_token || '',
-            repository: connectorState?.configuration?.repository || '',
+            repository: connectorState?.configuration?.repository || ''
         }
     });
 
@@ -140,7 +151,13 @@ function EditConnector() {
                             {isLoading ? (
                                 <Loader />
                             ) : (
-                                <ConnectorForm form={form} ref={formRef} onSubmit={handleSubmit} connectorData={connectorState} isEditMode={true} />
+                                <ConnectorForm
+                                    form={form}
+                                    ref={formRef}
+                                    onSubmit={handleSubmit}
+                                    connectorData={connectorState}
+                                    isEditMode={true}
+                                />
                             )}
                         </div>
                     )}
@@ -163,7 +180,8 @@ function EditConnector() {
                 </div>
             </div>
             <div className="col-span-1 gap-0 w-full overflow-hidden">
-                <div className="flex flex-col pl-8 pt-8 h-full bg-white max-w-[24rem]">
+                {/* <!-- max-w-[24rem] --> */}
+                <div className="flex flex-col pl-8 pt-8 h-full bg-white">
                     <div className="flex flex-col h-full">
                         <div className="self-start text-xs font-medium tracking-normal text-center text-slate-400">
                             STEPS TO COMPLETE

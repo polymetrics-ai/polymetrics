@@ -2,3 +2,34 @@
 # yarn lockfile v1
 
 
+"@react-formgen/core@0.0.0-alpha.19":
+  version "0.0.0-alpha.19"
+  resolved "https://registry.yarnpkg.com/@react-formgen/core/-/core-0.0.0-alpha.19.tgz#aab6cd5c83bb5de6028604b20af98ae5ca3214a2"
+  integrity sha512-V4Aj0bZgO7CGSKGyXxMkEuSi/4n7novd5qE1156okVS7nerdoqKtwjL3tt6pOtuDWsxXRI3vjYcw8F1V5MXFcw==
+  dependencies:
+    nanoid "^5.0.7"
+    zustand "^4.5.2"
+
+"@react-formgen/json-schema@^0.0.0-alpha.19":
+  version "0.0.0-alpha.19"
+  resolved "https://registry.yarnpkg.com/@react-formgen/json-schema/-/json-schema-0.0.0-alpha.19.tgz#602c1082b104a20d87762a948e3bcf555390bf24"
+  integrity sha512-6mD2rJbOU13OtIwPjlZgWDziu/AkH9ZiQefM/jEawNsXZbjxU2iDmzMVO7GVXx9f9Pc6jlRPa1hysDLUkaWPmQ==
+  dependencies:
+    "@react-formgen/core" "0.0.0-alpha.19"
+
+nanoid@^5.0.7:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.9.tgz#977dcbaac055430ce7b1e19cf0130cea91a20e50"
+  integrity sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==
+
+use-sync-external-store@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
+  integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
+
+zustand@^4.5.2:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.5.5.tgz#f8c713041543715ec81a2adda0610e1dc82d4ad1"
+  integrity sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==
+  dependencies:
+    use-sync-external-store "1.2.2"
