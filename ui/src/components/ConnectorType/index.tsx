@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { getTitleCase } from '@/lib/helper';
 export interface ConnectorTypeProps {
     className?: string;
     icon: string;
@@ -13,13 +13,13 @@ const ConnectorType: React.FC<ConnectorTypeProps> = ({ icon, name }) => {
                 <img
                     className="w-4.5 h-4.5 p-2 shrink-0"
                     src={
-                        icon
+                        icon !== ''
                             ? icon
                             : 'https://raw.githubusercontent.com/polymetrics-ai/polymetrics/main/public/connector_icons/github.svg'
                     }
                 />
             </div>
-            <span className="text-sm font-medium text-slate-800">{name}</span>
+            <span className="text-sm font-medium text-slate-800">{getTitleCase(name)}</span>
         </div>
     );
 };

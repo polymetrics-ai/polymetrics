@@ -18,50 +18,60 @@ export interface ConnectorFormRef {
     submitForm: () => void;
 }
 export interface ConnectorFormProps {
-    form: UseFormReturn<z.infer<typeof ConnectorSchema>>; // Update type here
-    // ref: React.Ref<HTMLFormElement>
+    form: UseFormReturn<z.infer<typeof ConnectorSchema>>;
     onSubmit?: (data: z.infer<typeof ConnectorSchema>) => void;
     setIsDisabled: () => void;
+    connectorData: Array<object>;
+    isEditMode?: boolean;
 }
-const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(({ form, onSubmit }, ref) => {
-    useImperativeHandle(ref, () => ({
-        submitForm: () => form.handleSubmit(onSubmit)()
-    }));
+// const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(
+//     ({ form, onSubmit, connectorData, isEditMode = false }, ref) => {
+//         useImperativeHandle(ref, () => ({
+//             submitForm: () => form.handleSubmit(onSubmit)()
+//         }));
 
-    return (
-        <div className="flex flex-col w-full px-10">
-            <Form {...form}>
-                <form className="flex flex-col w-full" onSubmit={form.handleSubmit(onSubmit)}>
-                    {connectorFields.map((input, index) => (
-                        <FormField
-                            key={index}
-                            control={form.control}
-                            name={input.field || input.label?.toLowerCase()}
-                            render={({ field }) => (
-                                <FormItem className="flex mt-6 flex-col items-start self-stretch">
-                                    <FormLabel className="text-sm font-semibold tracking-tighter">
-                                        {input.label}
-                                    </FormLabel>
-                                    <FormControl>
-                                        <>
-                                            <Input
-                                                className="text-sm my-2.5 font-normal"
-                                                {...field}
-                                            />
-                                            <p className="font-normal text-xs fold-semibold text-slate-500">
-                                                {input.placeholder}
-                                            </p>
-                                        </>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    ))}
-                </form>
-            </Form>
-        </div>
-    );
-});
+//         const initialValues: Record<string, any> = isEditMode ? connectorData : {};
 
-export default ConnectorForm;
+//         return (
+//             <div className="flex flex-col w-full px-10">
+//                 <Form {...form}>
+//                     <form className="flex flex-col w-full" onSubmit={form.handleSubmit(onSubmit)}>
+//                         {connectorFields.map((input, index) => (
+//                             <FormField
+//                                 key={index}
+//                                 control={form.control}
+//                                 name={input.field || input.label?.toLowerCase()}
+//                                 render={({ field }) => {
+//                                     // console.log(field, initialValues[field.name]);
+//                                     return (
+//                                         <FormItem className="flex mt-6 flex-col items-start self-stretch">
+//                                             <FormLabel className="text-sm font-semibold tracking-tighter">
+//                                                 {input.label}
+//                                             </FormLabel>
+//                                             <FormControl>
+//                                                 <>
+//                                                     <Input
+//                                                         className="text-sm my-2.5 font-normal"
+//                                                         {...field}
+//                                                     />
+//                                                     <p className="font-normal text-xs fold-semibold text-slate-500">
+//                                                         {input.placeholder}
+//                                                     </p>
+//                                                 </>
+//                                             </FormControl>
+//                                             <FormMessage />
+//                                         </FormItem>
+//                                     );
+//                                 }}
+//                             />
+//                         ))}
+//                     </form>
+//                 </Form>
+//             </div>
+//         );
+//     }
+// );
+// export default ConnectorForm;
+
+const ConnectorForm: React.FC<ConnectorFormProps> = ({}) => {};
+ export default ConnectorForm;

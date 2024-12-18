@@ -3,11 +3,11 @@ import { Button, Separator } from '../ui';
 
 export interface StepperProps {
     stepper: {
-      all: Array<{id: string, title: string, description: string}>;
-      current: { id: string, index: number };
-      goTo: (id: string) => void;
+        all: Array<{ id: string; title: string; description: string }>;
+        current: { id: string; index: number };
+        goTo: (id: string) => void;
     };
-  }
+}
 
 const VerticalStepper: React.FC<StepperProps> = ({ stepper }) => {
     return (

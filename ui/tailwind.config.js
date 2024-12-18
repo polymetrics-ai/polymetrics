@@ -61,8 +61,8 @@ module.exports = {
             },
             keyframes: {
                 loader: {
-                    '0%, 100%': { height: '8rem' },
-                    '50%': { height: '3rem' }
+                    '0%, 100%': { height: '6rem' },
+                    '50%': { height: '2rem' }
                 },
                 'accordion-down': {
                     from: { height: '0' },
