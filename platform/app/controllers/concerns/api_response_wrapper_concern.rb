@@ -3,23 +3,35 @@
 module ApiResponseWrapperConcern
   extend ActiveSupport::Concern
 
-  def render_success(data, status = :ok)
-    render json: { data: }, status:
-  end
-
-  def render_error(message, status: :unprocessable_entity)
-    render json: { error: { message: } }, status:
-  end
-
-  def render_api_response(result, _status)
-    if result.is_a?(ActiveRecord::RecordNotFound)
-      render_error(result.message, status: :not_found)
-    elsif result.is_a?(StandardError)
-      Rails.logger.error("Unexpected error: #{result.message}")
-      Rails.logger.error(result.backtrace&.join("\n"))
-      render_error(result.message, status: :internal_server_error)
+  def render_api_response(result, status = :ok)
+    case result
+    when ActiveRecord::RecordNotFound
+      handle_error_response(result.message, :not_found)
+    when StandardError
+      handle_error_response(result.message)
     else
-      render_success(result, :ok)
+      render json: { data: result }, status: status
     end
+  end
+
+  def render_success(data, status = :ok)
+    render json: { data: data }, status: status
+  end
+
+  def render_error(message, status = :bad_request)
+    response_body = {
+      error: {
+        message: message
+      }
+    }
+
+    render json: response_body, status: status
+  end
+
+  private
+
+  def handle_error_response(message, status = :internal_server_error)
+    Rails.logger.error("Unexpected error: #{message}") if status == :internal_server_error
+    render_error(message, status)
   end
 end

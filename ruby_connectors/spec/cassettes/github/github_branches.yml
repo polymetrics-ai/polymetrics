@@ -1,0 +1,85 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.github.com/repos/rails/rails/branches?page=1&per_page=2
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 9.1.0
+      Content-Type:
+      - application/json
+      Authorization:
+      - token <GITHUB_ACCESS_TOKEN>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 26 Oct 2024 20:41:22 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With
+      Etag:
+      - W/"08d706a3870f169a9f4e62e67745098d477804acb626c389d40c6b6525e06113"
+      Github-Authentication-Token-Expiration:
+      - '2025-08-10 00:00:00 +0530'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Link:
+      - <https://api.github.com/repositories/8514/branches?page=2&per_page=2>; rel="next",
+        <https://api.github.com/repositories/8514/branches?page=31&per_page=2>; rel="last"
+      X-Accepted-Github-Permissions:
+      - contents=read
+      X-Github-Api-Version-Selected:
+      - '2022-11-28'
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4993'
+      X-Ratelimit-Reset:
+      - '1729976153'
+      X-Ratelimit-Used:
+      - '7'
+      X-Ratelimit-Resource:
+      - core
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Access-Control-Allow-Origin:
+      - "*"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Frame-Options:
+      - deny
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - '0'
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Content-Security-Policy:
+      - default-src 'none'
+      Transfer-Encoding:
+      - chunked
+      Server:
+      - github.com
+      X-Github-Request-Id:
+      - D5A8:2B0D9F:B48D10:C1647C:671D53F2
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"name":"0-5-stable","commit":{"sha":"7b7799aec70f1b31db9fcc389b26ae61ef44d9bc","url":"https://api.github.com/repos/rails/rails/commits/7b7799aec70f1b31db9fcc389b26ae61ef44d9bc"},"protected":true},{"name":"0-6-stable","commit":{"sha":"11665ed67989e2ebb4ef38fa0781514a649b7ef2","url":"https://api.github.com/repos/rails/rails/commits/11665ed67989e2ebb4ef38fa0781514a649b7ef2"},"protected":true}]'
+  recorded_at: Sat, 26 Oct 2024 20:41:22 GMT
+recorded_with: VCR 6.2.0

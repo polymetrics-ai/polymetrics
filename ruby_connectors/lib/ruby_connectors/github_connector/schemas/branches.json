@@ -4,6 +4,9 @@
   "title": "Branches",
   "description": "Detailed information about a branch in a GitHub repository, including its name, commit, protection status, and protection rules.",
   "x-stream_name": "branches",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
+  "x-source_defined_primary_key": ["name"],
   "properties": {
     "repository": {
       "description": "The fully qualified name or unique identifier of the repository containing the branch. This could be in the format 'owner/repo'.",

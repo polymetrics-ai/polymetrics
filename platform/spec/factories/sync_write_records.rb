@@ -2,8 +2,9 @@
 
 FactoryBot.define do
   factory :sync_write_record do
-    sync_run
-    sync
+    association :sync_run
+    association :sync
+    association :sync_read_record
     data { { "key" => "value" } }
     status { :pending }
 

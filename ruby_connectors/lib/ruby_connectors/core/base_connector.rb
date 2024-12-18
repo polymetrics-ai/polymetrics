@@ -18,6 +18,10 @@ module RubyConnectors
       def write(data)
         raise NotImplementedError, "#{self.class} must implement #write"
       end
+
+      def catalog
+        raise NotImplementedError, "#{self.class} must implement #catalog"
+      end
     end
   end
 end

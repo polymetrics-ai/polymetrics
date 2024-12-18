@@ -4,6 +4,9 @@
   "title": "Repository Assignees",
   "description": "Detailed information about a repository assignee, including their repository, login, ID, node ID, avatar URL, gravatar ID, URL, HTML URL, followers URL, following URL, gists URL, starred URL, subscriptions URL, organizations URL, repositories URL, events URL, received events URL, type, site admin status, and permissions.",
   "x-stream_name": "repository_assignees",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
+  "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {
       "description": "The full name of the repository where the assignee is associated",

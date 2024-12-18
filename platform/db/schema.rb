@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,11 +22,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.integer "status", default: 0, null: false
     t.jsonb "configuration", null: false
     t.integer "schedule_type", default: 0, null: false
-    t.string "namespace"
     t.string "stream_prefix"
     t.string "sync_frequency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "namespace", default: 0
     t.index ["destination_id"], name: "index_connections_on_destination_id"
     t.index ["source_id"], name: "index_connections_on_source_id"
     t.index ["workspace_id", "name"], name: "index_connections_on_workspace_id_and_name", unique: true
@@ -74,6 +74,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.string "signature", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "extraction_completed_at"
+    t.index ["signature", "sync_id"], name: "index_sync_read_records_on_signature_and_sync_id", unique: true
     t.index ["sync_id"], name: "index_sync_read_records_on_sync_id"
     t.index ["sync_run_id"], name: "index_sync_read_records_on_sync_run_id"
   end
@@ -91,20 +93,43 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_01_194230) do
     t.integer "records_failed_to_write", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "current_page", default: 0
+    t.integer "total_pages", default: 0
+    t.integer "current_offset", default: 0
+    t.integer "batch_size", default: 1000
+    t.string "last_cursor_value"
+    t.datetime "last_extracted_at"
+    t.boolean "extraction_completed", default: false
+    t.integer "records_extracted", default: 0
+    t.string "temporal_workflow_id"
+    t.string "temporal_run_id"
+    t.jsonb "temporal_read_data_workflow_ids", default: []
     t.index ["status"], name: "index_sync_runs_on_status"
+    t.index ["sync_id", "current_page"], name: "index_sync_runs_on_sync_id_and_current_page"
+    t.index ["sync_id", "last_cursor_value"], name: "index_sync_runs_on_sync_id_and_last_cursor_value"
+    t.index ["sync_id", "last_extracted_at"], name: "index_sync_runs_on_sync_id_and_last_extracted_at"
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
+    t.index ["temporal_read_data_workflow_ids"], name: "index_sync_runs_on_temporal_read_data_workflow_ids", using: :gin
+    t.index ["temporal_run_id"], name: "index_sync_runs_on_temporal_run_id"
+    t.index ["temporal_workflow_id"], name: "index_sync_runs_on_temporal_workflow_id"
   end
 
   create_table "sync_write_records", force: :cascade do |t|
     t.bigint "sync_run_id", null: false
     t.bigint "sync_id", null: false
     t.jsonb "data", null: false
-    t.string "signature", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["signature"], name: "index_sync_write_records_on_signature"
+    t.datetime "extraction_completed_at"
+    t.bigint "sync_read_record_id"
+    t.string "primary_key_signature"
+    t.string "data_signature"
+    t.integer "destination_action", default: 0, null: false
+    t.index ["data_signature"], name: "index_sync_write_records_on_data_signature"
+    t.index ["primary_key_signature"], name: "index_sync_write_records_on_primary_key_signature"
     t.index ["sync_id"], name: "index_sync_write_records_on_sync_id"
+    t.index ["sync_read_record_id"], name: "index_sync_write_records_on_sync_read_record_id"
     t.index ["sync_run_id"], name: "index_sync_write_records_on_sync_run_id"
   end
 

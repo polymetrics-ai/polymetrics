@@ -75,8 +75,8 @@ RSpec.describe Workspace, type: :model do
     let(:workspace) { create(:workspace) }
 
     it "returns the default analytics db connector" do
-      default_connector = create(:connector, workspace:, default_analytics_db: true)
-      create(:connector, workspace:, default_analytics_db: false)
+      default_connector = create(:connector, workspace: workspace, default_analytics_db: true)
+      create(:connector, workspace: workspace, default_analytics_db: false)
 
       expect(workspace.default_analytics_db).to eq(default_connector)
     end
@@ -86,7 +86,7 @@ RSpec.describe Workspace, type: :model do
     let(:workspace) { create(:workspace) }
 
     it "returns the correct count of connectors" do
-      create_list(:connector, 3, workspace:)
+      create_list(:connector, 3, workspace: workspace)
 
       expect(workspace.connectors_count).to eq(4)
     end
@@ -96,8 +96,8 @@ RSpec.describe Workspace, type: :model do
     let(:workspace) { create(:workspace) }
 
     before do
-      create(:user_workspace_membership, workspace:)
-      create(:connector, workspace:)
+      create(:user_workspace_membership, workspace: workspace)
+      create(:connector, workspace: workspace)
     end
 
     it "destroys associated user_workspace_memberships" do

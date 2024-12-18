@@ -46,16 +46,30 @@ RSpec.configure do |config|
   end
 
   config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
+  config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::IntegrationHelpers, type: :feature
 
-  # Add this helper method for authentication in controller specs
-  config.include Module.new {
+  # Include the auth module for both controller and integration tests
+  auth_module = Module.new do
     def sign_in_and_set_token(user)
       @request.env["devise.mapping"] = Devise.mappings[:user]
       sign_in user
       auth_headers = user.create_new_auth_token
       request.headers.merge!(auth_headers)
     end
-  }, type: :controller
+
+    def remove_auth_tokens
+      request.headers.merge!({
+                               "access-token" => nil,
+                               "client" => nil,
+                               "uid" => nil
+                             })
+    end
+  end
+
+  config.include auth_module, type: :controller
+  config.include auth_module, type: :integration
 end
 
 Shoulda::Matchers.configure do |config|

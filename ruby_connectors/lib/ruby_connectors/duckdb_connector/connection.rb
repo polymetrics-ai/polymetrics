@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'json-schema'
-require 'duckdb'
+require "json-schema"
+require "duckdb"
 
 module RubyConnectors
   module DuckdbConnector

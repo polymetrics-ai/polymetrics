@@ -34,7 +34,7 @@ class Connector < ApplicationRecord
   def unset_other_default_analytics_dbs
     return unless default_analytics_db
 
-    workspace.connectors.where.not(id:).find_each do |connector|
+    workspace.connectors.where.not(id: id).find_each do |connector|
       connector.update(default_analytics_db: false)
     end
   end

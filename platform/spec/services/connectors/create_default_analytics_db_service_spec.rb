@@ -15,7 +15,7 @@ RSpec.describe Connectors::CreateDefaultAnalyticsDbService do
       connector = Connector.last
 
       expect(connector).to have_attributes(
-        workspace:, name: "Default DuckDB", connector_class_name: "duckdb",
+        workspace: workspace, name: "Default DuckDB", connector_class_name: "duckdb",
         description: "Default local analytics database for the workspace",
         connector_language: "ruby", connected: true, default_analytics_db: true
       )
