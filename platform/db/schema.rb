@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_18_213242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -148,6 +148,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
     t.string "destination_sync_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "destination_database_schema"
     t.index ["connection_id", "stream_name"], name: "index_syncs_on_connection_id_and_stream_name", unique: true
     t.index ["connection_id"], name: "index_syncs_on_connection_id"
   end

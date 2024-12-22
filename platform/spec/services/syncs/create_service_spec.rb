@@ -9,6 +9,12 @@ RSpec.describe Syncs::CreateService do
       {
         "stream1" => {
           "name" => "stream1",
+          "properties" => {
+            "id" => { "type" => "integer" },
+            "name" => { "type" => "string" },
+            "email" => { "type" => "string" },
+            "created_at" => { "type" => "string", "format" => "date-time" }
+          },
           "x-supported_sync_modes" => %w[full_refresh incremental],
           "x-default_sync_mode" => "incremental",
           "x-source_defined_cursor" => true,
@@ -17,11 +23,19 @@ RSpec.describe Syncs::CreateService do
         },
         "stream2" => {
           "name" => "stream2",
+          "properties" => {
+            "id" => { "type" => "integer" },
+            "name" => { "type" => "string" }
+          },
           "x-supported_sync_modes" => ["full_refresh"],
           "x-default_sync_mode" => "full_refresh"
         },
         "stream3" => {
           "name" => "stream3",
+          "properties" => {
+            "id" => { "type" => "integer" },
+            "name" => { "type" => "string" }
+          },
           "x-supported_sync_modes" => ["incremental"],
           "x-default_sync_mode" => "incremental",
           "x-source_defined_cursor" => true,

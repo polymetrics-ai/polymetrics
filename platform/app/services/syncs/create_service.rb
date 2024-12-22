@@ -21,20 +21,38 @@ module Syncs
 
     def create_syncs(schema)
       schema.each_key do |stream|
-        Sync.create!(
-          connection: @connection,
-          stream_name: stream,
-          status: :queued,
-          sync_mode: determine_sync_mode(schema[stream]),
-          schedule_type: :manual,
-          schema: schema[stream],
-          sync_frequency: DEFAULT_SYNC_FREQUENCY,
-          supported_sync_modes: schema[stream]["x-supported_sync_modes"],
-          source_defined_cursor: schema[stream]["x-source_defined_cursor"] || false,
-          default_cursor_field: schema[stream]["x-default_cursor_field"],
-          source_defined_primary_key: schema[stream]["x-source_defined_primary_key"]
-        )
+        create_sync_for_stream(stream, schema[stream])
       end
+    end
+
+    def create_sync_for_stream(stream, stream_schema)
+      sync = build_sync(stream, stream_schema)
+      sync.destination_database_schema = generate_destination_schema(sync) if database_destination?
+      sync.save!
+    end
+
+    def build_sync(stream, stream_schema)
+      Sync.new(
+        connection: @connection,
+        stream_name: stream,
+        status: :queued,
+        sync_mode: determine_sync_mode(stream_schema),
+        schedule_type: :manual,
+        schema: stream_schema,
+        sync_frequency: DEFAULT_SYNC_FREQUENCY,
+        supported_sync_modes: stream_schema["x-supported_sync_modes"],
+        source_defined_cursor: stream_schema["x-source_defined_cursor"] || false,
+        default_cursor_field: stream_schema["x-default_cursor_field"],
+        source_defined_primary_key: stream_schema["x-source_defined_primary_key"]
+      )
+    end
+
+    def database_destination?
+      @connection.destination.integration_type == "database"
+    end
+
+    def generate_destination_schema(sync)
+      Syncs::DestinationSchemaNormalizerService.new(sync).call
     end
 
     def determine_sync_mode(stream)
