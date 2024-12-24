@@ -7,5 +7,5 @@ class SyncBlueprint < Blueprinter::Base
          :sync_frequency, :schema, :supported_sync_modes,
          :source_defined_cursor, :default_cursor_field,
          :source_defined_primary_key, :destination_sync_mode,
-         :created_at, :updated_at
+         :destination_database_schema, :created_at, :updated_at
 end
