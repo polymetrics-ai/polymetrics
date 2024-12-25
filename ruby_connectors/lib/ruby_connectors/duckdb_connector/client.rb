@@ -6,21 +6,23 @@ module RubyConnectors
       def initialize(config)
         super
         @connection = RubyConnectors::DuckdbConnector::Connection.new(config)
-        # @reader = RubyConnectors::DuckdbConnector::Reader.new(config)
-        # @writer = RubyConnectors::DuckdbConnector::Writer.new(config)
+        @writer = RubyConnectors::DuckdbConnector::Writer.new(config)
       end
 
       def connect
         @connection.connect
       end
 
-      # def read(stream_name, page = 1, per_page = 30)
-      #   @reader.read(stream_name, page, per_page)
-      # end
-
-      # def write(data)
-      #   @writer.write(data)
-      # end
+      def write(data, table_name:, schema:, schema_name: nil, database_name: nil, primary_keys: nil)
+        @writer.write(
+          data,
+          table_name: table_name,
+          schema: schema,
+          schema_name: schema_name,
+          database_name: database_name,
+          primary_keys: primary_keys
+        )
+      end
     end
   end
 end
