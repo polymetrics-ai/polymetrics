@@ -18,9 +18,10 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
   # Mock Redis for all tests
   let(:mock_redis) do
     instance_double(Redis,
-                    sadd: true,
-                    expire: true,
-                    sdiff: [])
+                   get: record_data.to_json,
+                   sadd: true,
+                   expire: true,
+                   sdiff: [])
   end
 
   before do
@@ -133,6 +134,64 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
       it "returns :create" do
         expect(service.send(:determine_destination_action)).to eq(:create)
       end
+    end
+  end
+
+  describe "#create_write_record" do
+    let(:test_record) { { "id" => 1, "name" => "Test Record" } }
+    let(:pk_signature) { service.send(:generate_primary_key_signature, test_record) }
+    let(:data_signature) { service.send(:generate_data_signature, test_record) }
+
+    it "adds system fields to the record" do
+      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
+      
+      expect(write_record.data["_polymetrics_id"]).to eq(data_signature)
+      expect(write_record.data["_polymetrics_extracted_at"]).to be_present
+    end
+
+    it "uses data_signature as _polymetrics_id" do
+      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
+      
+      expect(write_record.data["_polymetrics_id"]).to eq(data_signature)
+    end
+
+    it "preserves original data while adding system fields" do
+      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
+      
+      expect(write_record.data["id"]).to eq(test_record["id"])
+      expect(write_record.data["name"]).to eq(test_record["name"])
+    end
+
+    it "creates write record with correct signatures" do
+      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
+      
+      expect(write_record.primary_key_signature).to eq(pk_signature)
+      expect(write_record.data_signature).to eq(data_signature)
+    end
+  end
+
+  describe "signature generation with system fields" do
+    let(:record_with_system_fields) do
+      {
+        "id" => 1,
+        "name" => "Test",
+        "_polymetrics_id" => "some-id",
+        "_polymetrics_extracted_at" => Time.current.iso8601
+      }
+    end
+
+    let(:record_without_system_fields) do
+      {
+        "id" => 1,
+        "name" => "Test"
+      }
+    end
+
+    it "generates same primary key signature regardless of system fields presence" do
+      sig1 = service.send(:generate_primary_key_signature, record_with_system_fields)
+      sig2 = service.send(:generate_primary_key_signature, record_without_system_fields)
+
+      expect(sig1).to eq(sig2)
     end
   end
 end

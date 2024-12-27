@@ -30,5 +30,6 @@ worker.register_activity(Temporal::Activities::UpdateSyncStatusActivity)
 worker.register_activity(Temporal::Activities::RegisterWorkflowRunActivity)
 worker.register_activity(Temporal::Activities::RequestFirstPageActivity)
 worker.register_activity(Temporal::Activities::RequestPageBatchActivity)
+worker.register_activity(Temporal::Activities::TransformRecordActivity)
 
 worker.start

@@ -20,6 +20,7 @@ RSpec.describe Temporal::Workflows::SyncWorkflow do
     allow(Temporal::Activities::UpdateSyncStatusActivity).to receive(:execute!)
     allow(Temporal::Activities::LogSyncErrorActivity).to receive(:execute!)
     allow(Temporal::Activities::ConvertReadRecordActivity).to receive(:execute!)
+    allow(Temporal::Activities::TransformRecordActivity).to receive(:execute!)
   end
 
   describe "#execute" do
@@ -33,9 +34,7 @@ RSpec.describe Temporal::Workflows::SyncWorkflow do
         workflow.execute(sync_run_id)
 
         expect(Temporal::Activities::UpdateSyncStatusActivity).to have_received(:execute!)
-          .with(sync_run_id: sync_run_id, status: "syncing").once
-        expect(Temporal::Activities::UpdateSyncStatusActivity).to have_received(:execute!)
-          .with(sync_run_id: sync_run_id, status: "synced").once
+          .with(sync_run_id: sync_run_id, status: "syncing").ordered
         expect(sync).to have_received(:synced!)
       end
     end
@@ -48,9 +47,9 @@ RSpec.describe Temporal::Workflows::SyncWorkflow do
         workflow.execute(sync_run_id)
 
         expect(Temporal::Activities::UpdateSyncStatusActivity).to have_received(:execute!)
-          .with(sync_run_id: sync_run_id, status: "syncing").once
+          .with(sync_run_id: sync_run_id, status: "syncing").ordered
         expect(Temporal::Activities::UpdateSyncStatusActivity).to have_received(:execute!)
-          .with(sync_run_id: sync_run_id, status: "error").once
+          .with(sync_run_id: sync_run_id, status: "error").ordered
         expect(Temporal::Activities::LogSyncErrorActivity).to have_received(:execute!)
           .with(sync_run_id: sync_run_id, sync_id: sync.id, error_message: error_message)
         expect(sync).to have_received(:error!)
@@ -68,9 +67,9 @@ RSpec.describe Temporal::Workflows::SyncWorkflow do
           workflow.execute(sync_run_id)
 
           expect(Temporal::Activities::UpdateSyncStatusActivity).to have_received(:execute!)
-            .with(sync_run_id: sync_run_id, status: "syncing").once
+            .with(sync_run_id: sync_run_id, status: "syncing").ordered
           expect(Temporal::Activities::UpdateSyncStatusActivity).to have_received(:execute!)
-            .with(sync_run_id: sync_run_id, status: "error").once
+            .with(sync_run_id: sync_run_id, status: "error").ordered.once
           expect(Temporal::Activities::LogSyncErrorActivity).to have_received(:execute!)
             .with(sync_run_id: sync_run_id, sync_id: sync.id, error_message: expected_error)
           expect(sync).to have_received(:error!)
@@ -79,18 +78,12 @@ RSpec.describe Temporal::Workflows::SyncWorkflow do
 
       context "with nil result" do
         let(:failure_result) { nil }
-
-        include_examples "handles extraction failure",
-                         "nil result",
-                         "Extraction result is nil"
+        include_examples "handles extraction failure", "nil result", "Extraction result is nil"
       end
 
       context "with invalid format" do
         let(:failure_result) { "invalid" }
-
-        include_examples "handles extraction failure",
-                         "invalid format",
-                         "Invalid extraction result format"
+        include_examples "handles extraction failure", "invalid format", "Invalid extraction result format"
       end
     end
   end
