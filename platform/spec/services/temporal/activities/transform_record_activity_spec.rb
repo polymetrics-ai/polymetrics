@@ -52,9 +52,9 @@ RSpec.describe Temporal::Activities::TransformRecordActivity do
         transformed_data = JSON.parse(activity.send(:redis).get(redis_key))
 
         expect(transformed_data).to eq([
-          { "dest_field" => "value1", "full_name" => "John Doe" },
-          { "dest_field" => "value2", "full_name" => "Jane Smith" }
-        ])
+                                         { "dest_field" => "value1", "full_name" => "John Doe" },
+                                         { "dest_field" => "value2", "full_name" => "Jane Smith" }
+                                       ])
       end
 
       it "marks read record as transformed" do
@@ -86,9 +86,9 @@ RSpec.describe Temporal::Activities::TransformRecordActivity do
       result = activity.send(:transform_record_data, record)
 
       expect(result).to eq({
-        "dest_field" => "test_value",
-        "full_name" => "John Doe"
-      })
+                             "dest_field" => "test_value",
+                             "full_name" => "John Doe"
+                           })
     end
 
     it "excludes unmapped fields" do
@@ -107,4 +107,4 @@ RSpec.describe Temporal::Activities::TransformRecordActivity do
       expect(retry_policy[:max_attempts]).to eq(3)
     end
   end
-end 
+end

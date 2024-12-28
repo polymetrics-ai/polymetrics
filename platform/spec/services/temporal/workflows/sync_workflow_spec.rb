@@ -78,11 +78,13 @@ RSpec.describe Temporal::Workflows::SyncWorkflow do
 
       context "with nil result" do
         let(:failure_result) { nil }
+
         include_examples "handles extraction failure", "nil result", "Extraction result is nil"
       end
 
       context "with invalid format" do
         let(:failure_result) { "invalid" }
+
         include_examples "handles extraction failure", "invalid format", "Invalid extraction result format"
       end
     end

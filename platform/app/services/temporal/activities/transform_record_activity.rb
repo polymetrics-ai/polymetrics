@@ -12,7 +12,7 @@ module Temporal
       def execute(sync_run_id)
         @sync_run = SyncRun.find(sync_run_id)
         @sync = @sync_run.sync
-        
+
         return if @sync_run.extraction_completed
         return if @sync_run.sync_read_records.empty?
 
@@ -47,7 +47,7 @@ module Temporal
         mapping.each do |field_map|
           source_field = field_map["from"]
           dest_field = field_map["to"]
-          
+
           transformed_record[dest_field] = record[source_field]
         end
 
@@ -86,4 +86,4 @@ module Temporal
       end
     end
   end
-end 
+end

@@ -1,11 +1,16 @@
+# frozen_string_literal: true
+
 class AddTransformationTrackingToSyncRecords < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
   def change
     add_column :sync_read_records, :transformation_completed_at, :datetime
-    add_column :sync_runs, :transformation_completed, :boolean, default: false
-    add_column :sync_runs, :last_transformed_at, :datetime
-    
-    add_index :sync_runs, [:sync_id, :last_transformed_at], algorithm: :concurrently
+
+    change_table :sync_runs, bulk: true do |t|
+      t.boolean :transformation_completed, null: false, default: false
+      t.datetime :last_transformed_at
+    end
+
+    add_index :sync_runs, %i[sync_id last_transformed_at], algorithm: :concurrently
   end
 end
