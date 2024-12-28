@@ -4,28 +4,39 @@ module Etl
   module Extractors
     module ConvertReadRecord
       class IncrementalDedupService
-        REDIS_KEY_TTL = 7.days.to_i # Keep sync run data for 7 days
+        REDIS_KEY_TTL = 7.days.to_i
 
-        def initialize(sync_run, sync_read_record_id, sync_read_record_data)
+        def initialize(sync_run, sync_read_record_id, redis_key)
           @sync_run = sync_run
           @sync = sync_run.sync
           @sync_read_record_id = sync_read_record_id
-          @sync_read_record_data = sync_read_record_data
+          @redis_key = redis_key
           @existing_signatures = {}
         end
 
         def call
-          return unless @sync_read_record_data.is_a?(Array)
+          transformed_data = fetch_transformed_data
+          return unless transformed_data.is_a?(Array)
 
           load_existing_signatures
 
-          @sync_read_record_data.each do |record_data|
+          transformed_data.each do |record_data|
             process_record(record_data)
             store_pk_signature_in_redis(record_data)
           end
         end
 
         private
+
+        def fetch_transformed_data
+          data = redis.get(@redis_key)
+          return unless data
+
+          JSON.parse(data)
+        rescue JSON::ParserError
+          Rails.logger.error "Invalid JSON data in Redis key: #{@redis_key}"
+          nil
+        end
 
         def load_existing_signatures
           existing_records = SyncWriteRecord
@@ -58,11 +69,15 @@ module Etl
         end
 
         def create_write_record(record_data, pk_signature, data_signature)
+          record_with_system_fields = record_data.deep_dup
+          record_with_system_fields["_polymetrics_id"] = data_signature
+          record_with_system_fields["_polymetrics_extracted_at"] = Time.current.iso8601
+
           SyncWriteRecord.create!(
             sync: @sync,
             sync_run: @sync_run,
             sync_read_record_id: @sync_read_record_id,
-            data: record_data,
+            data: record_with_system_fields,
             primary_key_signature: pk_signature,
             data_signature: data_signature,
             destination_action: determine_destination_action

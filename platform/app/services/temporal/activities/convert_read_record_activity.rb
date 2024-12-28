@@ -47,10 +47,12 @@ module Temporal
       end
 
       def process_with_dedup(sync_run, sync_read_record)
+        redis_key = "sync:#{sync_run.sync.id}:transformed:#{sync_read_record.id}"
+
         Etl::Extractors::ConvertReadRecord::IncrementalDedupService.new(
           sync_run,
           sync_read_record.id,
-          sync_read_record.data
+          redis_key
         ).call
       end
 
@@ -98,11 +100,14 @@ module Temporal
       end
 
       def create_single_write_record(sync_read_record, record_data)
+        destination_action = sync_read_record.sync.connection.destination.integration_type == "database" ? :insert : :create
+
         SyncWriteRecord.create!(
           sync: sync_read_record.sync,
           sync_run: sync_read_record.sync_run,
           sync_read_record: sync_read_record,
-          data: record_data
+          data: record_data,
+          destination_action: destination_action
         )
       end
     end

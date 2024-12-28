@@ -4,7 +4,9 @@ require "rails_helper"
 
 RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
   let(:activity) { described_class.new(double("context")) }
-  let(:sync) { create(:sync) }
+  let(:destination) { create(:connector, integration_type: "database", connector_class_name: "database") }
+  let(:connection) { create(:connection, destination: destination) }
+  let(:sync) { create(:sync, connection: connection) }
   let(:sync_run) { create(:sync_run, sync: sync) }
   let(:sync_read_record_data) { [{ "id" => 1, "name" => "Test" }] }
 
@@ -139,6 +141,38 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
         expect(write_record.sync_read_record).to eq(sync_read_record)
         expect(write_record.data).to be_present
       end
+
+      context "with destination actions" do
+        let!(:sync_read_record) do
+          create(:sync_read_record,
+                 sync: sync,
+                 sync_run: sync_run,
+                 data: [
+                   { "key1" => "value1" },
+                   { "key2" => "value2" }
+                 ])
+        end
+
+        it "creates write records with default insert action for database destination" do
+          activity.send(:create_write_records, sync_read_record)
+
+          write_records = SyncWriteRecord.last(2)
+          write_records.each do |record|
+            expect(record.destination_action.to_sym).to eq(:insert)
+          end
+        end
+
+        it "creates write records with create action for non-database destination" do
+          allow(destination).to receive(:integration_type).and_return("api")
+
+          activity.send(:create_write_records, sync_read_record)
+
+          write_records = SyncWriteRecord.last(2)
+          write_records.each do |record|
+            expect(record.destination_action.to_sym).to eq(:create)
+          end
+        end
+      end
     end
   end
 
@@ -170,6 +204,31 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
 
       result = activity.send(:all_records_extracted?, sync_run.sync_read_records)
       expect(result).to be true
+    end
+  end
+
+  describe "destination actions" do
+    let!(:sync_read_record) do
+      create(:sync_read_record,
+             sync: sync,
+             sync_run: sync_run,
+             data: [{ "key" => "value" }])
+    end
+
+    it "creates write record with default insert action for database destination" do
+      expect(sync_read_record.sync.connection.destination.integration_type).to eq("database")
+      activity.execute(sync_run.id)
+
+      write_record = SyncWriteRecord.last
+      expect(write_record.destination_action.to_sym).to eq(:insert)
+    end
+
+    it "creates write record with create action for non-database destination" do
+      destination.update!(integration_type: "api")
+      activity.execute(sync_run.id)
+
+      write_record = SyncWriteRecord.last
+      expect(write_record.destination_action.to_sym).to eq(:create)
     end
   end
 end

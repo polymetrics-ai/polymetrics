@@ -22,7 +22,7 @@ module Temporal
       def perform_sync
         update_sync_status_activity("syncing")
         extract_data
-        # transform_data(sync_run)
+        transform_data
         # load_data(sync_run)
         @sync.synced!
       end
@@ -68,8 +68,7 @@ module Temporal
       end
 
       def handle_successful_extraction
-        Activities::ConvertReadRecordActivity.execute!(@sync_run_id)
-        update_sync_status_activity("synced")
+        # TODO: Implement extracted at timestamp for sync run
       end
 
       def handle_sync_failure(error)
@@ -93,6 +92,11 @@ module Temporal
           sync_id: @sync_run&.sync_id,
           error_message: error_message
         )
+      end
+
+      def transform_data
+        Activities::TransformRecordActivity.execute!(@sync_run_id)
+        Activities::ConvertReadRecordActivity.execute!(@sync_run_id)
       end
     end
   end
