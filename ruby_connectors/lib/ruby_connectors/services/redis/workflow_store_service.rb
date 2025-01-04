@@ -37,14 +37,14 @@ module RubyConnectors
 
         def get_workflow_data(workflow_key)
           key = workflow_key(workflow_key)
-          data = @redis.hgetall(key)
-          return nil if data.empty?
+          result = @redis.hgetall(key)
+          return nil if result.empty?
 
           {
-            status: data["status"],
-            result: data["result"] ? JSON.parse(data["result"]) : nil,
-            created_at: Time.zone.at(data["created_at"].to_i),
-            updated_at: data["updated_at"] ? Time.zone.at(data["updated_at"].to_i) : nil
+            status: result["status"],
+            result: result["data"] ? JSON.parse(result["data"]) : nil,
+            created_at: Time.at(result["created_at"].to_i).utc,
+            updated_at: result["updated_at"] ? Time.at(result["updated_at"].to_i).utc : nil
           }.with_indifferent_access
         end
 

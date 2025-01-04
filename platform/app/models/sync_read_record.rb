@@ -12,7 +12,7 @@ class SyncReadRecord < ApplicationRecord
   private
 
   def generate_signature
-    self.signature = Digest::SHA256.hexdigest(normalized_data) if data.present?
+    self.signature = Digest::SHA256.hexdigest(normalized_data.to_json)
   end
 
   def sorted_data

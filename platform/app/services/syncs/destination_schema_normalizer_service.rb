@@ -101,7 +101,7 @@ module Syncs
                          .gsub(/[^a-z0-9_]/, "")
       workspace_hash = Digest::SHA256.hexdigest(@workspace_id.to_s)[0..7]
 
-      "source_#{source_name}_#{workspace_hash}"
+      "#{source_name}_#{workspace_hash}"
     end
 
     def generate_database_name

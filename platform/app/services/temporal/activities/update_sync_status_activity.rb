@@ -14,8 +14,10 @@ module Temporal
         @status = status
         @error_message = error_message
 
-        @sync = find_sync(sync_run_id)
+        @sync_run = SyncRun.find(sync_run_id)
+        @sync = @sync_run.sync
         update_sync_status(@status, @error_message)
+        update_sync_run_status(@status)
         build_response
       rescue StandardError => e
         handle_error(e)
@@ -23,15 +25,8 @@ module Temporal
 
       private
 
-      def find_sync(sync_run_id)
-        SyncRun.find(sync_run_id).sync
-      rescue ActiveRecord::RecordNotFound => e
-        activity.logger.error("Sync not found for sync run #{sync_run_id} error: #{e.message}")
-        raise
-      end
-
       def update_sync_status(status, error_message)
-        status_method = status_mapping[status.to_sym]
+        status_method = sync_status_mapping[status.to_sym]
         raise ArgumentError, "Invalid sync status: #{status}" unless status_method
 
         old_status = @sync.status
@@ -41,12 +36,28 @@ module Temporal
         log_status_change(old_status, @sync.status, message)
       end
 
-      def status_mapping
+      def update_sync_run_status(status)
+        sync_run_status = sync_run_status_mapping[status.to_sym]
+        raise ArgumentError, "Invalid sync run status mapping for: #{status}" unless sync_run_status
+
+        @sync_run.update!(status: sync_run_status)
+      end
+
+      def sync_status_mapping
         {
           syncing: :syncing!,
           synced: :synced!,
           error: :error!,
           action_required: :action_required!
+        }
+      end
+
+      def sync_run_status_mapping
+        {
+          syncing: :running,
+          synced: :succeeded,
+          error: :failed,
+          action_required: :cancelled
         }
       end
 
@@ -62,6 +73,7 @@ module Temporal
       def build_response
         {
           status: @sync.status,
+          sync_run_status: @sync_run.status,
           updated_at: @sync.updated_at,
           sync_id: @sync.id
         }

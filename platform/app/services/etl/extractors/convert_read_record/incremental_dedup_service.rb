@@ -72,6 +72,7 @@ module Etl
           record_with_system_fields = record_data.deep_dup
           record_with_system_fields["_polymetrics_id"] = data_signature
           record_with_system_fields["_polymetrics_extracted_at"] = Time.current.iso8601
+          return if SyncWriteRecord.where(sync_id: @sync.id, data_signature: data_signature, primary_key_signature: pk_signature).exists?
 
           SyncWriteRecord.create!(
             sync: @sync,

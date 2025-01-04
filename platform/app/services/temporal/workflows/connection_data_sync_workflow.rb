@@ -9,8 +9,8 @@ module Temporal
         begin
           sync_run_ids = prepare_sync_runs
           start_child_workflows(sync_run_ids)
-          monitor_child_workflows
           handle_completion
+          # monitor_child_workflows
         rescue StandardError => e
           handle_failure(e)
         end
@@ -23,15 +23,26 @@ module Temporal
       end
 
       def start_child_workflows(sync_run_ids)
+        @completed_sync_runs = Set.new
+        
+        # Set up completion signal handler
+        workflow.on_signal("sync_workflow_completed") do |signal_data|
+          @completed_sync_runs.add(signal_data[:sync_run_id])
+        end
+
         sync_run_ids.each do |sync_run_id|
           sync_run = SyncRun.find(sync_run_id)
           workflow_id = generate_child_workflow_id(sync_run_id)
-          run_id = Temporal.start_workflow(
-            Temporal::Workflows::SyncWorkflow,
+          
+          run_id = Temporal::Workflows::SyncWorkflow.execute(
             sync_run_id,
             options: workflow_options(workflow_id)
           )
+          
           sync_run.update(temporal_workflow_id: workflow_id, temporal_run_id: run_id)
+          
+          # Wait for the current sync run to complete before starting the next one
+          workflow.wait_until { @completed_sync_runs.include?(sync_run_id) }
         end
       end
 

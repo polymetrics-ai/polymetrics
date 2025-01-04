@@ -102,21 +102,17 @@ module Temporal
         end
 
         def process_completed_batch(signal_data)
-          signal_data[:pages].each do |page_number|
-            next if @processed_pages.include?(page_number)
-            next unless should_process_page?(page_number)
-
-            process_single_page(signal_data, page_number)
-          end
-        end
-
-        def process_single_page(signal_data, page_number)
-          Activities::ProcessPageActivity.execute!(
+          result = Activities::ProcessPageActivity.execute!(
             sync_run_id: @sync_run_id,
             signal_data: signal_data,
-            page_number: page_number
+            pages: signal_data[:pages]
           )
-          @processed_pages.add(page_number)
+
+          if result[:status] == "success"
+            result[:processed_pages].each do |page_number|
+              @processed_pages.add(page_number)
+            end
+          end
         end
 
         def wait_for_all_pages

@@ -9,6 +9,12 @@ module Temporal
         max_attempts: 3
       )
 
+      timeouts(
+        start_to_close: 600,  # 10 minutes
+        heartbeat: 120,       # 2 minutes
+        schedule_to_close: 1800  # 30 minutes
+      )
+
       def execute(sync_run_id)
         @sync_run = SyncRun.find(sync_run_id)
         @sync = @sync_run.sync
@@ -23,9 +29,32 @@ module Temporal
       private
 
       def transform_read_records
-        @sync_run.sync_read_records.find_each(batch_size: 1000) do |sync_read_record|
-          transform_single_record(sync_read_record)
+        record_ids = @sync_run.sync_read_records.pluck(:id)
+        processed_records = Set.new
+
+        Parallel.each(record_ids, in_threads: 10) do |record_id|
+          ActiveRecord::Base.connection_pool.with_connection do
+            begin
+              sync_read_record = SyncReadRecord.find(record_id)
+              transform_single_record(sync_read_record)
+              processed_records.add(record_id)
+              activity.heartbeat
+            rescue StandardError => e
+              handle_record_error(record_id, e)
+            ensure
+              ActiveRecord::Base.connection_pool.release_connection
+            end
+          end
         end
+      end
+
+      def handle_record_error(record_id, error)
+        activity.logger.error(
+          "Failed to transform record #{record_id}: #{error.message}",
+          error: error,
+          sync_run_id: @sync_run.id,
+          sync_id: @sync.id
+        )
       end
 
       def transform_single_record(sync_read_record)

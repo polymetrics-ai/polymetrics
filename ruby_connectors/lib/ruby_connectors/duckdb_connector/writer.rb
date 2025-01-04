@@ -4,33 +4,37 @@ module RubyConnectors
   module DuckdbConnector
     class Writer
       VALID_IDENTIFIER_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/
+      TEMP_TABLE_PREFIX = "temp_"
 
       def initialize(config)
         @config = config.with_indifferent_access
-        @connection = Connection.new(config)
       end
 
       def write(data, table_name:, schema:, schema_name: nil, database_name: nil, primary_keys: nil)
         validate_identifiers!(table_name: table_name, schema_name: schema_name, database_name: database_name)
         validate_primary_keys!(primary_keys, schema) if primary_keys
 
-        with_connection do |conn|
-          ensure_schema_exists(conn, schema_name) if schema_name
-          create_table(conn, table_name, schema, schema_name, primary_keys)
-
-          write_data(conn, data, table_name, schema_name, schema) unless data.empty?
+        path = @config.dig(:credentials, :local, :path)
+        DuckDB::Database.open(path) do |db|
+          db.connect do |conn|
+            ensure_schema_exists(conn, schema_name) if schema_name
+            create_table(conn, table_name, schema, schema_name, primary_keys)
+            
+            unless data.empty?
+              temp_table = "#{TEMP_TABLE_PREFIX}#{table_name}_#{Time.now.to_i}"
+              begin
+                create_temp_table(conn, temp_table, schema)
+                write_to_temp_table(conn, temp_table, data, schema)
+                upsert_from_temp_table(conn, temp_table, table_name, schema, schema_name, primary_keys)
+              ensure
+                drop_temp_table(conn, temp_table)
+              end
+            end
+          end
         end
       end
 
       private
-
-      def with_connection
-        db = @connection.authorize_connection
-        conn = db.connect
-        yield(conn)
-      ensure
-        conn&.close
-      end
 
       def validate_identifiers!(table_name:, schema_name:, database_name:)
         invalid_identifiers = collect_invalid_identifiers(
@@ -55,7 +59,7 @@ module RubyConnectors
         invalid_keys = primary_keys.reject { |key| schema.key?(key) }
         return unless invalid_keys.any?
 
-          raise ArgumentError, "Invalid primary keys: #{invalid_keys.join(", ")}. Keys must exist in schema"
+        raise ArgumentError, "Invalid primary keys: #{invalid_keys.join(", ")}. Keys must exist in schema"
       end
 
       def collect_invalid_identifiers(identifiers)
@@ -175,6 +179,65 @@ module RubyConnectors
 
       def execute_sql(conn, sql)
         conn.execute(sql.squish)
+      end
+
+      def create_temp_table(conn, temp_table, schema)
+        columns = build_columns_definition(schema)
+        execute_sql(conn, <<-SQL)
+          CREATE TEMPORARY TABLE #{temp_table} (
+            #{columns}
+          )
+        SQL
+      rescue DuckDB::Error => e
+        raise WriteError, "Failed to create temporary table #{temp_table}: #{e.message}"
+      end
+
+      def write_to_temp_table(conn, temp_table, data, schema)
+        write_with_appender(conn, temp_table, data, schema)
+      rescue DuckDB::Error => e
+        raise WriteError, "Failed to write data to temporary table #{temp_table}: #{e.message}"
+      end
+
+      def upsert_from_temp_table(conn, temp_table, target_table, schema, schema_name, primary_keys)
+        return merge_without_primary_keys(conn, temp_table, target_table, schema, schema_name) unless primary_keys&.any?
+
+        target_table_name = build_table_name(target_table, schema_name)
+        columns = schema.keys.join(", ")
+        # Only update non-primary key columns
+        update_sets = schema.keys
+                           .reject { |col| primary_keys.include?(col) }
+                           .map { |col| "#{col} = EXCLUDED.#{col}" }
+                           .join(", ")
+
+        execute_sql(conn, <<-SQL)
+          INSERT INTO #{target_table_name} (#{columns})
+          SELECT #{columns}
+          FROM #{temp_table}
+          ON CONFLICT (#{primary_keys.join(", ")})
+          DO UPDATE SET
+            #{update_sets}
+        SQL
+      rescue DuckDB::Error => e
+        raise WriteError, "Failed to upsert data from temporary table: #{e.message}"
+      end
+
+      def merge_without_primary_keys(conn, temp_table, target_table, schema, schema_name)
+        target_table_name = build_table_name(target_table, schema_name)
+        columns = schema.keys.join(", ")
+
+        execute_sql(conn, <<-SQL)
+          INSERT INTO #{target_table_name} (#{columns})
+          SELECT #{columns}
+          FROM #{temp_table}
+        SQL
+      rescue DuckDB::Error => e
+        raise WriteError, "Failed to merge data from temporary table: #{e.message}"
+      end
+
+      def drop_temp_table(conn, temp_table)
+        execute_sql(conn, "DROP TABLE IF EXISTS #{temp_table}")
+      rescue DuckDB::Error => e
+        raise WriteError, "Failed to drop temporary table #{temp_table}: #{e.message}"
       end
     end
 

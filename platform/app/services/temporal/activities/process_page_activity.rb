@@ -9,11 +9,38 @@ module Temporal
         max_attempts: 3
       )
 
-      def execute(sync_run_id:, signal_data:, page_number:)
-        initialize_dependencies(sync_run_id)
-        process_workflow_data(signal_data, page_number)
+      # Add timeouts
+      timeouts(
+        start_to_close: 600,  # 10 minutes
+        heartbeat: 120,       # 2 minutes
+        schedule_to_close: 1800  # 30 minutes
+      )
 
-        { status: "success" }
+      def execute(sync_run_id:, signal_data:, pages:)
+        initialize_dependencies(sync_run_id)
+        processed_pages = Set.new
+        
+        Parallel.each(pages, in_threads: 10) do |page_number|
+          ActiveRecord::Base.connection_pool.with_connection do
+            begin
+              process_workflow_data(signal_data, page_number)
+              processed_pages.add(page_number)
+
+              # Heartbeat after each successful page processing
+              activity.heartbeat
+            rescue StandardError => e
+              handle_page_error(page_number, e)
+            ensure
+              ActiveRecord::Base.connection_pool.release_connection
+            end
+          end
+        end
+
+        { 
+          status: "success", 
+          processed_pages: processed_pages.to_a,
+          batch_id: signal_data[:batch_id]
+        }
       end
 
       private
@@ -38,6 +65,16 @@ module Temporal
           update_current_page(page_number)
           update_extraction_stats(page_data)
         end
+      end
+
+      def handle_page_error(page_number, error)
+        activity.logger.error(
+          "Failed to process page #{page_number}: #{error.message}",
+          error: error,
+          sync_run_id: @sync_run.id,
+          sync_id: @sync.id
+        )
+        raise error
       end
 
       def update_extraction_stats(records)

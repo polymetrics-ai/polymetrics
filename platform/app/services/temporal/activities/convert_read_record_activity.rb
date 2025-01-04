@@ -9,6 +9,10 @@ module Temporal
         max_attempts: 3
       )
 
+      timeouts(
+        start_to_close: 3600, # Set appropriate timeout in seconds
+      )
+
       def execute(sync_run_id)
         sync_run = SyncRun.find(sync_run_id)
         return if sync_run.extraction_completed
@@ -26,8 +30,23 @@ module Temporal
       end
 
       def process_sync_records(sync_run)
-        sync_run.sync_read_records.find_each(batch_size: 1000) do |sync_read_record|
-          process_single_record(sync_run, sync_read_record)
+        # Get all record IDs first to avoid AR connection issues in parallel
+        record_ids = sync_run.sync_read_records.pluck(:id)
+        
+        # Process in parallel with a pool size of 10
+        Parallel.each(record_ids, in_threads: 10) do |record_id|
+          ActiveRecord::Base.connection_pool.with_connection do
+            begin
+              sync_read_record = SyncReadRecord.find(record_id)
+              activity.heartbeat
+              process_single_record(sync_run, sync_read_record)
+            rescue StandardError => e
+              Rails.logger.error("Failed to process record #{record_id}: #{e.message}")
+              raise e
+            ensure
+              ActiveRecord::Base.connection_pool.release_connection
+            end
+          end
         end
       end
 
@@ -49,6 +68,7 @@ module Temporal
       def process_with_dedup(sync_run, sync_read_record)
         redis_key = "sync:#{sync_run.sync.id}:transformed:#{sync_read_record.id}"
 
+        activity.heartbeat
         Etl::Extractors::ConvertReadRecord::IncrementalDedupService.new(
           sync_run,
           sync_read_record.id,
