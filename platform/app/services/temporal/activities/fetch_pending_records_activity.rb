@@ -20,7 +20,7 @@ module Temporal
         redis_key = "sync_run_#{sync_run_id}_pending_records"
         redis = initialize_redis
         redis.set(redis_key, sync_write_record_ids.to_json)
-        
+
         {
           status: :success,
           redis_key: redis_key
@@ -28,4 +28,4 @@ module Temporal
       end
     end
   end
-end 
+end

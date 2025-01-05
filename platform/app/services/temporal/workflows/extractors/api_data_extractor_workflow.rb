@@ -108,10 +108,10 @@ module Temporal
             pages: signal_data[:pages]
           )
 
-          if result[:status] == "success"
-            result[:processed_pages].each do |page_number|
-              @processed_pages.add(page_number)
-            end
+          return unless result[:status] == "success"
+
+          result[:processed_pages].each do |page_number|
+            @processed_pages.add(page_number)
           end
         end
 

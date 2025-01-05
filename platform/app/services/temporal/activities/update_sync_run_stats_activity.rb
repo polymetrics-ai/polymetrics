@@ -26,4 +26,4 @@ module Temporal
       end
     end
   end
-end 
+end

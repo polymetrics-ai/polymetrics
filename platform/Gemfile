@@ -55,12 +55,12 @@ gem "google-protobuf", "~> 3.19"
 gem "hiredis"
 gem "json-schema"
 gem "omniauth"
+gem "parallel"
 gem "rack-cors"
 gem "strong_migrations"
 gem "temporal-ruby", github: "coinbase/temporal-ruby"
 gem "vcr"
 gem "webmock"
-gem "parallel"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"

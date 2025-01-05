@@ -6,10 +6,10 @@ module Temporal
       def execute(params)
         params = params.transform_keys(&:to_s)
         sync_run = SyncRun.find(params["sync_run_id"])
-        
+
         total_records = sync_run.sync_write_records.count
-        processed_records = sync_run.sync_write_records.where(status: [:written, :failed]).count
-        
+        processed_records = sync_run.sync_write_records.where(status: %i[written failed]).count
+
         {
           completed: total_records == processed_records,
           total_records: total_records,
@@ -18,4 +18,4 @@ module Temporal
       end
     end
   end
-end 
+end

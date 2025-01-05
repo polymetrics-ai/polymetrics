@@ -9,6 +9,7 @@ module Temporal
         max_attempts: 5
       )
 
+      # rubocop:disable Metrics/MethodLength
       def execute(params)
         params = params.transform_keys(&:to_s)
         write_record_ids = params["write_record_ids"]
@@ -19,8 +20,8 @@ module Temporal
             status: status,
             updated_at: Time.current
           )
-          
-          { 
+
+          {
             status: "success",
             write_record_ids: write_record_ids,
             updated_status: status
@@ -34,6 +35,7 @@ module Temporal
           }
         end
       end
+      # rubocop:enable Metrics/MethodLength
     end
   end
-end 
+end

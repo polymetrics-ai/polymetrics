@@ -13,35 +13,35 @@ module Temporal
       timeouts(
         start_to_close: 600,  # 10 minutes
         heartbeat: 120,       # 2 minutes
-        schedule_to_close: 1800  # 30 minutes
+        schedule_to_close: 1800 # 30 minutes
       )
 
+      # rubocop:disable Metrics/MethodLength
       def execute(sync_run_id:, signal_data:, pages:)
         initialize_dependencies(sync_run_id)
         processed_pages = Set.new
-        
+
         Parallel.each(pages, in_threads: 10) do |page_number|
           ActiveRecord::Base.connection_pool.with_connection do
-            begin
-              process_workflow_data(signal_data, page_number)
-              processed_pages.add(page_number)
+            process_workflow_data(signal_data, page_number)
+            processed_pages.add(page_number)
 
-              # Heartbeat after each successful page processing
-              activity.heartbeat
-            rescue StandardError => e
-              handle_page_error(page_number, e)
-            ensure
-              ActiveRecord::Base.connection_pool.release_connection
-            end
+            # Heartbeat after each successful page processing
+            activity.heartbeat
+          rescue StandardError => e
+            handle_page_error(page_number, e)
+          ensure
+            ActiveRecord::Base.connection_pool.release_connection
           end
         end
 
-        { 
-          status: "success", 
+        {
+          status: "success",
           processed_pages: processed_pages.to_a,
           batch_id: signal_data[:batch_id]
         }
       end
+      # rubocop:enable Metrics/MethodLength
 
       private
 

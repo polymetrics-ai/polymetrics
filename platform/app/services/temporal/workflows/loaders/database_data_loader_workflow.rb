@@ -5,20 +5,21 @@ module Temporal
     module Loaders
       class DatabaseDataLoaderWorkflow < ::Temporal::Workflow
         timeouts(
-          execution: 86_400,  # 24 hours
+          execution: 86_400, # 24 hours
           run: 86_400,       # 24 hours
           task: 10           # 10 seconds
         )
 
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def execute(sync_run_id)
           @write_completed = false
           # Start the loading process
           result = Activities::LoadDataActivity.execute!(
-            sync_run_id, 
-            workflow.metadata.id, 
+            sync_run_id,
+            workflow.metadata.id,
             workflow.metadata.run_id
           )
-          
+
           raise "Failed to start loading: #{result[:error]}" unless result[:success]
 
           # Set up signal handler for write completions
@@ -35,7 +36,7 @@ module Temporal
           end
 
           # Wait for write completion
-          workflow.wait_until do 
+          workflow.wait_until do
             @write_completed
           end
 
@@ -49,7 +50,8 @@ module Temporal
         rescue StandardError => e
           { success: false, error: e.message }
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
       end
     end
   end
-end 
+end

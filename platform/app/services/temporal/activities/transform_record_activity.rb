@@ -12,7 +12,7 @@ module Temporal
       timeouts(
         start_to_close: 600,  # 10 minutes
         heartbeat: 120,       # 2 minutes
-        schedule_to_close: 1800  # 30 minutes
+        schedule_to_close: 1800 # 30 minutes
       )
 
       def execute(sync_run_id)
@@ -34,16 +34,14 @@ module Temporal
 
         Parallel.each(record_ids, in_threads: 10) do |record_id|
           ActiveRecord::Base.connection_pool.with_connection do
-            begin
-              sync_read_record = SyncReadRecord.find(record_id)
-              transform_single_record(sync_read_record)
-              processed_records.add(record_id)
-              activity.heartbeat
-            rescue StandardError => e
-              handle_record_error(record_id, e)
-            ensure
-              ActiveRecord::Base.connection_pool.release_connection
-            end
+            sync_read_record = SyncReadRecord.find(record_id)
+            transform_single_record(sync_read_record)
+            processed_records.add(record_id)
+            activity.heartbeat
+          rescue StandardError => e
+            handle_record_error(record_id, e)
+          ensure
+            ActiveRecord::Base.connection_pool.release_connection
           end
         end
       end

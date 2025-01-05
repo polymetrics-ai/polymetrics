@@ -2,10 +2,11 @@
 
 module Temporal
   module Workflows
+    # rubocop:disable Metrics/ClassLength
     class SyncWorkflow < ::Temporal::Workflow
       def execute(sync_run_id)
         initialize_sync(sync_run_id)
-        
+
         begin
           perform_sync
           signal_completion(true)
@@ -22,7 +23,7 @@ module Temporal
         @sync_run = SyncRun.find(sync_run_id)
         @sync = @sync_run.sync
         @signals_received = {}
-        
+
         # Initialize integration types
         @source_integration_type = @sync.connection.source.integration_type
         @destination_integration_type = @sync.connection.destination.integration_type
@@ -147,7 +148,7 @@ module Temporal
       def signal_completion(success)
         parent_workflow_id = workflow.metadata.parent_id
         parent_run_id = workflow.metadata.parent_run_id
-        
+
         return unless parent_workflow_id && parent_run_id
 
         Temporal.signal_workflow(
@@ -162,5 +163,6 @@ module Temporal
         )
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

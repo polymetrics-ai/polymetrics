@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Temporal
   module Activities
+    # rubocop:disable Metrics/ClassLength
     class LoadDataActivity < ::Temporal::Activity
-      BATCH_SIZE = 10000
+      BATCH_SIZE = 10_000
 
       LANGUAGE_CONNECTOR_QUEUES = {
         ruby: "ruby_connectors_queue",
@@ -38,16 +41,17 @@ module Temporal
 
       private
 
+      # rubocop:disable Metrics/AbcSize
       def process_write_records
         record_ids = @sync_run.sync_write_records.where(status: :pending).pluck(:id)
         total_batches = (record_ids.size.to_f / BATCH_SIZE).ceil
-        
+
         processed_records = { records: [], write_record_ids: [] }
-        
+
         record_ids.each_slice(BATCH_SIZE).with_index(1) do |batch_ids, batch_number|
           activity.heartbeat
           process_batch(batch_ids, processed_records)
-          
+
           # Store batch data in Redis when we reach BATCH_SIZE or it's the last batch
           if processed_records[:records].size >= BATCH_SIZE || batch_number == total_batches
             store_batch_data(processed_records, batch_number)
@@ -57,20 +61,19 @@ module Temporal
 
         start_write_workflow(total_batches)
       end
+      # rubocop:enable Metrics/AbcSize
 
       def process_batch(batch_ids, processed_records)
         Parallel.each(batch_ids, in_threads: 10) do |record_id|
           ActiveRecord::Base.connection_pool.with_connection do
-            begin
-              record = @sync_run.sync_write_records.find(record_id)
-              processed_records[:records] << record.data
-              processed_records[:write_record_ids] << record.id
-              activity.heartbeat
-            rescue StandardError => e
-              handle_record_error(record_id, e)
-            ensure
-              ActiveRecord::Base.connection_pool.release_connection
-            end
+            record = @sync_run.sync_write_records.find(record_id)
+            processed_records[:records] << record.data
+            processed_records[:write_record_ids] << record.id
+            activity.heartbeat
+          rescue StandardError => e
+            handle_record_error(record_id, e)
+          ensure
+            ActiveRecord::Base.connection_pool.release_connection
           end
         end
       end
@@ -94,7 +97,7 @@ module Temporal
       def start_write_workflow(total_batches)
         workflow_id = "write_data_#{@sync_run.id}"
         workflow_params = build_database_params(workflow_id, total_batches)
-        
+
         ::Temporal.start_workflow(
           determine_workflow_class,
           workflow_params,
@@ -105,6 +108,7 @@ module Temporal
         )
       end
 
+      # rubocop:disable Metrics/MethodLength
       def build_database_params(workflow_id, total_batches)
         destination = @sync.connection.destination
         destination_config = destination.configuration
@@ -118,16 +122,17 @@ module Temporal
           schema_name: destination_config["schema"],
           database_name: destination_config["database"],
           primary_keys: @sync.source_defined_primary_key,
-          
+
           # Workflow coordination params
           workflow_id: workflow_id,
           total_batches: total_batches,
-          batch_size: BATCH_SIZE,
+          batch_size: BATCH_SIZE.to_i,
           database_data_loader_workflow_id: @database_data_loader_workflow_id,
           database_data_loader_workflow_run_id: @database_data_loader_workflow_run_id,
           sync_run_id: @sync_run.id
         }
       end
+      # rubocop:enable Metrics/MethodLength
 
       def determine_workflow_class
         case @sync.connection.destination.integration_type
@@ -143,5 +148,6 @@ module Temporal
         LANGUAGE_CONNECTOR_QUEUES[language.to_sym] || LANGUAGE_CONNECTOR_QUEUES[:ruby]
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

@@ -10,7 +10,7 @@ module Temporal
       )
 
       timeouts(
-        start_to_close: 3600, # Set appropriate timeout in seconds
+        start_to_close: 3600 # Set appropriate timeout in seconds
       )
 
       def execute(sync_run_id)
@@ -32,20 +32,18 @@ module Temporal
       def process_sync_records(sync_run)
         # Get all record IDs first to avoid AR connection issues in parallel
         record_ids = sync_run.sync_read_records.pluck(:id)
-        
+
         # Process in parallel with a pool size of 10
         Parallel.each(record_ids, in_threads: 10) do |record_id|
           ActiveRecord::Base.connection_pool.with_connection do
-            begin
-              sync_read_record = SyncReadRecord.find(record_id)
-              activity.heartbeat
-              process_single_record(sync_run, sync_read_record)
-            rescue StandardError => e
-              Rails.logger.error("Failed to process record #{record_id}: #{e.message}")
-              raise e
-            ensure
-              ActiveRecord::Base.connection_pool.release_connection
-            end
+            sync_read_record = SyncReadRecord.find(record_id)
+            activity.heartbeat
+            process_single_record(sync_run, sync_read_record)
+          rescue StandardError => e
+            Rails.logger.error("Failed to process record #{record_id}: #{e.message}")
+            raise e
+          ensure
+            ActiveRecord::Base.connection_pool.release_connection
           end
         end
       end
