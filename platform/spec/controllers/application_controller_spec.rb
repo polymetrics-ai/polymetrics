@@ -32,7 +32,7 @@ RSpec.describe ApplicationController, type: :controller do
     let(:devise_parameter_sanitizer) { instance_double(Devise::ParameterSanitizer) }
 
     before do
-      allow(controller).to receive_messages(devise_parameter_sanitizer:,
+      allow(controller).to receive_messages(devise_parameter_sanitizer: devise_parameter_sanitizer,
                                             devise_controller?: true)
     end
 
@@ -47,24 +47,27 @@ RSpec.describe ApplicationController, type: :controller do
 
   describe "error handling" do
     controller do
+      skip_before_action :validate_token_presence!, only: [:index]
+
       def index
         raise StandardError, "Test error"
       end
     end
 
-    it "rescues from StandardError and calls handle_error" do
-      allow(controller).to receive(:handle_error)
-      get :index
-      expect(controller).to have_received(:handle_error)
+    before do
+      allow(Rails.error).to receive(:report)
     end
 
     it "renders API response and reports error" do
-      error = StandardError.new("Test error")
-      allow(controller).to receive(:render_api_response)
-      allow(Rails.error).to receive(:report)
-      controller.send(:handle_error, error)
-      expect(controller).to have_received(:render_api_response).with(error, :internal_server_error)
-      expect(Rails.error).to have_received(:report).with(error)
+      routes.draw { get "index" => "anonymous#index" }
+
+      get :index
+
+      expect(Rails.error).to have_received(:report)
+      expect(response).to have_http_status(:internal_server_error)
+      expect(response.parsed_body).to include(
+        "error" => include("message" => "Test error")
+      )
     end
   end
 end

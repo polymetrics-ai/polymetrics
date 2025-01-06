@@ -20,6 +20,7 @@ module Api
 
       def create
         result = Connectors::UpsertService.new(connector_params, current_user).call
+        CreateConnectionAndSyncsService.new(result[:id]).call if result[:id]
         render_api_response(result, :created)
       end
 
@@ -41,8 +42,8 @@ module Api
       private
 
       def connector_params
-        params.require(:connector).permit(:name, :connector_class_name, :description, :connector_language,
-                                          configuration: {})
+        params.require(:connector).permit(:name, :integration_type, :connector_class_name, :description,
+                                          :connector_language, configuration: {})
       end
 
       def set_connector

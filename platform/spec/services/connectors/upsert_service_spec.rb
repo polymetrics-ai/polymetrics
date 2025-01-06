@@ -53,7 +53,7 @@ RSpec.describe Connectors::UpsertService do
         expect(Temporal).to have_received(:start_workflow).with(
           "RubyConnectors::Temporal::Workflows::ConnectionStatusWorkflow",
           params.as_json,
-          hash_including(options: hash_including(:task_queue, :workflow_id, :workflow_execution_timeout))
+          hash_including(options: hash_including(:task_queue, :workflow_id))
         )
       end
 
@@ -61,7 +61,7 @@ RSpec.describe Connectors::UpsertService do
         result
         expect(Temporal).to have_received(:await_workflow_result).with(
           "RubyConnectors::Temporal::Workflows::ConnectionStatusWorkflow",
-          hash_including(:workflow_id, :run_id, :timeout)
+          hash_including(:workflow_id, :run_id)
         )
       end
     end
@@ -79,7 +79,7 @@ RSpec.describe Connectors::UpsertService do
     end
 
     context "when updating an existing connector" do
-      let(:existing_connector) { create(:connector, workspace:) }
+      let(:existing_connector) { create(:connector, workspace: workspace) }
       let(:service) { described_class.new(params, current_user, existing_connector) }
 
       context "with changed configuration" do
@@ -116,7 +116,7 @@ RSpec.describe Connectors::UpsertService do
 
   describe "private methods" do
     describe "#configuration_changed?" do
-      let!(:existing_connector) { create(:connector, workspace:, configuration: { "key" => "old_value" }) }
+      let!(:existing_connector) { create(:connector, workspace: workspace, configuration: { "key" => "old_value" }) }
       let(:service) { described_class.new(params, current_user, existing_connector) }
 
       it "returns true when configuration has changed" do
@@ -141,8 +141,7 @@ RSpec.describe Connectors::UpsertService do
         workflow_id = "test_workflow_id"
         expect(service.send(:workflow_options, workflow_id)).to eq({
                                                                      task_queue: "ruby_connectors_queue",
-                                                                     workflow_id:,
-                                                                     workflow_execution_timeout: 30
+                                                                     workflow_id: workflow_id
                                                                    })
       end
     end

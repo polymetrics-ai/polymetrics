@@ -1,4 +1,2 @@
 node_modules/
 .DS_Store
-ruby_connectors/duckdb
-/ruby_connectors/.byebug_history

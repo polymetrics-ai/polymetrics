@@ -4,6 +4,9 @@
   "title": "Contributions",
   "description": "Detailed information about a contributor in a GitHub repository, including their login, ID, node ID, avatar URL, gravatar ID, URL, HTML URL, followers URL, following URL, gists URL, starred URL, subscriptions URL, organizations URL, repositories URL, events URL, received events URL, type, site admin status, role name, and permissions.",
   "x-stream_name": "contribs",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
+  "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {
       "description": "The fully qualified name or unique identifier of the repository associated with the collaborator, typically in the format 'owner/repo'.",

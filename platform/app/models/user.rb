@@ -8,6 +8,12 @@ class User < ApplicationRecord
 
   include DeviseTokenAuth::Concerns::User
 
+  # Override sign_out to ensure proper token cleanup
+  def sign_out(client)
+    revoke_token(client)
+    super
+  end
+
   validates :email, presence: true,
                     uniqueness: { case_sensitive: false, scope: :provider }
 
@@ -23,13 +29,28 @@ class User < ApplicationRecord
   def add_organization_to_user
     ActiveRecord::Base.transaction do
       organization = Organization.create!(name: organization_name)
-      workspace = Workspace.create!(name: "default", organization:)
-      user_organization_memberships.create!(organization:, role: "owner")
-      user_workspace_memberships.create!(workspace:, role: "owner")
+      workspace = Workspace.create!(name: "default", organization: organization)
+      user_organization_memberships.create!(organization: organization, role: "owner")
+      user_workspace_memberships.create!(workspace: workspace, role: "owner")
     rescue ActiveRecord::RecordInvalid
       errors.add(:organization_name, "has already been taken")
     end
 
     raise ActiveRecord::Rollback if errors.any?
+  end
+
+  # Revokes the authentication token for the specified client
+  # @param client [String] the client identifier
+  # @return [Boolean] true if token was revoked successfully
+  protected
+
+  def revoke_token(client)
+    return true if tokens.blank?
+
+    tokens.delete(client)
+    save!
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error("Failed to revoke token: #{e.message}")
+    false
   end
 end

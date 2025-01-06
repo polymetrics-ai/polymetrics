@@ -4,6 +4,9 @@
   "title": "Tags",
   "description": "Detailed information about a tag in a GitHub repository, including its repository, name, commit, zipball URL, tarball URL, node ID, and protection rules.",
   "x-stream_name": "tags",
+  "x-supported_sync_modes": ["incremental_dedup"],
+  "x-default_sync_mode": "incremental_dedup",
+  "x-source_defined_primary_key": ["repository", "name"],
   "properties": {
     "repository": {
       "description": "Repository information related to the tag",
