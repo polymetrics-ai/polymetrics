@@ -4,24 +4,24 @@ module Temporal
   module Workflows
     class ConnectionDataSyncWorkflow < ::Temporal::Workflow
       def execute(connection_id)
-        @connection = ::Connection.find(connection_id)
+        initialize_connection(connection_id)
+        sync_run_ids = prepare_sync_runs
+        result = start_child_workflows(sync_run_ids)
 
-        begin
-          sync_run_ids = prepare_sync_runs
-          start_child_workflows(sync_run_ids)
-          handle_completion
-          # monitor_child_workflows
-        rescue StandardError => e
-          handle_failure(e)
-        end
+        handle_final_status(result)
       end
 
       private
+
+      def initialize_connection(connection_id)
+        @connection = ::Connection.find(connection_id)
+      end
 
       def prepare_sync_runs
         Activities::PrepareSyncRunsActivity.execute!(connection_id: @connection.id)
       end
 
+      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def start_child_workflows(sync_run_ids)
         @completed_sync_runs = Set.new
 
@@ -44,7 +44,17 @@ module Temporal
           # Wait for the current sync run to complete before starting the next one
           workflow.wait_until { @completed_sync_runs.include?(sync_run_id) }
         end
+
+        if sync_run_ids.all? { |id| @completed_sync_runs.include?(id) }
+          { status: "completed", success: true }
+        elsif @completed_sync_runs.any?
+          { status: "partial_success", success: false, failed_syncs: sync_run_ids - @completed_sync_runs.to_a,
+            error: "Some sync runs failed" }
+        else
+          { status: "failed", success: false, error: "All sync runs failed" }
+        end
       end
+      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       def workflow_options(workflow_id)
         {
@@ -57,8 +67,6 @@ module Temporal
         workflow.on_signal("terminate_connection_#{@connection.id}") do |signal, input|
           # TODO: Implement termination logic
         end
-
-        workflow.wait_until { @connection.status == "completed" }
       end
 
       def handle_completion
@@ -86,6 +94,29 @@ module Temporal
           error_message: error.message
         )
       end
+
+      # rubocop:disable Metrics/MethodLength
+      def handle_final_status(results)
+        if results[:status] == "completed"
+          handle_completion
+          { status: "completed", success: true }
+        else
+          error_message = "#{results[:failed_syncs].length} out of #{@sync_run_ids.length} syncs failed"
+          Activities::UpdateConnectionStatusActivity.execute!(
+            connection_id: @connection.id,
+            status: :partial_success,
+            message: error_message
+          )
+
+          {
+            status: "partial_success",
+            success: false,
+            failed_syncs: results[:failed_syncs],
+            error: error_message
+          }
+        end
+      end
+      # rubocop:enable Metrics/MethodLength
     end
   end
 end

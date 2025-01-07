@@ -2,6 +2,7 @@
 
 module Temporal
   module Activities
+    # rubocop:disable Metrics/ClassLength
     class TransformRecordActivity < ::Temporal::Activity
       retry_policy(
         interval: 1,
@@ -15,21 +16,60 @@ module Temporal
         schedule_to_close: 1800 # 30 minutes
       )
 
+      # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       def execute(sync_run_id)
         @sync_run = SyncRun.find(sync_run_id)
         @sync = @sync_run.sync
 
-        return if @sync_run.extraction_completed
-        return if @sync_run.sync_read_records.empty?
+        unless @sync_run.extraction_completed
+          return {
+            success: false,
+            error: "Extraction already completed for sync run #{sync_run_id}"
+          }
+        end
 
-        transform_read_records
-        update_sync_run_status
+        if @sync_run.sync_read_records.empty?
+          return {
+            success: false,
+            error: "No records found to transform for sync run #{sync_run_id}"
+          }
+        end
+
+        begin
+          transform_read_records
+
+          total_records = @sync_run.total_records_read
+          if @failed_records.size == total_records
+            {
+              success: false,
+              error: "All #{total_records} records failed to transform",
+              failed_records: @failed_records
+            }
+          else
+            {
+              success: true,
+              warning: @failed_records.any? ? "#{@failed_records.size} out of #{total_records} records failed to transform" : nil,
+              failed_records: @failed_records.any? ? @failed_records : nil
+            }.compact
+          end
+        rescue StandardError => e
+          activity.logger.error(
+            "Failed to transform records for sync run #{sync_run_id}: #{e.message}",
+            error: e,
+            sync_run_id: @sync_run.id,
+            sync_id: @sync.id
+          )
+          { success: false, error: e.message }
+        end
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
       private
 
+      # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       def transform_read_records
         record_ids = @sync_run.sync_read_records.pluck(:id)
+        @failed_records = []
         processed_records = Set.new
 
         Parallel.each(record_ids, in_threads: 10) do |record_id|
@@ -39,12 +79,14 @@ module Temporal
             processed_records.add(record_id)
             activity.heartbeat
           rescue StandardError => e
+            @failed_records << { id: record_id, error: e.message }
             handle_record_error(record_id, e)
           ensure
             ActiveRecord::Base.connection_pool.release_connection
           end
         end
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
       def handle_record_error(record_id, error)
         activity.logger.error(
@@ -63,7 +105,6 @@ module Temporal
         end
 
         store_transformed_data(sync_read_record.id, transformed_data)
-        mark_record_as_transformed(sync_read_record)
       end
 
       def transform_record_data(record)
@@ -87,23 +128,6 @@ module Temporal
         redis.expire(redis_key, 7.days.to_i)
       end
 
-      def mark_record_as_transformed(sync_read_record)
-        sync_read_record.update!(
-          transformation_completed_at: Time.current
-        )
-      end
-
-      def update_sync_run_status
-        transformation_completed = @sync_run.sync_read_records.all? do |record|
-          record.transformation_completed_at.present?
-        end
-
-        @sync_run.update!(
-          transformation_completed: transformation_completed,
-          last_transformed_at: Time.current
-        )
-      end
-
       def redis
         @redis ||= initialize_redis
       end
@@ -112,5 +136,6 @@ module Temporal
         Digest::SHA256.hexdigest(record.to_json)
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

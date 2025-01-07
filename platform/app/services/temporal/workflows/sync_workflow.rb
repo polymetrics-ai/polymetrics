@@ -7,12 +7,18 @@ module Temporal
       def execute(sync_run_id)
         initialize_sync(sync_run_id)
 
-        begin
-          perform_sync
-          signal_completion(true)
-        rescue StandardError => e
-          handle_sync_failure(e)
-          signal_completion(false)
+        result = perform_sync
+        if result[:success]
+          signal_completion(result[:status])
+        else
+          handle_sync_failure(result[:error])
+          error_result = {
+            success: false,
+            status: "error",
+            error: result[:error]
+          }
+          signal_completion(error_result)
+          error_result
         end
       end
 
@@ -29,13 +35,47 @@ module Temporal
         @destination_integration_type = @sync.connection.destination.integration_type
       end
 
+      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def perform_sync
         update_sync_status_activity("syncing")
-        extract_data
-        transform_data
-        load_data
+
+        extraction_result = extract_data
+        unless extraction_result[:success]
+          handle_error(extraction_result[:error])
+          return {
+            success: false,
+            status: "error",
+            error: extraction_result[:error]
+          }
+        end
+
+        transformation_result = transform_data
+        unless transformation_result[:success]
+          handle_error(transformation_result[:error])
+          return {
+            success: false,
+            status: "error",
+            error: transformation_result[:error]
+          }
+        end
+
+        load_result = load_data
+        unless load_result[:success]
+          handle_error(load_result[:error])
+          return {
+            success: false,
+            status: "error",
+            error: load_result[:error]
+          }
+        end
+
         update_sync_status_activity("synced")
+        {
+          success: true,
+          status: "completed"
+        }
       end
+      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       def extract_data
         extraction_result = perform_extraction
@@ -69,14 +109,10 @@ module Temporal
         return handle_error("Invalid extraction result format") unless result.is_a?(Hash)
 
         if result[:success]
-          handle_successful_extraction
+          result
         else
           handle_error(result[:error] || "Unknown extraction error")
         end
-      end
-
-      def handle_successful_extraction
-        # TODO: Implement extracted at timestamp for sync run
       end
 
       def handle_sync_failure(error)
@@ -103,31 +139,43 @@ module Temporal
       end
 
       def transform_data
-        Activities::TransformRecordActivity.execute!(@sync_run_id)
-        Activities::ConvertReadRecordActivity.execute!(@sync_run_id)
+        transformation_result = Activities::TransformRecordActivity.execute!(@sync_run_id)
+        return { success: false, error: transformation_result[:error] } unless transformation_result[:success]
+
+        conversion_result = Activities::ConvertReadRecordActivity.execute!(@sync_run_id)
+        if conversion_result[:success]
+          {
+            success: true,
+            warning: [transformation_result[:warning], conversion_result[:warning]].compact.presence
+          }.compact
+        else
+          {
+            success: false,
+            error: conversion_result[:error],
+            failed_records: conversion_result[:failed_records]
+          }
+        end
       end
 
       def load_data
         case @destination_integration_type
         when "database"
-          load_database_data
+          result = load_database_data
+          { success: result[:success], error: result[:error] }
         when "api"
-          load_api_data
+          { success: false, error: "API data loading not yet supported" }
         else
-          raise "Unsupported destination type: #{@destination_integration_type}"
+          { success: false, error: "Unsupported destination type: #{@destination_integration_type}" }
         end
+      rescue StandardError => e
+        { success: false, error: e.message }
       end
 
       def load_database_data
         Workflows::Loaders::DatabaseDataLoaderWorkflow.execute!(
-          @sync_run.id,
-          options: { workflow_id: "database_loader_#{@sync_run.id}" }
+          @sync_run_id,
+          options: { workflow_id: "database_loader_#{@sync_run_id}" }
         )
-      end
-
-      def load_api_data
-        # Will be implemented later for API destinations
-        raise NotImplementedError, "API data loading not yet supported"
       end
 
       def process_load_result(result)

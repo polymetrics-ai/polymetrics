@@ -38,5 +38,6 @@ worker.register_activity(Temporal::Activities::CheckWriteRecordsStatusActivity)
 worker.register_activity(Temporal::Activities::UpdateSyncRunStatsActivity)
 worker.register_activity(Temporal::Activities::FetchPendingRecordsActivity)
 worker.register_activity(Temporal::Activities::UpdateWriteCompletionActivity)
+worker.register_activity(Temporal::Activities::UpdateSyncRunActivity)
 
 worker.start

@@ -26,7 +26,7 @@ module Temporal
           update_sync_status("syncing")
           fetch_and_setup_workflow
           process_first_page
-          handle_remaining_pages if @total_pages&.> 1 # @total_pages && @total_pages > 1
+          handle_remaining_pages if @total_pages&.> 1
           finalize_extraction
         end
 
@@ -120,7 +120,14 @@ module Temporal
         end
 
         def finalize_extraction
-          update_sync_status("synced")
+          Activities::UpdateSyncRunActivity.execute!(
+            sync_run_id: @sync_run_id,
+            attributes: {
+              extraction_completed: true,
+              last_extracted_at: Time.current
+            }
+          )
+
           { success: true, message: "API extraction completed" }
         end
 
