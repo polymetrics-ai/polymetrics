@@ -57,8 +57,12 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
     context "when sync_read_record_data is not an array" do
       let(:record_data) { "invalid" }
 
-      it "returns nil without processing" do
-        expect(service.call).to be_nil
+      it "returns error without processing" do
+        result = service.call
+        expect(result).to eq({
+                               success: false,
+                               message: "transformed_data is not an array"
+                             })
       end
     end
 

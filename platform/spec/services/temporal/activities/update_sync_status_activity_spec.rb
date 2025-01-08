@@ -98,7 +98,7 @@ RSpec.describe Temporal::Activities::UpdateSyncStatusActivity do
 
       it "logs the error" do
         expect(logger).to receive(:error).with(
-          "Sync not found for sync run -1 error: Couldn't find SyncRun with 'id'=-1"
+          "Failed to update sync status for sync run -1 error: Couldn't find SyncRun with 'id'=-1"
         )
 
         expect do

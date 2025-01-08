@@ -60,12 +60,6 @@ module Temporal
             }.compact
           end
         rescue StandardError => e
-          activity.logger.error(
-            "Failed to convert records for sync run #{sync_run_id}: #{e.message}",
-            error: e,
-            sync_run_id: @sync_run.id,
-            sync_id: @sync_run.sync.id
-          )
           { success: false, error: e.message }
         end
       end
@@ -86,7 +80,12 @@ module Temporal
           ActiveRecord::Base.connection_pool.with_connection do
             sync_read_record = SyncReadRecord.find(record_id)
             activity.heartbeat
-            process_single_record(sync_run, sync_read_record)
+            result = process_single_record(sync_run, sync_read_record)
+            if result[:success]
+              result
+            else
+              @failed_records << [{ id: record_id, error: result[:message] }]
+            end
           rescue StandardError => e
             @failed_records << { id: record_id, error: e.message }
             activity.logger.error(
@@ -104,8 +103,9 @@ module Temporal
 
       def process_single_record(sync_run, sync_read_record)
         ActiveRecord::Base.transaction do
-          process_record_data(sync_run, sync_read_record)
-          mark_record_as_processed(sync_read_record)
+          result = process_record_data(sync_run, sync_read_record)
+          mark_record_as_processed(sync_read_record) if result[:success]
+          result
         end
       end
 
@@ -129,7 +129,7 @@ module Temporal
       end
 
       def mark_record_as_processed(sync_read_record)
-        sync_read_record.update!(extraction_completed_at: Time.current)
+        sync_read_record.update!(transformation_completed_at: Time.current)
       end
 
       def process_deletions(sync_run)

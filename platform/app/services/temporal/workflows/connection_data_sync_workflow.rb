@@ -5,8 +5,8 @@ module Temporal
     class ConnectionDataSyncWorkflow < ::Temporal::Workflow
       def execute(connection_id)
         initialize_connection(connection_id)
-        sync_run_ids = prepare_sync_runs
-        result = start_child_workflows(sync_run_ids)
+        @sync_run_ids = prepare_sync_runs
+        result = start_child_workflows(@sync_run_ids)
 
         handle_final_status(result)
       end
@@ -51,7 +51,7 @@ module Temporal
           { status: "partial_success", success: false, failed_syncs: sync_run_ids - @completed_sync_runs.to_a,
             error: "Some sync runs failed" }
         else
-          { status: "failed", success: false, error: "All sync runs failed" }
+          { status: "failed", success: false, error: "All sync runs failed", failed_syncs: sync_run_ids }
         end
       end
       # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
@@ -88,10 +88,10 @@ module Temporal
         "sync_run_#{sync_run_id}"
       end
 
-      def log_error(error)
+      def log_error(error_message)
         Activities::LogConnectionErrorActivity.execute!(
           connection_id: @connection.id,
-          error_message: error.message
+          error_message: error_message
         )
       end
 
@@ -100,13 +100,9 @@ module Temporal
         if results[:status] == "completed"
           handle_completion
           { status: "completed", success: true }
-        else
+        elsif results[:status] == "partial_success"
           error_message = "#{results[:failed_syncs].length} out of #{@sync_run_ids.length} syncs failed"
-          Activities::UpdateConnectionStatusActivity.execute!(
-            connection_id: @connection.id,
-            status: :partial_success,
-            message: error_message
-          )
+          handle_failure(error_message)
 
           {
             status: "partial_success",
@@ -114,6 +110,9 @@ module Temporal
             failed_syncs: results[:failed_syncs],
             error: error_message
           }
+        else
+          handle_failure(results[:error])
+          { status: "failed", success: false, error: results[:error], failed_syncs: results[:failed_syncs] }
         end
       end
       # rubocop:enable Metrics/MethodLength

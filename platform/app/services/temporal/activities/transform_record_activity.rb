@@ -75,9 +75,13 @@ module Temporal
         Parallel.each(record_ids, in_threads: 10) do |record_id|
           ActiveRecord::Base.connection_pool.with_connection do
             sync_read_record = SyncReadRecord.find(record_id)
-            transform_single_record(sync_read_record)
-            processed_records.add(record_id)
+            result = transform_single_record(sync_read_record)
             activity.heartbeat
+            if result[:success]
+              processed_records.add(record_id)
+            else
+              @failed_records << { id: record_id, error: result[:error] }
+            end
           rescue StandardError => e
             @failed_records << { id: record_id, error: e.message }
             handle_record_error(record_id, e)
@@ -98,13 +102,14 @@ module Temporal
       end
 
       def transform_single_record(sync_read_record)
-        return unless sync_read_record.data.is_a?(Array)
+        return { success: false, error: "Data is not an array" } unless sync_read_record.data.is_a?(Array)
 
         transformed_data = sync_read_record.data.map do |record|
           transform_record_data(record)
         end
 
         store_transformed_data(sync_read_record.id, transformed_data)
+        { success: true, transformed_data: transformed_data }
       end
 
       def transform_record_data(record)

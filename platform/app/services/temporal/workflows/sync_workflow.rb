@@ -10,6 +10,7 @@ module Temporal
         result = perform_sync
         if result[:success]
           signal_completion(result[:status])
+          result
         else
           handle_sync_failure(result[:error])
           error_result = {
@@ -136,6 +137,8 @@ module Temporal
           sync_id: @sync_run&.sync_id,
           error_message: error_message
         )
+
+        { success: false, error: error_message }
       end
 
       def transform_data

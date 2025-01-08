@@ -16,7 +16,7 @@ module Etl
 
         def call
           transformed_data = fetch_transformed_data
-          return unless transformed_data.is_a?(Array)
+          return { success: false, message: "transformed_data is not an array" } unless transformed_data.is_a?(Array)
 
           load_existing_signatures
 
@@ -24,6 +24,8 @@ module Etl
             process_record(record_data)
             store_pk_signature_in_redis(record_data)
           end
+
+          { success: true, message: "Records processed successfully" }
         end
 
         private
