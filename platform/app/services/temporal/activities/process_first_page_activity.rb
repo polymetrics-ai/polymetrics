@@ -21,6 +21,8 @@ module Temporal
         workflow_data = fetch_workflow_data(workflow_id)
         page_data = workflow_data[:data]
 
+        return { status: "skipped", message: "no records to process" } if page_data&.blank? || page_data&.empty? || page_data&.nil?
+
         process_page_data(page_data, total_pages)
 
         { status: "success", message: "first page processed", total_pages: total_pages }
@@ -42,6 +44,8 @@ module Temporal
       end
 
       def create_sync_read_record(records)
+        return { status: "skipped", message: "no records to process" } unless records
+
         SyncReadRecord.create!(
           sync_run: @sync_run,
           sync: @sync,
@@ -62,8 +66,10 @@ module Temporal
       end
 
       def update_extraction_stats(records)
-        @sync_run.total_records_read += records.size
-        @sync_run.successful_records_read += records.size
+        return unless records
+
+        @sync_run.total_records_read += records.size || 0
+        @sync_run.successful_records_read += records.size || 0
         @sync_run.save!
       end
 

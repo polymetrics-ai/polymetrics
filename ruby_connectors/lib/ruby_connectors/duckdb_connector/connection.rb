@@ -13,6 +13,7 @@ module RubyConnectors
       def connect
         db = authorize_connection
         check_connection(db)
+        db.close
       end
 
       def authorize_connection

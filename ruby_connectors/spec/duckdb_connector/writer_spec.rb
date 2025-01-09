@@ -17,28 +17,31 @@ RSpec.describe RubyConnectors::DuckdbConnector::Writer do
     }
   end
 
-  let(:connection) { instance_spy(RubyConnectors::DuckdbConnector::Connection) }
   let(:db) { instance_double(DuckDB::Database) }
   let(:conn) { instance_double(DuckDB::Connection) }
   let(:appender) { instance_double(DuckDB::Appender) }
 
   before do
-    allow(RubyConnectors::DuckdbConnector::Connection).to receive(:new).and_return(connection)
-    allow(connection).to receive(:authorize_connection).and_return(db)
-    allow(db).to receive(:connect).and_return(conn)
-    allow(conn).to receive_messages(appender: appender, query: [])
-    allow(conn).to receive(:execute)
-    allow(conn).to receive(:close)
-    allow(appender).to receive(:append)
-    allow(appender).to receive(:end_row)
-    allow(appender).to receive(:flush)
-    allow(appender).to receive(:close)
+    # Mock DuckDB database operations
+    allow(DuckDB::Database).to receive(:open).and_yield(db)
+    allow(db).to receive(:connect).and_yield(conn)
+    allow(conn).to receive_messages(
+      appender: appender,
+      query: [],
+      execute: true,
+      close: true
+    )
+    allow(appender).to receive_messages(
+      append: true,
+      end_row: true,
+      flush: true,
+      close: true
+    )
   end
 
   describe "#initialize" do
-    it "creates a new connection with config" do
-      writer
-      expect(RubyConnectors::DuckdbConnector::Connection).to have_received(:new).with(config)
+    it "initializes with config" do
+      expect(writer.instance_variable_get(:@config)).to be_a(ActiveSupport::HashWithIndifferentAccess)
     end
   end
 

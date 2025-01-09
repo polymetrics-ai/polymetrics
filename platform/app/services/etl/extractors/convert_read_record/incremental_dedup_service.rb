@@ -16,7 +16,7 @@ module Etl
 
         def call
           transformed_data = fetch_transformed_data
-          return unless transformed_data.is_a?(Array)
+          return { success: false, message: "transformed_data is not an array" } unless transformed_data.is_a?(Array)
 
           load_existing_signatures
 
@@ -24,6 +24,8 @@ module Etl
             process_record(record_data)
             store_pk_signature_in_redis(record_data)
           end
+
+          { success: true, message: "Records processed successfully" }
         end
 
         private
@@ -72,6 +74,7 @@ module Etl
           record_with_system_fields = record_data.deep_dup
           record_with_system_fields["_polymetrics_id"] = data_signature
           record_with_system_fields["_polymetrics_extracted_at"] = Time.current.iso8601
+          return if SyncWriteRecord.exists?(sync_id: @sync.id, data_signature: data_signature, primary_key_signature: pk_signature)
 
           SyncWriteRecord.create!(
             sync: @sync,

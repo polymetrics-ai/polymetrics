@@ -2,28 +2,146 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Stargazers",
-  "description": "Detailed information about a stargazer in a GitHub repository, including their repository, user ID, starred at timestamp, and user details.",
+  "description": "Detailed information about GitHub users who have starred a repository",
   "x-stream_name": "stargazers",
   "x-supported_sync_modes": ["incremental_dedup"],
   "x-default_sync_mode": "incremental_dedup",
-  "x-source_defined_primary_key": ["user_id", "repository", "starred_at"],
+  "x-source_defined_primary_key": ["id"],
   "properties": {
     "repository": {
-      "description": "The repository that was starred by a user.",
-      "type": "string"
+      "type": "string",
+      "description": "The repository that was starred by the user"
     },
-    "user_id": {
-      "description": "The unique identifier of the user who starred the repository.",
-      "type": ["null", "integer"]
+    "login": {
+      "type": "string",
+      "description": "The username of the user",
+      "examples": ["octocat"]
+    },
+    "id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "The unique identifier of the user",
+      "examples": [1]
+    },
+    "node_id": {
+      "type": "string",
+      "description": "The Node ID of the user",
+      "examples": ["MDQ6VXNlcjE="]
+    },
+    "avatar_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the user's avatar image",
+      "examples": ["https://github.com/images/error/octocat_happy.gif"]
+    },
+    "gravatar_id": {
+      "type": ["string", "null"],
+      "description": "The Gravatar ID associated with the user",
+      "examples": ["41d064eb2195891e12d0413f63227ea7"]
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The API URL for the user",
+      "examples": ["https://api.github.com/users/octocat"]
+    },
+    "html_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The GitHub URL for the user",
+      "examples": ["https://github.com/octocat"]
+    },
+    "followers_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The API URL for the user's followers",
+      "examples": ["https://api.github.com/users/octocat/followers"]
+    },
+    "following_url": {
+      "type": "string",
+      "description": "The API URL template for users being followed",
+      "examples": ["https://api.github.com/users/octocat/following{/other_user}"]
+    },
+    "gists_url": {
+      "type": "string",
+      "description": "The API URL template for user's gists",
+      "examples": ["https://api.github.com/users/octocat/gists{/gist_id}"]
+    },
+    "starred_url": {
+      "type": "string",
+      "description": "The API URL template for repositories starred by the user",
+      "examples": ["https://api.github.com/users/octocat/starred{/owner}{/repo}"]
+    },
+    "subscriptions_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The API URL for repositories the user is watching",
+      "examples": ["https://api.github.com/users/octocat/subscriptions"]
+    },
+    "organizations_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The API URL for organizations the user belongs to",
+      "examples": ["https://api.github.com/users/octocat/orgs"]
+    },
+    "repos_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The API URL for the user's repositories",
+      "examples": ["https://api.github.com/users/octocat/repos"]
+    },
+    "events_url": {
+      "type": "string",
+      "description": "The API URL template for user's events",
+      "examples": ["https://api.github.com/users/octocat/events{/privacy}"]
+    },
+    "received_events_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The API URL for events received by the user",
+      "examples": ["https://api.github.com/users/octocat/received_events"]
+    },
+    "type": {
+      "type": "string",
+      "description": "The type of GitHub account",
+      "enum": ["User", "Organization"]
+    },
+    "site_admin": {
+      "type": "boolean",
+      "description": "Whether the user is a GitHub site admin"
     },
     "starred_at": {
-      "description": "The date and time when the user starred the repository.",
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "The timestamp when the user starred the repository",
+      "examples": ["2020-07-09T00:17:55Z"]
     },
-    "user": {
-      "description": "The user who starred the repository.",
-      "$ref": "user.json"
+    "user_view_type": {
+      "type": "string",
+      "description": "The visibility type of the user",
+      "enum": ["public", "private"]
     }
-  }
+  },
+  "required": [
+    "repository",
+    "avatar_url",
+    "events_url",
+    "followers_url",
+    "following_url",
+    "gists_url",
+    "gravatar_id",
+    "html_url",
+    "id",
+    "node_id",
+    "login",
+    "organizations_url",
+    "received_events_url",
+    "repos_url",
+    "site_admin",
+    "starred_at",
+    "starred_url",
+    "subscriptions_url",
+    "type",
+    "url"
+  ]
 }

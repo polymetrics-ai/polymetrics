@@ -4,6 +4,7 @@ class SyncRun < ApplicationRecord
   belongs_to :sync
   has_many :sync_logs, dependent: :destroy
   has_many :sync_read_records, dependent: :destroy
+  has_many :sync_write_records, dependent: :destroy
 
   enum status: { running: 0, succeeded: 1, failed: 2, cancelled: 3 }
 

@@ -5,13 +5,13 @@ require "rails_helper"
 RSpec.describe Temporal::Activities::ProcessPageActivity do
   subject { described_class.new(context) }
 
-  let(:context) { instance_double("Temporal::Activity::Context", logger: logger) }
-  let(:logger) { instance_double("Logger", info: nil) }
+  let(:context) { instance_double("Temporal::Activity::Context", logger: logger, heartbeat: nil) }
+  let(:logger) { instance_double("Logger", info: nil, error: nil) }
   let(:sync) { create(:sync) }
   let(:sync_run) { create(:sync_run, sync: sync, total_pages: 5) }
   let(:workflow_store) { instance_double(WorkflowStoreService) }
   let(:workflow_id) { "test_workflow_123" }
-  let(:page_number) { 2 }
+  let(:pages) { [2] }
   let(:page_data) { [{ "id" => 1, "name" => "Test" }, { "id" => 2, "name" => "Test 2" }] }
   let(:workflow_data) do
     {
@@ -29,8 +29,9 @@ RSpec.describe Temporal::Activities::ProcessPageActivity do
   before do
     allow(WorkflowStoreService).to receive(:new).and_return(workflow_store)
     allow(workflow_store).to receive(:get_workflow_data)
-      .with("#{workflow_id}:#{page_number}")
+      .with("#{workflow_id}:2")
       .and_return(workflow_data)
+    allow(logger).to receive(:error).with(any_args)
   end
 
   describe "#execute" do
@@ -39,10 +40,14 @@ RSpec.describe Temporal::Activities::ProcessPageActivity do
         result = subject.execute(
           sync_run_id: sync_run.id,
           signal_data: signal_data,
-          page_number: page_number
+          pages: pages
         )
 
-        expect(result).to eq({ status: "success" })
+        expect(result).to eq({
+                               status: "success",
+                               processed_pages: pages,
+                               batch_id: nil
+                             })
       end
 
       it "creates sync read record" do
@@ -50,7 +55,7 @@ RSpec.describe Temporal::Activities::ProcessPageActivity do
           subject.execute(
             sync_run_id: sync_run.id,
             signal_data: signal_data,
-            page_number: page_number
+            pages: pages
           )
         end.to change(SyncReadRecord, :count).by(1)
 
@@ -64,12 +69,12 @@ RSpec.describe Temporal::Activities::ProcessPageActivity do
         subject.execute(
           sync_run_id: sync_run.id,
           signal_data: signal_data,
-          page_number: page_number
+          pages: pages
         )
 
         sync_run.reload
         expect(sync_run.attributes).to include(
-          "current_page" => page_number,
+          "current_page" => pages[0],
           "total_records_read" => 2,
           "successful_records_read" => 2
         )
@@ -83,7 +88,7 @@ RSpec.describe Temporal::Activities::ProcessPageActivity do
           subject.execute(
             sync_run_id: -1,
             signal_data: signal_data,
-            page_number: page_number
+            pages: pages
           )
         end.to raise_error(ActiveRecord::RecordNotFound)
       end
@@ -104,28 +109,10 @@ RSpec.describe Temporal::Activities::ProcessPageActivity do
         result = subject.execute(
           sync_run_id: sync_run.id,
           signal_data: signal_data,
-          page_number: page_number
+          pages: pages
         )
 
         expect(result[:status]).to eq("success")
-      end
-    end
-
-    context "with invalid workflow data" do
-      before do
-        allow(workflow_store).to receive(:get_workflow_data)
-          .with("#{workflow_id}:#{page_number}")
-          .and_return({ result: "invalid" })
-      end
-
-      it "raises TypeError" do
-        expect do
-          subject.execute(
-            sync_run_id: sync_run.id,
-            signal_data: signal_data,
-            page_number: page_number
-          )
-        end.to raise_error(TypeError)
       end
     end
   end
