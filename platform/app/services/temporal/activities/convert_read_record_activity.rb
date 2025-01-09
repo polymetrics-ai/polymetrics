@@ -75,16 +75,29 @@ module Temporal
       # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       def process_sync_records(sync_run)
         record_ids = sync_run.sync_read_records.pluck(:id)
+        chunk_size = 100 # Larger chunk size for processes
 
-        Parallel.each(record_ids, in_threads: 10) do |record_id|
-          ActiveRecord::Base.connection_pool.with_connection do
+        record_ids.each_slice(chunk_size) do |chunk|
+          activity.heartbeat
+
+          parallel_options = if Rails.env.test?
+                               { in_threads: 10 }
+                             else
+                               { in_processes: 30 }
+                             end
+
+          # Use processes instead of threads, with fewer processes than threads
+          # This may fail as we are not connecting to ActiveRecord in each process need to validate with multiple users
+          # rspec fails on in_processes
+          Parallel.each(chunk, parallel_options) do |record_id|
             sync_read_record = SyncReadRecord.find(record_id)
             activity.heartbeat
             result = process_single_record(sync_run, sync_read_record)
+
             if result[:success]
               result
             else
-              @failed_records << [{ id: record_id, error: result[:message] }]
+              @failed_records << { id: record_id, error: result[:message] }
             end
           rescue StandardError => e
             @failed_records << { id: record_id, error: e.message }
@@ -94,8 +107,6 @@ module Temporal
               sync_run_id: sync_run.id,
               sync_id: sync_run.sync.id
             )
-          ensure
-            ActiveRecord::Base.connection_pool.release_connection
           end
         end
       end
