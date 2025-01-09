@@ -86,10 +86,7 @@ module Temporal
 
       def handle_record_error(record_id, error)
         activity.logger.error(
-          "Failed to process record #{record_id}: #{error.message}",
-          error: error,
-          sync_run_id: @sync_run.id,
-          sync_id: @sync.id
+          "Failed to process record #{record_id}: #{error.message}"
         )
         raise error
       end

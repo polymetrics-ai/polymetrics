@@ -69,10 +69,7 @@ module Temporal
 
       def handle_page_error(page_number, error)
         activity.logger.error(
-          "Failed to process page #{page_number}: #{error.message}",
-          error: error,
-          sync_run_id: @sync_run.id,
-          sync_id: @sync.id
+          "Failed to process page #{page_number}: #{error.message}"
         )
         raise error
       end

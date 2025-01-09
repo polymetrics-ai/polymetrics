@@ -19,14 +19,12 @@ module Temporal
         ActiveRecord::Base.transaction do
           # Update write records status
           SyncWriteRecord.where(id: write_record_ids).update_all(
-            status: :written,
-            written_at: Time.current
+            status: :written
           )
 
           # Update sync run stats
           sync_run = SyncRun.find(sync_run_id)
-          sync_run.increment!(:records_written, write_record_ids.size)
-          sync_run.touch(:last_written_at)
+          sync_run.increment!(:successful_records_write, write_record_ids.size)
         end
       rescue StandardError => e
         activity.logger.error("Failed to update write completion: #{e.message}")

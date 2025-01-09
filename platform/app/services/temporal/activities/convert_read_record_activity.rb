@@ -89,6 +89,7 @@ module Temporal
           # Use processes instead of threads, with fewer processes than threads
           # This may fail as we are not connecting to ActiveRecord in each process need to validate with multiple users
           # rspec fails on in_processes
+          # Hypothesis that needs to be validated: is in_processes is working without restablishing connection to ActiveRecord may be due to temporal
           Parallel.each(chunk, parallel_options) do |record_id|
             sync_read_record = SyncReadRecord.find(record_id)
             activity.heartbeat
@@ -102,10 +103,7 @@ module Temporal
           rescue StandardError => e
             @failed_records << { id: record_id, error: e.message }
             activity.logger.error(
-              "Failed to process record #{record_id}: #{e.message}",
-              error: e,
-              sync_run_id: sync_run.id,
-              sync_id: sync_run.sync.id
+              "Failed to process record #{record_id}: #{e.message}"
             )
           end
         end

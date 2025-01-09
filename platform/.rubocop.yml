@@ -39,7 +39,7 @@ RSpec/DescribedClass:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 15
+  Max: 25
 
 RSpec/MultipleExpectations:
   Enabled: false

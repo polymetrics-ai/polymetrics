@@ -4,15 +4,25 @@ module RubyConnectors
       class WriteDatabaseDataWorkflow < ::Temporal::Workflow
         def execute(params)
           initialize_workflow_state(params)
-          @result = write_data.with_indifferent_access
-
-          signal_completion if @result[:status] == "success"
           
-          { 
-            status: @result[:status], 
-            records_written: @result[:records_written] || 0,
-            error: @result[:error]
-          }
+          begin
+            @result = write_data
+            @result = @result.is_a?(Hash) ? @result.with_indifferent_access : {}
+            
+            signal_completion if @result[:status] == "success"
+            
+            { 
+              status: @result[:status], 
+              records_written: @result[:records_written] || 0,
+              error: @result[:error]
+            }
+          rescue StandardError => e
+            {
+              status: "error",
+              records_written: 0,
+              error: e.message
+            }
+          end
         end
 
         private
@@ -31,7 +41,6 @@ module RubyConnectors
             "database_write_completed",
             @input["database_data_loader_workflow_id"],
             @input["database_data_loader_workflow_run_id"],
-            
             {
               status: "success",
               workflow_id: @input["workflow_id"],
