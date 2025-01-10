@@ -21,6 +21,7 @@ import { ConnectorSchema } from '@/lib/schema';
 import { defineStepper } from '@stepperize/react';
 import { putConnector } from '@/service';
 import { postConnectorPayload } from '@/types/payload';
+import { Connector, APIError } from '@/types/connector';
 
 export const Route = createLazyFileRoute('/_authenticated/connectors/$id')({
     component: EditConnector
@@ -37,6 +38,7 @@ function EditConnector() {
     });
     const formRef = useRef<ConnectorFormRef>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     // Hook Functions
     const id = useParams({
@@ -48,19 +50,31 @@ function EditConnector() {
 
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({
-        mutationFn: async (payload: { id: string; data: postConnectorPayload }) => {
-            const { id, data } = payload;
-            const response = await putConnector(id, data);
-            return response;
+    const mutation = useMutation<Connector, APIError, { id: string; data: postConnectorPayload }>({
+        mutationFn: async ({ id, data }) => {
+            return await putConnector(id, data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['connectors'], refetchType: 'active' });
-
             navigate({
                 to: '/connectors',
                 replace: true,
-                state: { showToast: true, message: 'Connector Successfully Updated' }
+                state: { 
+                    showToast: true, 
+                    message: 'Connector Successfully Updated',
+                    type: 'success'
+                }
+            });
+        },
+        onError: (error: Error) => {
+            navigate({
+                to: '/connectors',
+                replace: true,
+                state: { 
+                    showToast: true, 
+                    message: `Failed to update connector: ${error.message}`,
+                    type: 'error'
+                }
             });
         }
     });
@@ -108,6 +122,15 @@ function EditConnector() {
         }
     };
 
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        setIsLoading(true);
+        // Simulate loading state for search
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 500);
+    };
+
     return (
         <main className="grid grid-cols-4 my-8 mr-8 bg-slate-100">
             <div className="col-span-3 overflow-hidden flex-grow">
@@ -137,7 +160,7 @@ function EditConnector() {
                             <div className="mx-10 mt-4 mb-8 cursor-pointer bg-white border-slate-300">
                                 <SearchBar
                                     placeholder="Search for Connectors"
-                                    onSearch={() => console.log('Searching')}
+                                    onSearch={handleSearch}
                                 />
                             </div>
                             {isLoading ? (
