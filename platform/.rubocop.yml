@@ -39,7 +39,7 @@ RSpec/DescribedClass:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 15
+  Max: 25
 
 RSpec/MultipleExpectations:
   Enabled: false
@@ -48,7 +48,7 @@ RSpec/NestedGroups:
   Max: 4
 
 RSpec/MultipleMemoizedHelpers:
-  Max: 10
+  Max: 15
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
@@ -60,7 +60,7 @@ Metrics/MethodLength:
   Max: 15
 
 Layout/LineLength:
-  Max: 140 
+  Max: 150
 
 RSpec/MessageSpies:
   Enabled: false

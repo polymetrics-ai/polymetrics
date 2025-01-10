@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_26_173638) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -75,6 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "extraction_completed_at"
+    t.datetime "transformation_completed_at"
     t.index ["signature", "sync_id"], name: "index_sync_read_records_on_signature_and_sync_id", unique: true
     t.index ["sync_id"], name: "index_sync_read_records_on_sync_id"
     t.index ["sync_run_id"], name: "index_sync_read_records_on_sync_run_id"
@@ -104,10 +105,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
     t.string "temporal_workflow_id"
     t.string "temporal_run_id"
     t.jsonb "temporal_read_data_workflow_ids", default: []
+    t.boolean "transformation_completed", default: false
+    t.datetime "last_transformed_at"
     t.index ["status"], name: "index_sync_runs_on_status"
     t.index ["sync_id", "current_page"], name: "index_sync_runs_on_sync_id_and_current_page"
     t.index ["sync_id", "last_cursor_value"], name: "index_sync_runs_on_sync_id_and_last_cursor_value"
     t.index ["sync_id", "last_extracted_at"], name: "index_sync_runs_on_sync_id_and_last_extracted_at"
+    t.index ["sync_id", "last_transformed_at"], name: "index_sync_runs_on_sync_id_and_last_transformed_at"
     t.index ["sync_id"], name: "index_sync_runs_on_sync_id"
     t.index ["temporal_read_data_workflow_ids"], name: "index_sync_runs_on_temporal_read_data_workflow_ids", using: :gin
     t.index ["temporal_run_id"], name: "index_sync_runs_on_temporal_run_id"
@@ -148,6 +152,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_171452) do
     t.string "destination_sync_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "destination_database_schema"
     t.index ["connection_id", "stream_name"], name: "index_syncs_on_connection_id_and_stream_name", unique: true
     t.index ["connection_id"], name: "index_syncs_on_connection_id"
   end

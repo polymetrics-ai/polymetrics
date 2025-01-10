@@ -1,0 +1,19 @@
+{
+  "default": "VARCHAR",
+  "type_mappings": {
+    "integer": "BIGINT",
+    "number": "DOUBLE",
+    "string": "VARCHAR",
+    "boolean": "BOOLEAN",
+    "object": "JSON",
+    "array": "JSON"
+  },
+  "format_mappings": {
+    "date-time": "TIMESTAMP",
+    "date": "DATE",
+    "time": "TIME",
+    "uuid": "UUID",
+    "decimal": "DECIMAL",
+    "binary": "BLOB"
+  }
+} 

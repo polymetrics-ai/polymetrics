@@ -4,7 +4,7 @@
 FactoryBot.define do
   factory :sync do
     connection
-    stream_name { Faker::Lorem.word }
+    stream_name { Random.uuid }
     status { :synced }
     sync_mode { :full_refresh_overwrite }
     sync_frequency { "0 0 * * *" }

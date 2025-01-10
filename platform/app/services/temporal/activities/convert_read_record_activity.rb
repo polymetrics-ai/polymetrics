@@ -2,6 +2,7 @@
 
 module Temporal
   module Activities
+    # rubocop:disable Metrics/ClassLength
     class ConvertReadRecordActivity < ::Temporal::Activity
       retry_policy(
         interval: 1,
@@ -9,14 +10,60 @@ module Temporal
         max_attempts: 3
       )
 
-      def execute(sync_run_id)
-        sync_run = SyncRun.find(sync_run_id)
-        return if sync_run.extraction_completed
-        return if sync_run.sync_read_records.empty?
+      timeouts(
+        start_to_close: 3600 # Set appropriate timeout in seconds
+      )
 
-        process_read_records(sync_run)
-        update_sync_run_status(sync_run)
+      # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def execute(sync_run_id)
+        @sync_run = SyncRun.find(sync_run_id)
+
+        unless @sync_run.extraction_completed
+          return {
+            success: false,
+            error: "Extraction not completed for sync run #{sync_run_id}"
+          }
+        end
+
+        if @sync_run.transformation_completed
+          return {
+            success: false,
+            error: "Transformation already completed for sync run #{sync_run_id}"
+          }
+        end
+
+        if @sync_run.sync_read_records.empty?
+          return {
+            success: false,
+            error: "No records found to convert for sync run #{sync_run_id}"
+          }
+        end
+
+        begin
+          @failed_records = []
+          process_read_records(@sync_run)
+          result = update_sync_run_status(@sync_run)
+
+          total_records = @sync_run.total_records_read
+          if @failed_records.size == total_records
+            {
+              success: false,
+              error: "All #{total_records} records failed to convert",
+              failed_records: @failed_records
+            }
+          else
+            {
+              success: true,
+              transformation_completed: result[:transformation_completed],
+              warning: @failed_records.any? ? "#{@failed_records.size} out of #{total_records} records failed to convert" : nil,
+              failed_records: @failed_records.any? ? @failed_records : nil
+            }.compact
+          end
+        rescue StandardError => e
+          { success: false, error: e.message }
+        end
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       private
 
@@ -25,16 +72,49 @@ module Temporal
         process_deletions(sync_run)
       end
 
+      # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       def process_sync_records(sync_run)
-        sync_run.sync_read_records.find_each(batch_size: 1000) do |sync_read_record|
-          process_single_record(sync_run, sync_read_record)
+        record_ids = sync_run.sync_read_records.pluck(:id)
+        chunk_size = 100 # Larger chunk size for processes
+
+        record_ids.each_slice(chunk_size) do |chunk|
+          activity.heartbeat
+
+          parallel_options = if Rails.env.test?
+                               { in_threads: 10 }
+                             else
+                               { in_processes: 30 }
+                             end
+
+          # Use processes instead of threads, with fewer processes than threads
+          # This may fail as we are not connecting to ActiveRecord in each process need to validate with multiple users
+          # rspec fails on in_processes
+          # Hypothesis that needs to be validated: is in_processes is working without restablishing connection to ActiveRecord may be due to temporal
+          Parallel.each(chunk, parallel_options) do |record_id|
+            sync_read_record = SyncReadRecord.find(record_id)
+            activity.heartbeat
+            result = process_single_record(sync_run, sync_read_record)
+
+            if result[:success]
+              result
+            else
+              @failed_records << { id: record_id, error: result[:message] }
+            end
+          rescue StandardError => e
+            @failed_records << { id: record_id, error: e.message }
+            activity.logger.error(
+              "Failed to process record #{record_id}: #{e.message}"
+            )
+          end
         end
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
       def process_single_record(sync_run, sync_read_record)
         ActiveRecord::Base.transaction do
-          process_record_data(sync_run, sync_read_record)
-          mark_record_as_processed(sync_read_record)
+          result = process_record_data(sync_run, sync_read_record)
+          mark_record_as_processed(sync_read_record) if result[:success]
+          result
         end
       end
 
@@ -47,15 +127,18 @@ module Temporal
       end
 
       def process_with_dedup(sync_run, sync_read_record)
+        redis_key = "sync:#{sync_run.sync.id}:transformed:#{sync_read_record.id}"
+
+        activity.heartbeat
         Etl::Extractors::ConvertReadRecord::IncrementalDedupService.new(
           sync_run,
           sync_read_record.id,
-          sync_read_record.data
+          redis_key
         ).call
       end
 
       def mark_record_as_processed(sync_read_record)
-        sync_read_record.update!(extraction_completed_at: Time.current)
+        sync_read_record.update!(transformation_completed_at: Time.current)
       end
 
       def process_deletions(sync_run)
@@ -69,19 +152,18 @@ module Temporal
       end
 
       def update_sync_run_status(sync_run)
-        extraction_completed = all_records_extracted?(sync_run.sync_read_records)
+        transformation_completed = all_records_transformed?(sync_run.sync_read_records)
 
         sync_run.update!(
-          extraction_completed: extraction_completed,
-          last_extracted_at: Time.current,
-          records_extracted: sync_run.sync_read_records.count
+          transformation_completed: transformation_completed,
+          last_transformed_at: Time.current
         )
 
-        { extraction_completed: extraction_completed, status: "success" }
+        { transformation_completed: transformation_completed, status: "success" }
       end
 
-      def all_records_extracted?(sync_read_records)
-        sync_read_records.all? { |record| record.extraction_completed_at.present? }
+      def all_records_transformed?(sync_read_records)
+        sync_read_records.all? { |record| record.transformation_completed_at.present? }
       end
 
       def create_write_records(sync_read_record)
@@ -98,13 +180,17 @@ module Temporal
       end
 
       def create_single_write_record(sync_read_record, record_data)
+        destination_action = sync_read_record.sync.connection.destination.integration_type == "database" ? :insert : :create
+
         SyncWriteRecord.create!(
           sync: sync_read_record.sync,
           sync_run: sync_read_record.sync_run,
           sync_read_record: sync_read_record,
-          data: record_data
+          data: record_data,
+          destination_action: destination_action
         )
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

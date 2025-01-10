@@ -5,7 +5,7 @@ FactoryBot.define do
     association :sync_run
     association :sync
     association :sync_read_record
-    data { { "key" => "value" } }
+    data { { "key" => Random.uuid.to_s } }
     status { :pending }
 
     trait :written do

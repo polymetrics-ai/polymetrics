@@ -27,10 +27,10 @@ module Connectors
 
     def default_duckdb_config
       {
-        database: "analytics_db_#{@workspace.id}",
+        database: "analytics_#{Digest::SHA256.hexdigest(@workspace.id.to_s).first(8)}.duckdb",
         credentials: {
           local: {
-            path: "analytics.duckdb"
+            path: "analytics_#{Digest::SHA256.hexdigest(@workspace.id.to_s).first(8)}.duckdb"
           }
         }
       }

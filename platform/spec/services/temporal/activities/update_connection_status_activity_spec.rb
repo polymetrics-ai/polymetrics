@@ -6,77 +6,120 @@ RSpec.describe Temporal::Activities::UpdateConnectionStatusActivity do
   subject { described_class.new(context) }
 
   let(:context) { instance_double("Temporal::Activity::Context", logger: logger) }
-  let(:logger) { instance_double("Logger") }
+  let(:logger) { instance_double("Logger", error: nil) }
   let(:connection) { create(:connection) }
-
-  before do
-    allow(Connection).to receive(:find).with(connection.id).and_return(connection)
-    allow(logger).to receive(:error)
-  end
 
   describe "#execute" do
     context "when status is completed" do
       it "updates connection status to healthy" do
-        expect(connection).to receive(:update).with(status: "healthy")
+        allow(Connection).to receive(:find).with(connection.id).and_return(connection)
+        allow(connection).to receive(:update!).with(status: "healthy")
 
-        subject.execute(
+        result = subject.execute(
           connection_id: connection.id,
           status: :completed
         )
+
+        expect(result).to eq({
+                               success: true,
+                               status: "healthy"
+                             })
       end
     end
 
     context "when status is failed" do
       it "updates connection status to failed" do
-        expect(connection).to receive(:update).with(status: "failed")
+        allow(Connection).to receive(:find).with(connection.id).and_return(connection)
+        allow(connection).to receive(:update!).with(status: "failed")
 
-        subject.execute(
+        result = subject.execute(
           connection_id: connection.id,
-          status: :failed
+          status: :failed,
+          message: "Error message"
         )
+
+        expect(result).to eq({
+                               success: false,
+                               status: "failed",
+                               error: "Error message"
+                             })
+      end
+    end
+
+    context "when status is partial_success" do
+      it "updates connection status to healthy with warning" do
+        allow(Connection).to receive(:find).with(connection.id).and_return(connection)
+        allow(connection).to receive(:update!).with(status: "healthy")
+
+        result = subject.execute(
+          connection_id: connection.id,
+          status: :partial_success,
+          message: "Warning message"
+        )
+
+        expect(result).to eq({
+                               success: true,
+                               status: "healthy",
+                               warning: "Warning message"
+                             })
       end
     end
 
     context "when connection not found" do
       before do
         allow(Connection).to receive(:find).with(connection.id)
-                                           .and_raise(ActiveRecord::RecordNotFound)
+                                           .and_raise(ActiveRecord::RecordNotFound.new("Couldn't find Connection with 'id'=#{connection.id}"))
       end
 
-      it "raises RecordNotFound error" do
-        expect do
-          subject.execute(
-            connection_id: connection.id,
-            status: :completed
-          )
-        end.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns error status" do
+        result = subject.execute(
+          connection_id: connection.id,
+          status: :completed
+        )
+
+        expect(result).to eq({
+                               success: false,
+                               status: "error",
+                               error: "Couldn't find Connection with 'id'=#{connection.id}"
+                             })
       end
     end
 
     context "when update fails" do
       before do
-        allow(connection).to receive(:update)
+        allow(Connection).to receive(:find).with(connection.id).and_return(connection)
+        allow(connection).to receive(:update!)
           .and_raise(ActiveRecord::RecordInvalid.new(connection))
       end
 
-      it "raises the error" do
-        expect do
-          subject.execute(
-            connection_id: connection.id,
-            status: :completed
-          )
-        end.to raise_error(ActiveRecord::RecordInvalid)
+      it "returns error status" do
+        result = subject.execute(
+          connection_id: connection.id,
+          status: :completed
+        )
+
+        expect(result).to eq({
+                               success: false,
+                               status: "error",
+                               error: "Validation failed: "
+                             })
       end
     end
 
     context "with invalid status" do
-      it "raises ArgumentError" do
-        expect do
-          subject.execute(
-            connection_id: connection.id,
-            status: :invalid_status
-          )
-        end.to raise_error(ArgumentError, /Invalid status/)
+      it "returns error with invalid status message" do
+        allow(Connection).to receive(:find).with(connection.id).and_return(connection)
+
+        result = subject.execute(
+          connection_id: connection.id,
+          status: :invalid_status
+        )
+
+        expect(result).to eq({
+                               success: false,
+                               status: "error",
+                               error: "Invalid connection status: invalid_status"
+                             })
       end
     end
   end
