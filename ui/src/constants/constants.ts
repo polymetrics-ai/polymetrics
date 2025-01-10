@@ -142,3 +142,5 @@ export const connectorSteps = [
         description: 'Lorem ispsum something about connectors'
     }
 ];
+
+export const DEFAULT_CONNECTOR_ICON = '/connectors/default.svg';

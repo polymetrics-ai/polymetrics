@@ -1,7 +1,7 @@
 import React from 'react';
 import Loader from '../Loader';
 import { ConnectorCard } from '../Card';
-import { useDefinitionQuery } from '@/hooks/useConnectorDefinitions'
+import { Definition, useDefinitionQuery } from '@/hooks/useConnectorDefinitions'
 
 export interface ActiveConnectorState {
     connector_class_name: string;
@@ -17,8 +17,8 @@ export interface ConnectorGridProps {
 const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
     
     /* Load the definitions for the Grid to be rendered */
-    let {data, error, isLoading } = useDefinitionQuery();
-    const definitons = data?.data
+    const {data, error, isLoading} = useDefinitionQuery();
+    const definitions = data;
     
     const handleOnSelection = (grid: ActiveConnectorState) => {
         if (setActive) {
@@ -32,7 +32,7 @@ const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
     return (
         <div className="overflow-y-auto px-10">
             <div className="grid grid-flow-row grid-cols-4 gap-3 text-base font-medium tracking-normal text-slate-800 h-full flex-grow">
-                {definitons.map((def: any) => (
+                {Array.isArray(definitions) && definitions.map((def: Definition) => (
                     <ConnectorCard
                         key={def.name}
                         definition={def}
@@ -43,7 +43,7 @@ const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
                         handleOnSelection={() =>
                             handleOnSelection({
                                 connector_class_name: def.name.toLowerCase(),
-                                icon_url: def.icon
+                                icon_url: def.icon_url
                             })
                         }
                     />

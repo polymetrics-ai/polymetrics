@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getDefinitions } from '@/service';
+import { ConnectorDefinitionResponse, APIError } from '@/types/connector';
 
 export const CACHE_TIME = 1000 * 60 * 60; // 1 hour
 
@@ -37,21 +38,11 @@ export interface Definition {
     icon_url: string;
     connection_specification: ConnectionSpecification;
 }
+
 export const useDefinitionQuery = () => {
-    return useQuery<Definition[], Error>({
+    return useQuery<ConnectorDefinitionResponse, APIError>({
         queryKey: ['definitions'],
-        queryFn: async () => {
-            try {
-                const { data } = await getDefinitions();
-                console.log('data ', data)
-                if (!data) {
-                    throw new Error('Failed to fetch definitions');
-                }
-                return data;
-            } catch (error) {
-                throw new Error(error instanceof Error ? error.message : 'Error fetching definitions');
-            }
-        },
+        queryFn: getDefinitions,
         staleTime: CACHE_TIME,
         cacheTime: CACHE_TIME,
         refetchOnMount: false,

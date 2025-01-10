@@ -14,12 +14,18 @@ import {
 const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
     const navigate = useNavigate();
 
-    // Use the 'table' variable to render the table
     const table = useReactTable({
-        data: data?.data ?? [],
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel()
     });
+
+    const handleRowNavigation = (rowData: any) => {
+        navigate({
+            to: `/connectors/${rowData?.id}`,
+            state: rowData
+        });
+    };
 
     return (
         <Table>
@@ -39,24 +45,25 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
                     return (
                         <TableRow
                             key={rowEl.id}
-                            onClick={() =>
-                                navigate({
-                                    to: `/connectors/${rowEl?.original?.id}`,
-                                    state: rowEl.original
-                                })
-                            }
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`View details for ${rowEl?.original?.name || 'connector'}`}
+                            onClick={() => handleRowNavigation(rowEl.original)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleRowNavigation(rowEl.original);
+                                }
+                            }}
                         >
-                            {rowEl.getVisibleCells().map((cellEl) => {
-                                console.log(cellEl.getValue());
-                                return (
-                                    <TableCell key={cellEl.id}>
-                                        {flexRender(
-                                            cellEl.column.columnDef.cell,
-                                            cellEl.getContext()
-                                        )}
-                                    </TableCell>
-                                );
-                            })}
+                            {rowEl.getVisibleCells().map((cellEl) => (
+                                <TableCell key={cellEl.id}>
+                                    {flexRender(
+                                        cellEl.column.columnDef.cell,
+                                        cellEl.getContext()
+                                    )}
+                                </TableCell>
+                            ))}
                         </TableRow>
                     );
                 })}
@@ -64,4 +71,5 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns }) => {
         </Table>
     );
 };
+
 export default DataTable;
