@@ -25,10 +25,10 @@ const ConnectorCard: React.FC<ConnectorCardProps> = ({
             <Tooltip>
                 <TooltipTrigger>
                     <div
-                        className={`flex gap-2.5 items-center p-4 border border-solid border-slate-300 min-h-[80px] min-w-[220px] shadow-[0px_3px_8px_-2px_rgba(203,213,225,0.60)] ${isActive ? 'bg-slate-300' : 'bg-white'}`}
+                        className={`flex gap-2.5 items-center p-4 border border-solid border-slate-300 min-h-[80px] min-w-[220px] shadow-[0px_3px_8px_-2px_rgba(203,213,225,0.60)] ${isActive ? 'bg-slate-300' : 'bg-slate-100'}`}
                         onClick={() => handleOnSelection(name ?? DEFAULT_NAME)}
                     >
-                        <div className="flex w-11 h-11 rounded-full border border-slate-200 bg-white items-center justify-center">
+                        <div className="flex w-11 h-11 rounded-full border border-slate-200 items-center justify-center p-1 bg-white">
                             <img 
                                 className="w-4.5 h-4.5" 
                                 src={icon_url ?? DEFAULT_CONNECTOR_ICON} 

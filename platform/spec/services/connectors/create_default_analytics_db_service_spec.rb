@@ -28,16 +28,15 @@ RSpec.describe Connectors::CreateDefaultAnalyticsDbService do
 
       # Test the structure and presence of required keys
       expect(config).to include(:database, :credentials)
-      expect(config[:credentials]).to include(:local)
-      expect(config[:credentials][:local]).to include(:path)
+      expect(config[:credentials]).to include(:path)
 
       # Test that both database and path use the same identifier
       db_identifier = config[:database].split("_").last.sub(".duckdb", "")
-      path_identifier = config[:credentials][:local][:path].split("_").last.sub(".duckdb", "")
+      path_identifier = config[:credentials][:path].split("_").last.sub(".duckdb", "")
 
       expect(db_identifier).to eq(path_identifier)
       expect(config[:database]).to end_with(".duckdb")
-      expect(config[:credentials][:local][:path]).to end_with(".duckdb")
+      expect(config[:credentials][:path]).to end_with(".duckdb")
     end
   end
 end

@@ -17,9 +17,9 @@ module RubyConnectors
       end
 
       def authorize_connection
-        if @config[:credentials].key?(:local)
+        if @config[:credentials].key?(:path)
           connect_local
-        elsif @config[:credentials].key?(:motherduck)
+        elsif @config[:credentials].key?(:token)
           connect_motherduck
         else
           raise ArgumentError, "Invalid credentials configuration"
@@ -29,14 +29,14 @@ module RubyConnectors
       private
 
       def connect_local
-        path = @config[:credentials][:local][:path]
+        path = @config[:credentials][:path]
         DuckDB::Database.open(path)
       rescue DuckDB::Error => e
         raise ConnectionError, "Failed to connect to local DuckDB: #{e.message}"
       end
 
       def connect_motherduck
-        token = @config[:credentials][:motherduck][:token]
+        token = @config[:credentials][:token]
         DuckDB::Database.open("md:?token=#{token}")
       rescue DuckDB::Error => e
         raise ConnectionError, "Failed to connect to MotherDuck: #{e.message}"

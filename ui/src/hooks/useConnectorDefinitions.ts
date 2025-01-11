@@ -39,15 +39,18 @@ export interface Definition {
     connection_specification: ConnectionSpecification;
 }
 
-export const useDefinitionQuery = () => {
-    return useQuery<ConnectorDefinitionResponse, APIError>({
+export function useDefinitionQuery() {
+    const query = useQuery({
         queryKey: ['definitions'],
-        queryFn: getDefinitions,
-        staleTime: CACHE_TIME,
-        cacheTime: CACHE_TIME,
+        queryFn: async () => {
+            const response = await getDefinitions();
+            return response.data;
+        },
+        staleTime: 5 * 60 * 1000,
         refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        retry: 1
+        refetchOnWindowFocus: false
     });
-};
+
+    return query;
+}
 

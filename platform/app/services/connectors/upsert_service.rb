@@ -63,8 +63,8 @@ module Connectors
       if result[:connected]
         save_or_update_connector
       else
-        error_message = result[:error_message]
-        raise StandardError, error_message || "Please check your configuration and try again."
+        error_message = result[:error_message] || "Please check your configuration and try again."
+        { connected: false, error_message: error_message }
       end
     end
 

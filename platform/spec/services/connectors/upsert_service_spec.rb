@@ -74,7 +74,9 @@ RSpec.describe Connectors::UpsertService do
 
       it "raises an error" do
         service = described_class.new(params, current_user)
-        expect { service.call }.to raise_error(StandardError, "Connection failed")
+        result = service.call
+
+        expect(result[:error_message]).to eq("Connection failed")
       end
     end
 
