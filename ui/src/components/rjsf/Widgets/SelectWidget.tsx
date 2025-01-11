@@ -40,21 +40,24 @@ export default function SelectWidget<
       onValueChange={handleChange}
       disabled={disabled || readonly}
     >
-      <SelectTrigger className="w-full bg-background border border-input ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 mb-1">
+      <SelectTrigger 
+        className="w-full bg-background border border-input ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 mb-1"
+        aria-label={placeholder || "Select an option"}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent 
         className="bg-background border border-input"
         position="popper"
+        aria-label="Select options list"
         sideOffset={4}
       >
         {(enumOptions as any[]).map(({ value, label }, i) => (
           <SelectItem
-            key={i}
+            key={`${id}-${value}`}
             value={value}
             disabled={enumDisabled && (enumDisabled as any[]).indexOf(value) !== -1}
             className="py-2.5 hover:bg-accent focus:bg-accent"
-            hideIndicator
           >
             {label}
           </SelectItem>

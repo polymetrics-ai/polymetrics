@@ -6,10 +6,14 @@ import {
   StrictRJSFSchema,
 } from "@rjsf/utils"
 
-/** The `FieldHelpTemplate` component renders any help desired for a field
- *
- * @param props - The `FieldHelpProps` to be rendered
- */
+ /** The `FieldHelpTemplate` component renders any help desired for a field
+  *
+  * @param props - The `FieldHelpProps` to be rendered
+  * @typeParam T - The type of the form data
+  * @typeParam S - The type of the schema, extending StrictRJSFSchema
+  * @typeParam F - The type of form context
+  */
+
 export default function FieldHelpTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
@@ -24,6 +28,7 @@ export default function FieldHelpTemplate<
     <span
       className={hasErrors ? "text-red-500" : "text-muted-foreground"}
       id={id}
+      aria-invalid={hasErrors}
     >
       {help}
     </span>

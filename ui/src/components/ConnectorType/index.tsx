@@ -9,32 +9,16 @@ export interface ConnectorTypeProps {
 }
 
 const ConnectorType: React.FC<ConnectorTypeProps> = ({ icon, name }) => {
-    const [iconSrc, setIconSrc] = React.useState(icon);
-
-    // Log initial props
-    console.log('ConnectorType Props:', { icon, name });
+    const [iconSrc, setIconSrc] = React.useState(icon || DEFAULT_CONNECTOR_ICON);
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-        console.log('Image load error for:', iconSrc);
-        
-        // Try to load local icon first
-        const localIconPath = `/connectors/${name.toLowerCase()}.svg`;
-        console.log('Attempting to load local icon:', localIconPath);
-        
-        setIconSrc(localIconPath);
-
-        // If local icon also fails, use default
-        e.currentTarget.onerror = () => {
-            console.log('Local icon failed, using default:', DEFAULT_CONNECTOR_ICON);
+        const localIconPath = `/connectors/${name.toLowerCase()}.svg`;     
+        if (iconSrc !== localIconPath) {
+            setIconSrc(localIconPath);
+        } else {
             setIconSrc(DEFAULT_CONNECTOR_ICON);
-        };
-        e.currentTarget.src = localIconPath;
+        }
     };
-
-    // Log whenever iconSrc changes
-    React.useEffect(() => {
-        console.log('Current iconSrc:', iconSrc);
-    }, [iconSrc]);
 
     return (
         <div className="flex items-center gap-3">
