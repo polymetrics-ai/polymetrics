@@ -108,7 +108,7 @@ module Connectors
     end
 
     def merge_required_fields(required)
-      %w[name description] | (required || [])
+      %w[name] | (required || [])
     end
   end
 end

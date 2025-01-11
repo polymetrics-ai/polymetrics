@@ -46,4 +46,13 @@ const putConnector = async (id: string, payload: postConnectorPayload): Promise<
     }
 };
 
-export { getConnectors, getDefinitions, postConnector, putConnector };
+const getConnector = async (id: string): Promise<Connector> => {
+    try {
+        const response = await apiClient.get<Connector>(`api/v1/connectors/${id}`);
+        return response.data;
+    } catch (error) {
+        throw handleError(error);
+    }
+};
+
+export { getConnectors, getDefinitions, postConnector, putConnector, getConnector };

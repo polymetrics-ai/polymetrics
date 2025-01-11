@@ -19,6 +19,11 @@ export const signUpFields = [
 export const NAV_ICONS = {
     routeIcons: [
         {
+            label: 'Connectors',
+            value: '/connectors',
+            icon: '/icon-connectors.svg'
+        },
+        {
             label: 'Dashboard',
             value: '/dashboard',
             icon: '/icon-dashboard.svg'
@@ -27,11 +32,6 @@ export const NAV_ICONS = {
             label: 'Charts',
             value: '/charts',
             icon: '/icon-charts.svg'
-        },
-        {
-            label: 'Connectors',
-            value: '/connectors',
-            icon: '/icon-connectors.svg'
         },
         {
             label: 'Connections',

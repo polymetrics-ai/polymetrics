@@ -1,77 +1,73 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from '@/components/ui/form';
-import { ConnectorSchema } from '@/lib/schema';
-import { connectorFields } from '@/constants/constants';
+import { withTheme } from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
+import { RJSFSchema } from '@rjsf/utils';
+import { Definition } from '@/hooks/useConnectorDefinitions';
+import { generateForm } from '@/components/rjsf';
+import { IChangeEvent } from '@rjsf/core';
+
+const Form = generateForm();
 
 export interface ConnectorFormRef {
     submitForm: () => void;
 }
-export interface ConnectorFormProps {
-    form: UseFormReturn<z.infer<typeof ConnectorSchema>>;
-    onSubmit?: (data: z.infer<typeof ConnectorSchema>) => void;
-    setIsDisabled: () => void;
-    connectorData: Array<object>;
-    isEditMode?: boolean;
+
+interface ConnectorFormProps {
+    definition: Definition;
+    onSubmit: (data: any) => void;
+    readOnly?: boolean;
+    ref: any;
+    connectorData?: any;
 }
-// const ConnectorForm: React.FC<ConnectorFormProps> = forwardRef(
-//     ({ form, onSubmit, connectorData, isEditMode = false }, ref) => {
-//         useImperativeHandle(ref, () => ({
-//             submitForm: () => form.handleSubmit(onSubmit)()
-//         }));
 
-//         const initialValues: Record<string, any> = isEditMode ? connectorData : {};
+const ConnectorForm = forwardRef<ConnectorFormRef, ConnectorFormProps>(
+    ({ definition, onSubmit, readOnly = false, connectorData }, ref) => {
+        const { connection_specification } = definition;
+        const formRef = React.useRef<any>();
 
-//         return (
-//             <div className="flex flex-col w-full px-10">
-//                 <Form {...form}>
-//                     <form className="flex flex-col w-full" onSubmit={form.handleSubmit(onSubmit)}>
-//                         {connectorFields.map((input, index) => (
-//                             <FormField
-//                                 key={index}
-//                                 control={form.control}
-//                                 name={input.field || input.label?.toLowerCase()}
-//                                 render={({ field }) => {
-//                                     // console.log(field, initialValues[field.name]);
-//                                     return (
-//                                         <FormItem className="flex mt-6 flex-col items-start self-stretch">
-//                                             <FormLabel className="text-sm font-semibold tracking-tighter">
-//                                                 {input.label}
-//                                             </FormLabel>
-//                                             <FormControl>
-//                                                 <>
-//                                                     <Input
-//                                                         className="text-sm my-2.5 font-normal"
-//                                                         {...field}
-//                                                     />
-//                                                     <p className="font-normal text-xs fold-semibold text-slate-500">
-//                                                         {input.placeholder}
-//                                                     </p>
-//                                                 </>
-//                                             </FormControl>
-//                                             <FormMessage />
-//                                         </FormItem>
-//                                     );
-//                                 }}
-//                             />
-//                         ))}
-//                     </form>
-//                 </Form>
-//             </div>
-//         );
-//     }
-// );
-// export default ConnectorForm;
 
-const ConnectorForm: React.FC<ConnectorFormProps> = ({}) => {};
- export default ConnectorForm;
+        useImperativeHandle(ref, () => ({
+            submitForm: () => {
+                formRef.current.submit();
+            },
+        }));
+        
+        const handleSubmit = (data: IChangeEvent<any, RJSFSchema, any>) => {
+            onSubmit(data.formData);
+        };
+
+        if (!connection_specification) {
+            return (
+                <div className="flex flex-col items-center justify-center p-8">
+                    <p className="text-slate-600">
+                        This connector is coming soon. Configuration is not available yet.
+                    </p>
+                </div>
+            );
+        }
+
+        const formData = connectorData?.configuration || {};
+
+        return (
+            <div className="flex flex-col w-full px-10 overflow-y-auto">
+                <Form
+                    ref={formRef}
+                    schema={connection_specification as RJSFSchema}
+                    validator={validator}
+                    formData={formData}
+                    onSubmit={handleSubmit}
+                    uiSchema={{
+                        "ui:submitButtonOptions": {
+                            norender: true,
+                        },
+                        "ui:readonly": readOnly
+                    }}
+                />
+            </div>
+        );
+    }
+);
+
+ConnectorForm.displayName = 'ConnectorForm';
+
+export default ConnectorForm;

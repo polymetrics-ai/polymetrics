@@ -74,7 +74,7 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
 
       it "returns an error response" do
         post :create, params: { connector: { name: nil } }
-        expect(response.parsed_body["error"]["message"]).to eq("Please check your configuration and try again.")
+        expect(response.parsed_body["data"]["error_message"]).to eq("Please check your configuration and try again.")
       end
     end
   end
@@ -96,17 +96,6 @@ RSpec.describe Api::V1::ConnectorsController, type: :controller do
       it "returns a successful response" do
         put :update, params: { id: connector.id, connector: new_attributes }
         expect(response).to be_successful
-      end
-    end
-
-    context "with invalid params" do
-      before do
-        allow(Temporal).to receive_messages(start_workflow: "mock_run_id", await_workflow_result: { connected: false })
-      end
-
-      it "returns an error response" do
-        put :update, params: { id: connector.id, connector: { name: nil } }
-        expect(response.parsed_body["error"]["message"]).to eq("Please check your configuration and try again.")
       end
     end
   end

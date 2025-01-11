@@ -1,6 +1,7 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router';
 import { RouterContext } from '@/types/types';
 import '../index.css';
+import { Toaster } from "@/components/ui/toaster";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
     component: RootLayout,
@@ -21,6 +22,7 @@ export default function RootLayout() {
     return (
         <>
             <Outlet />
+            <Toaster />
         </>
     );
 }

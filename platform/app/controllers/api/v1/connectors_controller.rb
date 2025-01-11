@@ -20,7 +20,7 @@ module Api
 
       def create
         result = Connectors::UpsertService.new(connector_params, current_user).call
-        CreateConnectionAndSyncsService.new(result[:id]).call if result[:id]
+        CreateConnectionAndSyncsService.new(result[:id]).call if result[:id] && result[:integration_type] == "api"
         render_api_response(result, :created)
       end
 

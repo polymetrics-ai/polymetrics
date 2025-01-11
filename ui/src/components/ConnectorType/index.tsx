@@ -9,16 +9,23 @@ export interface ConnectorTypeProps {
 }
 
 const ConnectorType: React.FC<ConnectorTypeProps> = ({ icon, name }) => {
+    const [iconSrc, setIconSrc] = React.useState(icon || DEFAULT_CONNECTOR_ICON);
+
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-        e.currentTarget.src = DEFAULT_CONNECTOR_ICON;
+        const localIconPath = `/connectors/${name.toLowerCase()}.svg`;     
+        if (iconSrc !== localIconPath) {
+            setIconSrc(localIconPath);
+        } else {
+            setIconSrc(DEFAULT_CONNECTOR_ICON);
+        }
     };
 
     return (
         <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-white border-1 border-slate-200">
+            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-white border border-slate-200 p-1">
                 <img
-                    className="w-4.5 h-4.5 p-2 shrink-0"
-                    src={icon || DEFAULT_CONNECTOR_ICON}
+                    className="w-full h-full object-contain"
+                    src={iconSrc}
                     alt={`${name} icon`}
                     onError={handleImageError}
                 />

@@ -11,9 +11,7 @@ RSpec.describe RubyConnectors::DuckdbConnector::Connection do
     {
       database: "md:my_database",
       credentials: {
-        motherduck: {
-          token: ENV.fetch("MOTHERDUCK_TOKEN", nil)
-        }
+        token: ENV.fetch("MOTHERDUCK_TOKEN", nil)
       }
     }
   end

@@ -12,8 +12,16 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
     const { routeIcons, userIcons } = NAV_ICONS;
     const location = useLocation();
 
+    // Check if the route is active
+    const isRouteActive = (routeValue: string) => {
+        if (routeValue === '/connectors') {
+            return location.pathname.startsWith('/connectors');
+        }
+        return location.pathname === routeValue;
+    };
+
     return (
-        <aside className="w-[60px] h-full flex flex-col justify-between py-8 bg-white">
+        <aside className="w-[70px] h-full flex flex-col justify-between py-8 bg-white">
             <nav className="flex flex-col items-center space-y-6">
                 <Button
                     className="mx-2 h-full bg-none hover:bg-none ring-0 focus:ring-0"
@@ -30,7 +38,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname === `${route.value}` ? 'bg-emerald-100' : ''} ${route.className ? route.className : ''}`}
+                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${isRouteActive(route.value) ? 'bg-emerald-100' : ''}`}
                                         aria-label={route.label}
                                     >
                                         <img className="h-6 w-6" src={route.icon} />
@@ -58,7 +66,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname === `${user.value}` ? 'bg-emerald-100' : ''} ${user.className ? user.className : ''}`}
+                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${location.pathname === `${user.value}` ? 'bg-emerald-100' : ''}`}
                                         aria-label={user.label}
                                         onClick={
                                             user.label === 'Logout' ? () => onSignOut() : undefined

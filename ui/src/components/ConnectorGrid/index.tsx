@@ -11,41 +11,37 @@ export interface ActiveConnectorState {
 export interface ConnectorGridProps {
     active?: ActiveConnectorState;
     setActive?: React.Dispatch<React.SetStateAction<ActiveConnectorState>>;
-    handleOnClickGrid?: () => void;
+    onSelect?: (definition: Definition) => void;
 }
 
-const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive }) => {
+const ConnectorGrid: React.FC<ConnectorGridProps> = ({ active, setActive, onSelect }) => {
+    const {data: definitions, error, isLoading} = useDefinitionQuery();
     
-    /* Load the definitions for the Grid to be rendered */
-    const {data, error, isLoading} = useDefinitionQuery();
-    const definitions = data;
-    
-    const handleOnSelection = (grid: ActiveConnectorState) => {
+    const handleOnSelection = (definition: Definition) => {
         if (setActive) {
-            setActive(grid);
+            setActive({
+                connector_class_name: definition.name.toLowerCase(),
+                icon_url: definition.icon_url
+            });
+        }
+        if (onSelect) {
+            onSelect(definition);
         }
     };
     
     if (isLoading) return <Loader/>;
     if (error) return <>Error:{error.message}</>;
+    if (!definitions) return <>No connectors found</>;
 
     return (
         <div className="overflow-y-auto px-10">
             <div className="grid grid-flow-row grid-cols-4 gap-3 text-base font-medium tracking-normal text-slate-800 h-full flex-grow">
-                {Array.isArray(definitions) && definitions.map((def: Definition) => (
+                {definitions.map((def: Definition) => (
                     <ConnectorCard
                         key={def.name}
                         definition={def}
-                        isActive={  
-                            active?.connector_class_name?.toLocaleLowerCase() ===
-                            def.name.toLocaleLowerCase()
-                        }
-                        handleOnSelection={() =>
-                            handleOnSelection({
-                                connector_class_name: def.name.toLowerCase(),
-                                icon_url: def.icon_url
-                            })
-                        }
+                        isActive={active?.connector_class_name?.toLocaleLowerCase() === def.name.toLocaleLowerCase()}
+                        handleOnSelection={() => handleOnSelection(def)}
                     />
                 ))}
             </div>

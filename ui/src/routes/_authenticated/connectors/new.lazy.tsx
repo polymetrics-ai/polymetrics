@@ -14,6 +14,9 @@ import VerticalStepper from '@/components/VerticalStepper';
 import { connectorSteps } from '@/constants/constants';
 import { ConnectorSchema } from '@/lib/schema';
 import { defineStepper } from '@stepperize/react';
+import { Definition } from '@/hooks/useConnectorDefinitions';
+import { postConnector } from '@/service/connectors';
+import { useToast } from "@/hooks/useToast";
 
 export const Route = createLazyFileRoute('/_authenticated/connectors/new')({
     component: AddConnector
@@ -23,11 +26,16 @@ const { useStepper } = defineStepper(...connectorSteps);
 
 function AddConnector() {
     const formRef = useRef<ConnectorFormRef>(null);
-    const [active, setActive] = useState<ActiveConnectorState>({ name: '', icon: '' });
+    const [active, setActive] = useState<ActiveConnectorState>({
+        connector_class_name: '',
+        icon_url: ''
+    });
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [selectedDefinition, setSelectedDefinition] = useState<Definition | null>(null);
 
     const stepper = useStepper();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const form = useForm<z.infer<typeof ConnectorSchema>>({
         resolver: zodResolver(ConnectorSchema),
@@ -36,29 +44,59 @@ function AddConnector() {
             description: '',
             personal_access_token: '',
             repository: ''
-        }
+        },
+        mode: 'onChange'
     });
 
-    const {
-        formState: { isValid }
-    } = form;
 
-    const handleSubmit = (data: z.infer<typeof ConnectorSchema>) => {
-        const { name, description, repository, personal_access_token } = data;
-        const payload = {
-            connector: {
-                configuration: {
-                    repository,
-                    personal_access_token
-                },
-                name,
-                description,
-                connector_class_name: name.toLowerCase(),
-                connector_language: 'ruby'
+    const handleConnectorSelection = (def: Definition) => {
+        console.log('Connector selected:', def);
+        setActive({
+            connector_class_name: def.class_name,
+            icon_url: def.icon_url
+        });
+        setSelectedDefinition(def);
+        console.log('Calling stepper.next()');
+        stepper.next();
+        console.log('Current step:', stepper.current);
+    };
+    
+    const handleFormSubmit = async (formData: any) => {
+        try {
+            const payload = {
+                connector: {
+                    ...formData,
+                    configuration: {
+                        ...formData
+                    },
+                    connector_class_name: selectedDefinition?.class_name,
+                    connector_language: selectedDefinition?.language
+                }
+            };
+            
+            const response = await postConnector(payload);
+            
+            if (response.data.connected) {
+                navigate({ 
+                    to: '/connectors',
+                    replace: true,
+                    state: { showToast: true, message: "Connector created successfully", type: "success" }
+                });
+            } else {
+                toast({
+                    title: "Error",
+                    description: response.data.error_message || "Failed to create connector",
+                    variant: "destructive",
+                });
             }
-        };
-
-        navigate({ to: '/connectors', replace: true });
+        } catch (error) {
+            console.error('Error Payload:', error);
+            toast({
+                title: "Error",
+                description: "Failed to create connector. Please try again.",
+                variant: "destructive",
+            });
+        }
     };
 
     const onPrev = () => {
@@ -69,7 +107,10 @@ function AddConnector() {
         if (!stepper.isLast) {
             stepper.next();
         } else {
-            formRef.current?.submitForm();
+            if (form.formState.isValid) {
+                formRef.current?.submitForm();
+                handleFormSubmit(form.getValues());
+            }
         }
     };
 
@@ -108,38 +149,56 @@ function AddConnector() {
                             {isLoading ? (
                                 <Loader />
                             ) : (
-                                <ConnectorGrid active={active} setActive={setActive} />
+                                <ConnectorGrid active={active} onSelect={handleConnectorSelection} />
                             )}
                         </div>
                     ) : (
-                        <div className="flex flex-col my-8 overflow-hidden flex-grow">
+                        <div className="flex flex-col my-8 overflow-y-auto flex-grow">
                             {isLoading ? (
                                 <Loader />
                             ) : (
-                                <ConnectorForm form={form} ref={formRef} onSubmit={handleSubmit} />
+                                <ConnectorForm 
+                                    ref={formRef}
+                                    definition={selectedDefinition!} 
+                                    onSubmit={handleFormSubmit}
+                                />
                             )}
                         </div>
                     )}
                     <div className="flex h-20 py-5 px-10 justify-between w-full text-sm font-medium tracking-normal border-t border-solid border-b-slate-200 text-slate-400">
                         <Button
                             variant={'outline'}
-                            className={`${stepper.current.index === 0 ? 'hidden' : 'border-emerald-600 hover:bg-white hover:text-emerald-600 text-emerald-600'}`}
+                            className={`${
+                                stepper.current.index === 0 
+                                ? 'hidden' 
+                                : 'bg-slate-100 border-emerald-600 hover:bg-slate-200 hover:text-emerald-600 text-emerald-600'
+                            }`}
                             onClick={onPrev}
                         >
                             Back
                         </Button>
-                        <Button
-                            className="ml-auto"
-                            onClick={onNext}
-                            disabled={stepper.isLast && !isValid}
-                        >
-                            {`${stepper.isLast ? 'Connect' : 'Next'}`}
-                        </Button>
+                        <div className="flex ml-auto">
+                            {!stepper.isLast && (
+                                <Button
+                                    className="mr-2"
+                                    onClick={onNext}
+                                >
+                                    Next
+                                </Button>
+                            )}
+                            {stepper.isLast && (
+                                <Button
+                                    className="ml-auto"
+                                    onClick={() => formRef.current?.submitForm()}
+                                >
+                                    Connect
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="col-span-1 gap-0 w-full overflow-hidden">
-                {/* <!-- max-w-[24rem] --> */}
+            <div className="w-96 overflow-hidden">
                 <div className="flex flex-col pl-8 pt-8 h-full bg-white">
                     <div className="flex flex-col h-full">
                         <div className="self-start text-xs font-medium tracking-normal text-center text-slate-400">

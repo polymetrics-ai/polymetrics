@@ -55,8 +55,11 @@ export function Connectors() {
             {
                 header: 'CONNECTOR',
                 accessorKey: 'connector_class_name',
-                cell: (row: { getValue: () => string; icon_url: string }) => (
-                    <ConnectorType icon={row.icon_url} name={row.getValue()}></ConnectorType>
+                cell: (row: { getValue: () => string; row: { original: { icon_url: string } } }) => (
+                    <ConnectorType 
+                        icon={row.row.original.icon_url} 
+                        name={row.getValue()}
+                    />
                 )
             },
             {
@@ -86,8 +89,8 @@ export function Connectors() {
     }
 
     return (
-        <main className="flex-1 flex flex-col my-8 mr-8 px-10 py-8 bg-slate-100">
-            <div className="flex justify-between h-8.5">
+        <main className="flex-1 flex flex-col my-8 mr-8 px-10 py-8 bg-slate-100 h-[calc(100vh-100px)] overflow-hidden">
+            <div className="flex justify-between mb-10">
                 <span className="self-start text-2xl text-slate-800 font-semibold">Connectors</span>
                 <Button
                     className="self-end gap-2"
@@ -97,7 +100,7 @@ export function Connectors() {
                     Add Connectors
                 </Button>
             </div>
-            <div className="flex-1 h-full flex items-start mt-10 justify-center">
+            <div className="flex-1 overflow-y-auto">
                 {isLoading ? <Loader /> : <Table data={data} columns={columns} />}
                 <Toaster />
             </div>

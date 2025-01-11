@@ -19,6 +19,7 @@ class CreateConnectionAndSyncsService
   end
 
   def create_syncs
+    # we need to update sync creation for database type
     Syncs::CreateService.new(@connection_id).call
   end
 end
