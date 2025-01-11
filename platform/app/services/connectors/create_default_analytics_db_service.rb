@@ -29,7 +29,7 @@ module Connectors
       {
         database: "analytics_#{Digest::SHA256.hexdigest(@workspace.id.to_s).first(8)}.duckdb",
         credentials: {
-            path: "analytics_#{Digest::SHA256.hexdigest(@workspace.id.to_s).first(8)}.duckdb"
+          path: "analytics_#{Digest::SHA256.hexdigest(@workspace.id.to_s).first(8)}.duckdb"
         }
       }
     end
