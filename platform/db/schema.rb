@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_26_173638) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_13_060444) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "chats", force: :cascade do |t|
+    t.bigint "workspace_id", null: false
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_chats_on_user_id"
+    t.index ["workspace_id", "user_id"], name: "index_chats_on_workspace_id_and_user_id"
+    t.index ["workspace_id"], name: "index_chats_on_workspace_id"
+  end
 
   create_table "connections", force: :cascade do |t|
     t.bigint "workspace_id", null: false
@@ -49,11 +61,44 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_26_173638) do
     t.index ["workspace_id"], name: "index_connectors_on_workspace_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.bigint "chat_id", null: false
+    t.text "content", null: false
+    t.integer "role", null: false
+    t.integer "message_type", null: false
+    t.boolean "answered", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_messages_on_chat_id"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_organizations_on_name", unique: true
+  end
+
+  create_table "pipeline_actions", force: :cascade do |t|
+    t.bigint "pipeline_id", null: false
+    t.bigint "query_action_id"
+    t.integer "action_type", null: false
+    t.integer "order", null: false
+    t.jsonb "action_data", default: {}, null: false
+    t.jsonb "result_data", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pipeline_id", "order"], name: "index_pipeline_actions_on_pipeline_id_and_order", unique: true
+    t.index ["pipeline_id"], name: "index_pipeline_actions_on_pipeline_id"
+    t.index ["query_action_id"], name: "index_pipeline_actions_on_query_action_id"
+  end
+
+  create_table "pipelines", force: :cascade do |t|
+    t.bigint "message_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_pipelines_on_message_id"
   end
 
   create_table "sync_logs", force: :cascade do |t|
@@ -221,10 +266,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_26_173638) do
     t.index ["organization_id"], name: "index_workspaces_on_organization_id"
   end
 
+  add_foreign_key "chats", "users"
+  add_foreign_key "chats", "workspaces"
   add_foreign_key "connections", "connectors", column: "destination_id"
   add_foreign_key "connections", "connectors", column: "source_id"
   add_foreign_key "connections", "workspaces"
   add_foreign_key "connectors", "workspaces"
+  add_foreign_key "messages", "chats"
+  add_foreign_key "pipeline_actions", "pipeline_actions", column: "query_action_id"
+  add_foreign_key "pipeline_actions", "pipelines"
+  add_foreign_key "pipelines", "messages"
   add_foreign_key "sync_logs", "sync_runs"
   add_foreign_key "sync_read_records", "sync_runs"
   add_foreign_key "sync_read_records", "syncs"

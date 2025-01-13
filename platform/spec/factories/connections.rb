@@ -5,7 +5,7 @@ FactoryBot.define do
     workspace
     association :source, factory: :connector
     association :destination, factory: :connector
-    name { Faker::Name.unique.name }
+    name { Random.uuid.to_s }
     schedule_type { :scheduled }
     sync_frequency { "0 0 * * *" }
     configuration { { "key" => "value" } }
