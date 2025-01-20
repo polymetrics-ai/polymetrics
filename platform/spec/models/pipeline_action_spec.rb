@@ -10,9 +10,9 @@ RSpec.describe PipelineAction, type: :model do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:action_type) }
-    it { is_expected.to validate_presence_of(:order) }
+    it { is_expected.to validate_presence_of(:position) }
     it { is_expected.to validate_presence_of(:action_data) }
-    it { is_expected.to validate_numericality_of(:order).only_integer }
+    it { is_expected.to validate_numericality_of(:position).only_integer }
   end
 
   describe "enums" do
@@ -29,7 +29,7 @@ RSpec.describe PipelineAction, type: :model do
       it "is valid with required keys" do
         action.action_data = {
           "source_connector_id" => 1,
-          "streams" => %w[users orders]
+          "streams" => %w[users positions]
         }
         expect(action).to be_valid
       end

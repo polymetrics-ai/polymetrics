@@ -5,7 +5,7 @@ class PipelineAction < ApplicationRecord
   belongs_to :query_action, class_name: "PipelineAction", optional: true
 
   validates :action_type, presence: true
-  validates :order, presence: true, numericality: { only_integer: true }
+  validates :position, presence: true, numericality: { only_integer: true }
   validates :action_data, presence: true
   validate :validate_action_data_schema, if: :action_type
   validate :validate_query_action_reference, if: :summary_generation?

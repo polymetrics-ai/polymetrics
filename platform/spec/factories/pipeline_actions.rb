@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :pipeline_action do
     pipeline
-    sequence(:order) { |n| n }
+    sequence(:position) { |n| n }
     action_type { :connection_creation }
     action_data do
       {

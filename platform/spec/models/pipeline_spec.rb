@@ -19,11 +19,11 @@ RSpec.describe Pipeline, type: :model do
   describe "ordered pipeline actions" do
     it "returns pipeline actions in correct order" do
       pipeline = create(:pipeline)
-      create(:pipeline_action, pipeline: pipeline, order: 2)
-      create(:pipeline_action, pipeline: pipeline, order: 1)
-      create(:pipeline_action, pipeline: pipeline, order: 3)
+      create(:pipeline_action, pipeline: pipeline, position: 2)
+      create(:pipeline_action, pipeline: pipeline, position: 1)
+      create(:pipeline_action, pipeline: pipeline, position: 3)
 
-      expect(pipeline.pipeline_actions.map(&:order)).to eq([1, 2, 3])
+      expect(pipeline.pipeline_actions.map(&:position)).to eq([1, 2, 3])
     end
   end
 

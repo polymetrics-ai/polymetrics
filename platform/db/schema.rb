@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_13_060444) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_17_073007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,6 +21,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_13_060444) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "tool_call_data", default: []
     t.index ["user_id"], name: "index_chats_on_user_id"
     t.index ["workspace_id", "user_id"], name: "index_chats_on_workspace_id_and_user_id"
     t.index ["workspace_id"], name: "index_chats_on_workspace_id"
@@ -83,12 +84,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_13_060444) do
     t.bigint "pipeline_id", null: false
     t.bigint "query_action_id"
     t.integer "action_type", null: false
-    t.integer "order", null: false
+    t.integer "position", null: false
     t.jsonb "action_data", default: {}, null: false
     t.jsonb "result_data", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["pipeline_id", "order"], name: "index_pipeline_actions_on_pipeline_id_and_order", unique: true
+    t.index ["pipeline_id", "position"], name: "index_pipeline_actions_on_pipeline_id_and_position", unique: true
     t.index ["pipeline_id"], name: "index_pipeline_actions_on_pipeline_id"
     t.index ["query_action_id"], name: "index_pipeline_actions_on_query_action_id"
   end

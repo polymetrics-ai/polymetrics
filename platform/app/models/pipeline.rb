@@ -3,7 +3,7 @@
 class Pipeline < ApplicationRecord
   belongs_to :message
   has_many :pipeline_actions,
-           -> { order(order: :asc) },
+           -> { order(position: :asc) },
            dependent: :destroy,
            inverse_of: :pipeline
 

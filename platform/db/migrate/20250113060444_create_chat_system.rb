@@ -48,12 +48,12 @@ class CreateChatSystem < ActiveRecord::Migration[7.1]
                    foreign_key: { to_table: :pipeline_actions },
                    null: true
       t.integer :action_type, null: false
-      t.integer :order, null: false
+      t.integer :position, null: false
       t.jsonb :action_data, null: false, default: {}
       t.jsonb :result_data, null: false, default: {}
       t.timestamps
 
-      t.index %i[pipeline_id order], unique: true
+      t.index %i[pipeline_id position], unique: true
     end
   end
 end
