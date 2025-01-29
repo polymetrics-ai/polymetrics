@@ -5,6 +5,8 @@ class Chat < ApplicationRecord
   belongs_to :user
   has_many :messages, dependent: :destroy
   has_many :pipelines, through: :messages
+  has_many :chat_connections, dependent: :destroy
+  has_many :connections, through: :chat_connections
 
   validates :title, presence: true
   validates :status, presence: true

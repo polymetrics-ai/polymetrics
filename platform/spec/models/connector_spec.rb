@@ -136,4 +136,99 @@ RSpec.describe Connector, type: :model do
       expect(connector.icon_url).to eq(expected_url)
     end
   end
+
+  describe "#fetch_schema" do
+    let(:connector) { build(:connector, connector_class_name: "TestConnector", integration_type: :api) }
+    let(:mock_schema) { { "stream1" => { "description" => "Test stream" } } }
+
+    before do
+      allow(Catalogs::FetchSchemaService).to receive(:new).and_return(double(call: mock_schema))
+    end
+
+    context "when integration type is database" do
+      it "returns an empty array" do
+        connector.integration_type = :database
+        expect(connector.fetch_schema).to eq([])
+      end
+    end
+
+    context "when integration type is api" do
+      it "calls FetchSchemaService with connector class name" do
+        expect(Catalogs::FetchSchemaService).to receive(:new).with("TestConnector")
+        connector.fetch_schema
+      end
+
+      it "returns the schema from the service" do
+        expect(connector.fetch_schema).to eq(mock_schema)
+      end
+
+      context "when service raises an error" do
+        before do
+          allow(Catalogs::FetchSchemaService).to receive(:new).and_raise(StandardError.new("Test error"))
+        end
+
+        it "returns an empty array and logs the error" do
+          expect(Rails.logger).to receive(:error).with(/Error fetching schema for TestConnector: Test error/)
+          expect(connector.fetch_schema).to eq([])
+        end
+      end
+    end
+  end
+
+  describe "#available_streams" do
+    let(:connector) { build(:connector) }
+    let(:mock_schema) do
+      {
+        "stream1" => { "description" => "Test stream 1" },
+        "stream2" => { "description" => "Test stream 2" }
+      }
+    end
+
+    before do
+      allow(connector).to receive(:fetch_schema).and_return(mock_schema)
+    end
+
+    it "returns array of stream names" do
+      expect(connector.available_streams).to eq(%w[stream1 stream2])
+    end
+  end
+
+  describe "#stream_descriptions" do
+    let(:connector) { build(:connector) }
+    let(:mock_schema) do
+      {
+        "stream1" => {
+          "description" => "Test stream",
+          "x-supported_sync_modes" => ["full_refresh"],
+          "x-source_defined_primary_key" => ["id"],
+          "required" => ["id"],
+          "properties" => {
+            "id" => { "type" => "integer" }
+          }
+        }
+      }
+    end
+
+    before do
+      allow(connector).to receive(:fetch_schema).and_return(mock_schema)
+    end
+
+    it "returns formatted stream descriptions" do
+      expected_output = [
+        {
+          name: "stream1",
+          description: "Test stream",
+          sync_modes: ["full_refresh"],
+          primary_key: ["id"],
+          required_fields: ["id"],
+          properties: {
+            "id" => {
+              type: "integer"
+            }
+          }
+        }
+      ]
+      expect(connector.stream_descriptions).to eq(expected_output)
+    end
+  end
 end

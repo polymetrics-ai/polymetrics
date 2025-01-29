@@ -99,7 +99,7 @@ module Syncs
       source_name = @sync.connection.source.name.downcase
                          .parameterize(separator: "_")
                          .gsub(/[^a-z0-9_]/, "")
-      workspace_hash = Digest::SHA256.hexdigest(@workspace_id.to_s)[0..7]
+      workspace_hash = Digest::SHA256.hexdigest(@workspace_id.to_s)[0..15]
 
       "#{source_name}_#{workspace_hash}"
     end

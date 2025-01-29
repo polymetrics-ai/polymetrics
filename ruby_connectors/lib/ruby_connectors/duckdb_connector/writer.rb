@@ -14,7 +14,7 @@ module RubyConnectors
         validate_identifiers!(table_name: table_name, schema_name: schema_name, database_name: database_name)
         validate_primary_keys!(primary_keys, schema) if primary_keys
 
-        path = @config.dig(:credentials, :local, :path)
+        path = @config.dig(:credentials, :path)
         DuckDB::Database.open(path) do |db|
           db.connect do |conn|
             ensure_schema_exists(conn, schema_name) if schema_name

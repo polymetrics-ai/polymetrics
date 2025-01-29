@@ -5,7 +5,8 @@ require "rails_helper"
 
 RSpec.describe CreateConnectionAndSyncsService do
   let(:connector) { create(:connector) }
-  let(:service) { described_class.new(connector.id) }
+  let(:streams) { %w[stream1 stream2] }
+  let(:service) { described_class.new(connector.id, streams) }
 
   describe "#call" do
     let(:connection_id) { 123 }
@@ -14,12 +15,12 @@ RSpec.describe CreateConnectionAndSyncsService do
 
     before do
       allow(Connections::CreateService).to receive(:new)
-        .with(connector.id)
+        .with(connector.id, streams)
         .and_return(connection_service)
       allow(connection_service).to receive(:call)
         .and_return(connection_id)
       allow(Syncs::CreateService).to receive(:new)
-        .with(connection_id)
+        .with(connection_id, streams)
         .and_return(syncs_service)
       allow(syncs_service).to receive(:call)
       allow(ActiveRecord::Base).to receive(:transaction).and_yield
@@ -30,19 +31,38 @@ RSpec.describe CreateConnectionAndSyncsService do
       expect(ActiveRecord::Base).to have_received(:transaction)
     end
 
-    it "creates a connection using Connections::CreateService" do
+    it "creates a connection using Connections::CreateService with streams" do
       service.call
-      expect(connection_service).to have_received(:call)
+      expect(Connections::CreateService).to have_received(:new).with(connector.id, streams)
     end
 
-    it "creates syncs using Syncs::CreateService" do
+    it "creates syncs using Syncs::CreateService with streams" do
       service.call
-      expect(syncs_service).to have_received(:call)
+      expect(Syncs::CreateService).to have_received(:new).with(connection_id, streams)
     end
 
-    it "passes the correct connection_id to Syncs::CreateService" do
-      service.call
-      expect(Syncs::CreateService).to have_received(:new).with(connection_id)
+    context "when streams are not provided" do
+      let(:service) { described_class.new(connector.id) }
+
+      before do
+        # Override the previous mock setup for this context
+        allow(Connections::CreateService).to receive(:new)
+          .with(connector.id, nil)
+          .and_return(connection_service)
+        allow(Syncs::CreateService).to receive(:new)
+          .with(connection_id, nil)
+          .and_return(syncs_service)
+      end
+
+      it "creates a connection without streams" do
+        service.call
+        expect(Connections::CreateService).to have_received(:new).with(connector.id, nil)
+      end
+
+      it "creates syncs without streams" do
+        service.call
+        expect(Syncs::CreateService).to have_received(:new).with(connection_id, nil)
+      end
     end
 
     context "when an error occurs during connection creation" do

@@ -7,6 +7,8 @@ class Connection < ApplicationRecord
   belongs_to :source, class_name: "Connector"
   belongs_to :destination, class_name: "Connector"
   has_many :syncs, dependent: :destroy
+  has_many :chat_connections, dependent: :destroy
+  has_many :chats, through: :chat_connections
 
   enum status: { created: 0, failed: 1, running: 2, paused: 3, healthy: 4 }
   enum schedule_type: { scheduled: 0, cron: 1, manual: 2 }

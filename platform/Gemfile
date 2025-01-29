@@ -98,3 +98,7 @@ group :test do
   gem "database_cleaner-active_record"
   gem "selenium-webdriver"
 end
+
+gem "faraday"
+gem "langchainrb", "0.19.3"
+gem "ruby-openai"

@@ -59,24 +59,20 @@
     },
     "following_url": {
       "type": "string",
-      "description": "The API URL template for users being followed",
-      "examples": ["https://api.github.com/users/octocat/following{/other_user}"]
+      "description": "The API URL template for users being followed"
     },
     "gists_url": {
       "type": "string",
-      "description": "The API URL template for user's gists",
-      "examples": ["https://api.github.com/users/octocat/gists{/gist_id}"]
+      "description": "The API URL template for user's gists"
     },
     "starred_url": {
       "type": "string",
-      "description": "The API URL template for repositories starred by the user",
-      "examples": ["https://api.github.com/users/octocat/starred{/owner}{/repo}"]
+      "description": "The API URL template for repositories starred by the user"
     },
     "subscriptions_url": {
       "type": "string",
       "format": "uri",
-      "description": "The API URL for repositories the user is watching",
-      "examples": ["https://api.github.com/users/octocat/subscriptions"]
+      "description": "The API URL for repositories the user is watching"
     },
     "organizations_url": {
       "type": "string",
@@ -92,8 +88,7 @@
     },
     "events_url": {
       "type": "string",
-      "description": "The API URL template for user's events",
-      "examples": ["https://api.github.com/users/octocat/events{/privacy}"]
+      "description": "The API URL template for user's events"
     },
     "received_events_url": {
       "type": "string",
@@ -123,25 +118,6 @@
     }
   },
   "required": [
-    "repository",
-    "avatar_url",
-    "events_url",
-    "followers_url",
-    "following_url",
-    "gists_url",
-    "gravatar_id",
-    "html_url",
-    "id",
-    "node_id",
-    "login",
-    "organizations_url",
-    "received_events_url",
-    "repos_url",
-    "site_admin",
-    "starred_at",
-    "starred_url",
-    "subscriptions_url",
-    "type",
-    "url"
+    "id"
   ]
 }

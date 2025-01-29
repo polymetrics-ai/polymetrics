@@ -4,8 +4,9 @@ module Syncs
   class CreateService
     DEFAULT_SYNC_FREQUENCY = "*/30 * * * *"
 
-    def initialize(connection_id)
+    def initialize(connection_id, streams = nil)
       @connection = Connection.find(connection_id)
+      @streams = streams
     end
 
     def call
@@ -20,8 +21,9 @@ module Syncs
     end
 
     def create_syncs(schema)
-      schema.each_key do |stream|
-        create_sync_for_stream(stream, schema[stream])
+      streams_to_sync = @streams.present? ? schema.slice(*@streams) : schema
+      streams_to_sync.each do |stream, stream_schema|
+        create_sync_for_stream(stream, stream_schema)
       end
     end
 

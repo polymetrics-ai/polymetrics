@@ -53,15 +53,15 @@
       "format": "uri"
     },
     "following_url": {
-      "description": "The API endpoint URL template for retrieving the list of users the contributor is following. Replace {/other_user} with a specific username.",
+      "description": "The API endpoint URL template for retrieving the list of users the contributor is following.",
       "type": ["null", "string"]
     },
     "gists_url": {
-      "description": "The API endpoint URL template for accessing the contributor's public gists. Replace {/gist_id} with a specific gist ID.",
+      "description": "The API endpoint URL template for accessing the contributor's public gists.",
       "type": ["null", "string"]
     },
     "starred_url": {
-      "description": "The API endpoint URL template for retrieving repositories starred by the contributor. Replace {/owner}{/repo} with specific repository details.",
+      "description": "The API endpoint URL template for retrieving repositories starred by the contributor.",
       "type": ["null", "string"]
     },
     "subscriptions_url": {
@@ -80,7 +80,7 @@
       "format": "uri"
     },
     "events_url": {
-      "description": "The API endpoint URL template for retrieving events associated with the contributor. Replace {/privacy} with the event privacy level.",
+      "description": "The API endpoint URL template for retrieving events associated with the contributor.",
       "type": ["null", "string"]
     },
     "repository": {

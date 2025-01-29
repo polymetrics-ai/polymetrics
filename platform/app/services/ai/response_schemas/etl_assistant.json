@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Whether the operation was successful"
+    },
+    "message": {
+      "type": "string",
+      "description": "Success or error message to display to the user"
+    }
+  },
+  "required": ["success", "message"],
+  "additionalProperties": false
+} 

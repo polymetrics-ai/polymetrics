@@ -87,7 +87,7 @@ RSpec.describe Syncs::DestinationSchemaNormalizerService do
         result = service.call
 
         expect(result[:database]).to match(/\w+_test$/)
-        expect(result[:schema_name]).to match(/^connector_\w+_[a-f0-9]{8}$/)
+        expect(result[:schema_name]).to match(/^connector_\w+_[a-f0-9]{16}$/)
         expect(result[:table_name]).to eq("users")
       end
 
@@ -137,7 +137,7 @@ RSpec.describe Syncs::DestinationSchemaNormalizerService do
           result = service.call
 
           expect(result[:schema_name]).to be_nil
-          expect(result[:table_name]).to match(/connector_\w+_[a-f0-9]{8}_users/)
+          expect(result[:table_name]).to match(/connector_\w+_[a-f0-9]{16}_users/)
         end
       end
 
@@ -179,7 +179,7 @@ RSpec.describe Syncs::DestinationSchemaNormalizerService do
     describe "#generate_schema_name" do
       it "generates a valid schema name" do
         result = service.send(:generate_schema_name)
-        expect(result).to match(/^connector_[a-z0-9_]+_[a-f0-9]{8}$/)
+        expect(result).to match(/^connector_[a-z0-9_]+_[a-f0-9]{16}$/)
       end
     end
 

@@ -1,0 +1,119 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://openrouter.ai/api/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"messages":[{"role":"user","content":"You are an expert SQL query
+        generator.\nBased on the following information, create a SQL SELECT query
+        that includes joins between multiple tables according to the specified database
+        syntax.\n\n**Table Names**:\nsales\n**Schema Names**:\necommerce\n**JSON Schemas**:\n[{\"type\":\"object\",\"properties\":{\"category\":{\"type\":\"string\"},\"sale_date\":{\"type\":\"string\",\"format\":\"date\"},\"product_id\":{\"type\":\"integer\"},\"sale_amount\":{\"type\":\"number\"}}}]\n**Database
+        Type**: duckDB\n\n### Requirements:\n- Include any necessary WHERE conditions
+        based on user input.\n- Specify the columns to select from each table.\n-
+        Ensure that the syntax aligns with the specified database type.\n- Ensure
+        we have schema names and table names along with the json schema else return
+        an error message.\n### Example Output:\nProvide a complete SQL SELECT statement
+        based on the above information.\n### Your Task:\nShow me total sales by product
+        category\n\nYou must format your output as a JSON value that adheres to a
+        given \"JSON Schema\" instance.\n\n\"JSON Schema\" is a declarative language
+        that allows you to annotate and validate JSON documents.\n\nFor example, the
+        example \"JSON Schema\" instance {\"properties\": {\"foo\": {\"description\":
+        \"a list of test words\", \"type\": \"array\", \"items\": {\"type\": \"string\"}}},
+        \"required\": [\"foo\"]}}\nwould match an object with one required property,
+        \"foo\". The \"type\" property specifies \"foo\" must be an \"array\", and
+        the \"description\" property semantically describes it as \"a list of test
+        words\". The items within \"foo\" must be strings.\nThus, the object {\"foo\":
+        [\"bar\", \"baz\"]} is a well-formatted instance of this example \"JSON Schema\".
+        The object {\"properties\": {\"foo\": [\"bar\", \"baz\"]}}} is not well-formatted.\n\nYour
+        output will be parsed and type-checked according to the provided schema instance,
+        so make sure all fields in your output match the schema exactly and there
+        are no trailing commas!\n\nHere is the JSON Schema instance your output must
+        adhere to. Include the enclosing markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\",\"enum\":[\"message\",\"pipeline_action\"],\"description\":\"Type
+        of response - either a message asking for clarification or pipeline action
+        configuration\"},\"content\":{\"type\":\"array\",\"items\":{\"oneOf\":[{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Clarification
+        message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"query_execution\"],\"description\":\"Type
+        of pipeline action\"},\"action_data\":{\"type\":\"object\",\"properties\":{\"query\":{\"type\":\"string\",\"description\":\"Generated
+        SQL query\"},\"explanation\":{\"type\":\"string\",\"description\":\"Explanation
+        of the generated query\"},\"warnings\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Any
+        warnings about the query\"},\"connection_id\":{\"type\":\"string\",\"description\":\"ID
+        of the connection to execute the query against\"}},\"required\":[\"query\",\"explanation\",\"connection_id\"]}},\"required\":[\"action_type\",\"action_data\"],\"additionalProperties\":false}]},\"minItems\":1,\"description\":\"Array
+        of either messages or pipeline action configurations\"}},\"required\":[\"type\",\"content\"],\"additionalProperties\":false}\n```\n\n"}],"model":"deepseek/deepseek-chat","temperature":0.7,"n":1}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <AUTH_TOKEN>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 29 Jan 2025 12:39:34 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Clerk-Auth-Message:
+      - Invalid JWT form. A JWT consists of three parts separated by dots. (reason=token-invalid,
+        token-carrier=header)
+      X-Clerk-Auth-Reason:
+      - token-invalid
+      X-Clerk-Auth-Status:
+      - signed-out
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 90994923daf0802b-MAA
+    body:
+      encoding: ASCII-8BIT
+      string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n{\"id\":\"gen-1738154374-pAkEYr7rtikmCapUJzm2\",\"provider\":\"Together\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738154374,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
+        \ \\\"type\\\": \\\"pipeline_action\\\",\\n  \\\"content\\\": [\\n    {\\n
+        \     \\\"action_type\\\": \\\"query_execution\\\",\\n      \\\"action_data\\\":
+        {\\n        \\\"query\\\": \\\"SELECT category, SUM(sale_amount) AS total_sales
+        FROM ecommerce.sales GROUP BY category ORDER BY total_sales DESC;\\\",\\n
+        \       \\\"explanation\\\": \\\"This SQL query calculates the total sales
+        by product category by summing up the 'sale_amount' for each 'category' in
+        the 'sales' table. The results are grouped by 'category' and ordered by 'total_sales'
+        in descending order.\\\",\\n        \\\"warnings\\\": [],\\n        \\\"connection_id\\\":
+        \\\"\\\"\\n      }\\n    }\\n  ]\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":708,\"completion_tokens\":147,\"total_tokens\":855}}"
+  recorded_at: Wed, 29 Jan 2025 12:39:49 GMT
+recorded_with: VCR 6.3.1

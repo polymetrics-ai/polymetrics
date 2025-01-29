@@ -1,0 +1,124 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://openrouter.ai/api/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"messages":[{"role":"user","content":"You are a Data Integration Assistant
+        specialized in creating data pipelines. Your role is to help users set up
+        source-to-destination data connections based on their requirements.\n\nAvailable
+        connectors in the workspace:\nAPI Connectors:\n\n\nDatabase Connectors:\nConnector
+        Name: Default DuckDB\nConnector ID: 975\nIntegration Type: database\nConnector
+        Language: ruby\nDefault Analytics DB: Yes\nConnector Configuration: ---\ndatabase:
+        analytics_fa7aec4e.duckdb\ncredentials:\n  path: analytics_fa7aec4e.duckdb\n\n\nConnector
+        Name: Connector 570\nConnector ID: 976\nIntegration Type: database\nConnector
+        Language: ruby\nDefault Analytics DB: No\nConnector Configuration: ---\nrepository_name:
+        rails/rails\n\n\nConnector Name: Connector 571\nConnector ID: 977\nIntegration
+        Type: database\nConnector Language: ruby\nDefault Analytics DB: No\nConnector
+        Configuration: ---\naccess_token: sample_token\n\n\n\nInstructions:\n1. Analyze
+        the user''s query to understand their data integration needs\n2. Identify
+        appropriate source which will be an API connector based on the query and destination
+        which will be a database connector\n3. For source connectors:\n   - Match
+        requirements with available API connectors and their streams\n   - Consider
+        data structure, required fields, and primary keys\n4. For destination:\n   -
+        If user specifies a database, use that configuration\n   - Otherwise, use
+        the default analytics database (marked as default_analytics_db: true)\n5.
+        If the query is ambiguous or needs clarification, ask appropriate questions\n\nYou
+        must format your output as a JSON value that adheres to a given \"JSON Schema\"
+        instance.\n\n\"JSON Schema\" is a declarative language that allows you to
+        annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
+        instance {\"properties\": {\"foo\": {\"description\": \"a list of test words\",
+        \"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould
+        match an object with one required property, \"foo\". The \"type\" property
+        specifies \"foo\" must be an \"array\", and the \"description\" property semantically
+        describes it as \"a list of test words\". The items within \"foo\" must be
+        strings.\nThus, the object {\"foo\": [\"bar\", \"baz\"]} is a well-formatted
+        instance of this example \"JSON Schema\". The object {\"properties\": {\"foo\":
+        [\"bar\", \"baz\"]}}} is not well-formatted.\n\nYour output will be parsed
+        and type-checked according to the provided schema instance, so make sure all
+        fields in your output match the schema exactly and there are no trailing commas!\n\nHere
+        is the JSON Schema instance your output must adhere to. Include the enclosing
+        markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\",\"enum\":[\"message\",\"pipeline_action\"],\"description\":\"Type
+        of response - either a message asking for clarification or pipeline action
+        configuration\"},\"content\":{\"type\":\"array\",\"items\":{\"oneOf\":[{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Clarification
+        message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"connection_creation\"],\"description\":\"Type
+        of pipeline action\"},\"action_data\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
+        of the source connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
+        of the source connector\"},\"streams\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\",\"description\":\"Name
+        of the stream\"},\"fields\":{\"type\":\"object\",\"properties\":{\"required\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"optional\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"primary_key\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"required\",\"optional\",\"primary_key\"]}},\"required\":[\"name\",\"fields\"]}}},\"required\":[\"connector_name\",\"connector_id\",\"streams\"]},\"destination\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
+        of the destination database connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
+        of the destination database connector\"},\"is_default_analytics_db\":{\"type\":\"boolean\",\"description\":\"Whether
+        to use default analytics database\"}},\"required\":[\"connector_name\",\"connector_id\"]}},\"required\":[\"source\",\"destination\"]}},\"required\":[\"action_type\",\"action_data\"],\"additionalProperties\":false}]},\"minItems\":1,\"description\":\"Array
+        of either messages or pipeline action configurations\"}},\"required\":[\"type\",\"content\"],\"additionalProperties\":false}\n```\n\n\nUser
+        Query: Please identify how many people starred my rails repo in Github?\n\nRemember:\n-
+        Source must be an API connector\n- Always use the exact stream names given
+        in the connector stream descriptions\n- Destination must be a database connector\n-
+        Validate stream compatibility and field mappings\n- If multiple options exist,
+        include all only one api source for one connection creation\n- If clarification
+        needed, ask specific questions\n- Consider data types and structure compatibility\n-
+        Only return the JSON response\n"}],"model":"deepseek/deepseek-chat","temperature":0.7,"n":1}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <AUTH_TOKEN>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 29 Jan 2025 13:28:29 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Clerk-Auth-Message:
+      - Invalid JWT form. A JWT consists of three parts separated by dots. (reason=token-invalid,
+        token-carrier=header)
+      X-Clerk-Auth-Reason:
+      - token-invalid
+      X-Clerk-Auth-Status:
+      - signed-out
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 909990cb08847ebb-MAA
+    body:
+      encoding: ASCII-8BIT
+      string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n{\"id\":\"gen-1738157309-llSD8QSOchNDnXs4iSUp\",\"provider\":\"Novita\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738157309,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\\"type\\\":\\\"pipeline_action\\\",\\\"content\\\":[{\\\"action_type\\\":\\\"connection_creation\\\",\\\"action_data\\\":{\\\"source\\\":{\\\"connector_name\\\":\\\"GitHub
+        API\\\",\\\"connector_id\\\":\\\"123\\\",\\\"streams\\\":[{\\\"name\\\":\\\"repository_stargazers\\\",\\\"fields\\\":{\\\"required\\\":[\\\"user_id\\\",\\\"starred_at\\\"],\\\"optional\\\":[],\\\"primary_key\\\":[\\\"user_id\\\"]}}]},\\\"destination\\\":{\\\"connector_name\\\":\\\"Default
+        DuckDB\\\",\\\"connector_id\\\":\\\"975\\\",\\\"is_default_analytics_db\\\":true}}}]}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":0,\"completion_tokens\":0,\"total_tokens\":0}}"
+  recorded_at: Wed, 29 Jan 2025 13:28:46 GMT
+recorded_with: VCR 6.3.1
