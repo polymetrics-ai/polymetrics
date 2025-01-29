@@ -20,7 +20,7 @@ module ChatAgent
           workflow_id: workflow_id
         }
       rescue StandardError => e
-        chat&.update(status: :error)
+        chat&.update(status: :failed)
         raise e
       end
     end
