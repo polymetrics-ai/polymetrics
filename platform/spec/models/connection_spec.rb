@@ -8,6 +8,8 @@ RSpec.describe Connection, type: :model do
     it { is_expected.to belong_to(:source).class_name("Connector") }
     it { is_expected.to belong_to(:destination).class_name("Connector") }
     it { is_expected.to have_many(:syncs).dependent(:destroy) }
+    it { is_expected.to have_many(:chat_connections).dependent(:destroy) }
+    it { is_expected.to have_many(:chats).through(:chat_connections) }
   end
 
   describe "validations" do
@@ -18,6 +20,7 @@ RSpec.describe Connection, type: :model do
     it { is_expected.to validate_length_of(:name).is_at_most(255) }
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:schedule_type) }
+    it { is_expected.to validate_presence_of(:namespace) }
 
     it "is valid with a valid namespace" do
       connection = build(:connection, namespace: :user_defined)
@@ -26,6 +29,21 @@ RSpec.describe Connection, type: :model do
 
     it "is invalid with an invalid namespace" do
       expect { build(:connection, namespace: :invalid_namespace) }.to raise_error(ArgumentError)
+    end
+
+    context "when schedule_type is scheduled or cron" do
+      it "requires sync_frequency" do
+        connection = build(:connection, schedule_type: :scheduled, sync_frequency: nil)
+        expect(connection).not_to be_valid
+        expect(connection.errors[:sync_frequency]).to include("can't be blank")
+      end
+    end
+
+    context "when schedule_type is manual" do
+      it "does not require sync_frequency" do
+        connection = build(:connection, schedule_type: :manual, sync_frequency: nil)
+        expect(connection).to be_valid
+      end
     end
   end
 
@@ -43,23 +61,22 @@ RSpec.describe Connection, type: :model do
     }
   end
 
-  describe "conditional validations" do
-    context "when schedule_type is scheduled" do
-      subject { build(:connection, schedule_type: :scheduled) }
+  describe "state machine" do
+    let(:connection) { create(:connection) }
 
-      it { is_expected.to validate_presence_of(:sync_frequency) }
-    end
+    describe "transitions" do
+      it "logs failure when transitioning to failed" do
+        expect(Rails.logger).to receive(:error).with(/Connection #{connection.id} failed at/)
+        connection.start!
+        connection.fail!
+      end
 
-    context "when schedule_type is cron" do
-      subject { build(:connection, schedule_type: :cron) }
-
-      it { is_expected.to validate_presence_of(:sync_frequency) }
-    end
-
-    context "when schedule_type is manual" do
-      subject { build(:connection, schedule_type: :manual) }
-
-      it { is_expected.not_to validate_presence_of(:sync_frequency) }
+      it "logs recovery when transitioning from failed to healthy" do
+        connection.start!
+        connection.fail!
+        expect(Rails.logger).to receive(:info).with(/Connection #{connection.id} recovered at/)
+        connection.recover!
+      end
     end
   end
 

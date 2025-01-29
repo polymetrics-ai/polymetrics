@@ -38,6 +38,8 @@ VCR.configure do |config|
   config.filter_sensitive_data("<TEMPORAL_PORT>") { ENV.fetch("TEMPORAL_PORT", nil) }
   config.filter_sensitive_data("<TEMPORAL_NAMESPACE>") { ENV.fetch("TEMPORAL_NAMESPACE", nil) }
   config.filter_sensitive_data("<GITHUB_TOKEN>") { ENV.fetch("GITHUB_ACCESS_TOKEN", nil) }
+  config.filter_sensitive_data("<OPENROUTER_API_KEY>") { ENV.fetch("OPENROUTER_API_KEY", nil) }
+  config.filter_sensitive_data("<OPENAI_API_KEY>") { ENV.fetch("OPENAI_API_KEY", nil) }
 
   # Filter JWT token from Authorization header
   config.filter_sensitive_data("<AUTH_TOKEN>") do |interaction|

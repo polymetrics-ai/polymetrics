@@ -85,3 +85,9 @@ RSpec/IndexedLet:
 
 RSpec/StubbedMock:
   Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false

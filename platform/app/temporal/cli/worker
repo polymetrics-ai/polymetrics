@@ -16,6 +16,7 @@ worker.register_workflow(Temporal::Workflows::Extractors::ApiDataExtractorWorkfl
 worker.register_workflow(Temporal::Workflows::Extractors::StartConnectorDataFetchWorkflow)
 worker.register_workflow(Temporal::Workflows::Extractors::StartFirstPageWorkflow)
 worker.register_workflow(Temporal::Workflows::Loaders::DatabaseDataLoaderWorkflow)
+worker.register_workflow(Temporal::Workflows::Agents::DataAgent::ChatProcessingWorkflow)
 
 # Register activities
 worker.register_activity(Temporal::Activities::LogSyncErrorActivity)
@@ -35,5 +36,7 @@ worker.register_activity(Temporal::Activities::TransformRecordActivity)
 worker.register_activity(Temporal::Activities::LoadDataActivity)
 worker.register_activity(Temporal::Activities::UpdateWriteCompletionActivity)
 worker.register_activity(Temporal::Activities::UpdateSyncRunActivity)
+worker.register_activity(Temporal::Activities::Agents::DataAgent::ProcessMessageActivity)
+worker.register_activity(Temporal::Activities::Agents::DataAgent::ChatProcessingActivity)
 
 worker.start

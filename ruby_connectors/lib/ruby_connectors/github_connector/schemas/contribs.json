@@ -45,15 +45,15 @@
       "type": ["null", "string"]
     },
     "following_url": {
-      "description": "The fully qualified API endpoint URL for retrieving the list of users the collaborator is following on GitHub. May contain '{/other_user}' to be replaced with a specific username.",
+      "description": "The fully qualified API endpoint URL for retrieving the list of users the collaborator is following on GitHub.",
       "type": ["null", "string"]
     },
     "gists_url": {
-      "description": "The fully qualified API endpoint URL for accessing the collaborator's public gists. May contain '{/gist_id}' to be replaced with a specific gist ID.",
+      "description": "The fully qualified API endpoint URL for accessing the collaborator's public gists",
       "type": ["null", "string"]
     },
     "starred_url": {
-      "description": "The fully qualified API endpoint URL for retrieving repositories starred by the collaborator. May contain '{/owner}{/repo}' to be replaced with specific repository details.",
+      "description": "The fully qualified API endpoint URL for retrieving repositories starred by the collaborator",
       "type": ["null", "string"]
     },
     "subscriptions_url": {
@@ -69,7 +69,7 @@
       "type": ["null", "string"]
     },
     "events_url": {
-      "description": "The fully qualified API endpoint URL for retrieving public events associated with the collaborator. May contain '{/privacy}' to be replaced with event privacy level.",
+      "description": "The fully qualified API endpoint URL for retrieving public events associated with the collaborator.",
       "type": ["null", "string"]
     },
     "received_events_url": {

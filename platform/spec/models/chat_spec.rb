@@ -8,6 +8,8 @@ RSpec.describe Chat, type: :model do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to have_many(:messages).dependent(:destroy) }
     it { is_expected.to have_many(:pipelines).through(:messages) }
+    it { is_expected.to have_many(:chat_connections).dependent(:destroy) }
+    it { is_expected.to have_many(:connections).through(:chat_connections) }
   end
 
   describe "validations" do

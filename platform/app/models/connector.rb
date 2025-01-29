@@ -25,6 +25,34 @@ class Connector < ApplicationRecord
     @icon_url ||= "https://raw.githubusercontent.com/polymetrics-ai/polymetrics/main/public/connector_icons/#{connector_class_name}.svg"
   end
 
+  def fetch_schema
+    return [] if integration_type == "database"
+
+    @fetch_schema ||= begin
+      Catalogs::FetchSchemaService.new(connector_class_name).call
+    rescue StandardError => e
+      Rails.logger.error("Error fetching schema for #{connector_class_name}: #{e.message}")
+      []
+    end
+  end
+
+  def available_streams
+    fetch_schema.filter_map { |stream_name, _schema| stream_name }
+  end
+
+  def stream_descriptions
+    fetch_schema.filter_map do |stream_name, schema|
+      {
+        name: stream_name,
+        description: schema["description"],
+        sync_modes: schema["x-supported_sync_modes"],
+        primary_key: schema["x-source_defined_primary_key"],
+        required_fields: schema["required"],
+        properties: format_properties(schema["properties"])
+      }
+    end
+  end
+
   private
 
   def should_validate_default_analytics_db?
@@ -43,5 +71,19 @@ class Connector < ApplicationRecord
     return unless api?
 
     self.default_analytics_db = false
+  end
+
+  def format_properties(properties, depth = 0, max_depth = 3)
+    return {} if properties.nil? || depth >= max_depth
+
+    properties.transform_values do |property|
+      {
+        type: property["type"],
+        description: property["description"],
+        format: property["format"],
+        required: property["required"],
+        properties: property["type"] == "object" ? format_properties(property["properties"], depth + 1, max_depth) : nil
+      }.compact
+    end
   end
 end

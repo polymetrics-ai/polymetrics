@@ -17,6 +17,12 @@ Rails.application.routes.draw do
           post "stop_sync"
         end
       end
+
+      namespace :agents do
+        resources :data_agent, only: [] do
+          post :chat, on: :collection
+        end
+      end
     end
   end
 
