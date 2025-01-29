@@ -65,7 +65,7 @@ module Ai
             Integration Type: #{connector.integration_type}
             Connector Language: #{connector.connector_language}
             Default Analytics DB: #{connector.default_analytics_db ? "Yes" : "No"}
-            Connector Configuration: #{connector.configuration.to_yaml}
+            Connector Configuration: #{sanitize_configuration(connector.configuration)}
           CONNECTOR
         end
 
@@ -81,6 +81,14 @@ module Ai
           end.join("\n")
 
           "\nAvailable Streams:\n#{streams}"
+        end
+
+        def self.sanitize_configuration(config)
+          sanitized = config.deep_dup
+          %w[password api_key secret token].each do |sensitive_field|
+            sanitized.delete(sensitive_field)
+          end
+          sanitized.to_yaml
         end
       end
     end

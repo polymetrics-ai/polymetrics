@@ -28,7 +28,7 @@ RSpec.describe Connections::CreateService do
         workspace: workspace,
         source: source_connector,
         destination: destination_connector,
-        name: "#{source_connector.name}_#{Digest::SHA256.hexdigest(streams.join("-"))[0..7]} Connection",
+        name: "#{source_connector.name}_#{Digest::SHA256.hexdigest(streams.join("-"))[0..15]} Connection",
         schedule_type: "manual",
         status: "created",
         sync_frequency: "hourly",

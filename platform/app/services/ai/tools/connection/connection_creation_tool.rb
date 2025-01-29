@@ -34,6 +34,8 @@ module Ai
 
         def extract_connection_params
           pipeline_message = @chat.messages.where(message_type: "pipeline").last
+          return {} if pipeline_message.blank?
+
           JSON.parse(pipeline_message.content)
         end
 

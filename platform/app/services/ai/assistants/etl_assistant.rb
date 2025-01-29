@@ -19,10 +19,6 @@ module Ai
       end
 
       def process_message
-        @assistant.add_message_and_run(
-          content: @query
-        )
-
         @tool_calls = []
 
         @assistant.tool_execution_callback = lambda { |tool_call_id, tool_name, method_name, tool_arguments|
@@ -33,6 +29,10 @@ module Ai
             arguments: tool_arguments
           }
         }
+
+        @assistant.add_message_and_run(
+          content: @query
+        )
 
         result = @assistant.run(auto_tool_execution: true)
         @chat.update!(tool_call_data: @tool_calls)

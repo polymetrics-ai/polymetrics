@@ -10,14 +10,19 @@ module ChatAgent
     end
 
     def call
-      chat = create_chat
-      create_initial_message(chat)
-      workflow_id = start_temporal_workflow(chat)
+      ActiveRecord::Base.transaction do
+        chat = create_chat
+        create_initial_message(chat)
+        workflow_id = start_temporal_workflow(chat)
 
-      {
-        chat: chat,
-        workflow_id: workflow_id
-      }
+        {
+          chat: chat,
+          workflow_id: workflow_id
+        }
+      rescue StandardError => e
+        chat&.update(status: :error)
+        raise e
+      end
     end
 
     private

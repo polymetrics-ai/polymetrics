@@ -4,6 +4,8 @@ module Api
   module V1
     module Agents
       class DataAgentController < ApplicationController
+        before_action :authenticate_user!
+
         def chat
           result = initialize_chat_service.call
           render_chat_success(result)

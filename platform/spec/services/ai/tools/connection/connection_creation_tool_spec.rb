@@ -85,7 +85,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
     context "when connection already exists" do
       let(:existing_connection) do
         create(:connection, workspace: workspace,
-                            name: "#{connector.name}_#{Digest::SHA256.hexdigest(%w[stream1 stream2].join("-"))[0..7]} Connection")
+                            name: "#{connector.name}_#{Digest::SHA256.hexdigest(%w[stream1 stream2].join("-"))[0..15]} Connection")
       end
 
       before do

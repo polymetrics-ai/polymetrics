@@ -71,7 +71,9 @@ module Ai
           parsed_response["content"].each do |content|
             next unless content["action_type"] == "connection_creation"
 
-            create_pipeline_for_content(content)
+            ActiveRecord::Base.transaction do
+              create_pipeline_for_content(content)
+            end
           end
         end
 

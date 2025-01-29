@@ -5,7 +5,7 @@ module Connections
     def initialize(connector_id, streams = nil)
       @connector = Connector.find(connector_id)
       @streams = streams || []
-      @stream_hash = Digest::SHA256.hexdigest(@streams.join("-"))[0..7]
+      @stream_hash = Digest::SHA256.hexdigest(@streams.join("-"))[0..15]
     end
 
     def call
