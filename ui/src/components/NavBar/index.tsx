@@ -35,14 +35,14 @@ const NavBar: React.FC<NavBarProps> = ({ onSignOut }) => {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Link to={route?.value ? route?.value : ''}>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${isRouteActive(route.value) ? 'bg-emerald-100' : ''}`}
+                                    <div
+                                        className={`mx-2 p-0 shadow-none bg-auto bg-transparent hover:bg-emerald-100 ${
+                                            isRouteActive(route.value) ? 'bg-emerald-100' : ''
+                                        }`}
                                         aria-label={route.label}
                                     >
                                         <img className="h-6 w-6" src={route.icon} />
-                                    </Button>
+                                    </div>
                                 </Link>
                             </TooltipTrigger>
                             <TooltipContent
