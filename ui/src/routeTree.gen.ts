@@ -28,6 +28,9 @@ const AuthenticatedSettingsIndexLazyImport = createFileRoute(
 const AuthenticatedDocumentationIndexLazyImport = createFileRoute(
   '/_authenticated/documentation/',
 )()
+const AuthenticatedDataAgentIndexLazyImport = createFileRoute(
+  '/_authenticated/data-agent/',
+)()
 const AuthenticatedDashboardIndexLazyImport = createFileRoute(
   '/_authenticated/dashboard/',
 )()
@@ -93,6 +96,16 @@ const AuthenticatedDocumentationIndexLazyRoute =
     getParentRoute: () => AuthenticatedRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/documentation/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthenticatedDataAgentIndexLazyRoute =
+  AuthenticatedDataAgentIndexLazyImport.update({
+    path: '/data-agent/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/data-agent/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexLazyImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/data-agent/': {
+      id: '/_authenticated/data-agent/'
+      path: '/data-agent'
+      fullPath: '/data-agent'
+      preLoaderRoute: typeof AuthenticatedDataAgentIndexLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/documentation/': {
       id: '/_authenticated/documentation/'
       path: '/documentation'
@@ -265,6 +285,7 @@ export const routeTree = rootRoute.addChildren({
     AuthenticatedConnectionsIndexLazyRoute,
     AuthenticatedConnectorsIndexLazyRoute,
     AuthenticatedDashboardIndexLazyRoute,
+    AuthenticatedDataAgentIndexLazyRoute,
     AuthenticatedDocumentationIndexLazyRoute,
     AuthenticatedSettingsIndexLazyRoute,
   }),
@@ -298,6 +319,7 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/connections/",
         "/_authenticated/connectors/",
         "/_authenticated/dashboard/",
+        "/_authenticated/data-agent/",
         "/_authenticated/documentation/",
         "/_authenticated/settings/"
       ]
@@ -344,6 +366,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/dashboard/": {
       "filePath": "_authenticated/dashboard/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/data-agent/": {
+      "filePath": "_authenticated/data-agent/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/documentation/": {

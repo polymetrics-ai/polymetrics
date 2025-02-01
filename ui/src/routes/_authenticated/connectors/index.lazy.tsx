@@ -89,7 +89,7 @@ export function Connectors() {
     }
 
     return (
-        <main className="flex-1 flex flex-col my-8 mr-8 px-10 py-8 bg-slate-100 h-[calc(100vh-100px)] overflow-hidden">
+        <main className="flex-1 flex flex-col my-8 mr-8 px-10 py-8 bg-slate-100 h-[calc(100vh-64px)] overflow-hidden">
             <div className="flex justify-between mb-10">
                 <span className="self-start text-2xl text-slate-800 font-semibold">Connectors</span>
                 <Button

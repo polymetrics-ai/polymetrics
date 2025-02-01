@@ -19,6 +19,11 @@ export const signUpFields = [
 export const NAV_ICONS = {
     routeIcons: [
         {
+            label: 'Data Agent',
+            value: '/data-agent',
+            icon: '/icon-data-agent.svg'
+        },
+        {
             label: 'Connectors',
             value: '/connectors',
             icon: '/icon-connectors.svg'
@@ -143,4 +148,33 @@ export const connectorSteps = [
     }
 ];
 
+
 export const DEFAULT_CONNECTOR_ICON = '/connectors/default.svg';
+
+export const dataAgentSteps = [
+    {
+        id: 'connector-identified',
+        title: 'Connector Identified',
+        description: 'Required connector has been identified for your request'
+    },
+    {
+        id: 'connector-configured',
+        title: 'Connector Configuration',
+        description: 'Connection parameters have been prepared'
+    },
+    {
+        id: 'sync-initiated',
+        title: 'Sync Initiated',
+        description: 'Starting initial data synchronization'
+    },
+    {
+        id: 'query-generated',
+        title: 'Query Generated',
+        description: 'SQL query created to fetch the requested information'
+    },
+    {
+        id: 'data-presented',
+        title: 'Data Presented',
+        description: 'Query results formatted into a table view'
+    }
+] as const;
