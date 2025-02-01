@@ -15,6 +15,24 @@ RSpec.describe Chat, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_presence_of(:status) }
+
+    context "description length validation" do
+      it "allows blank description" do
+        chat = build(:chat, description: nil)
+        expect(chat).to be_valid
+      end
+
+      it "allows descriptions up to 500 characters" do
+        chat = build(:chat, description: "a" * 500)
+        expect(chat).to be_valid
+      end
+
+      it "rejects descriptions over 500 characters" do
+        chat = build(:chat, description: "a" * 501)
+        expect(chat).not_to be_valid
+        expect(chat.errors[:description]).to include("is too long (maximum is 500 characters)")
+      end
+    end
   end
 
   describe "enums" do

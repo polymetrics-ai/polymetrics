@@ -10,6 +10,7 @@ class Chat < ApplicationRecord
 
   validates :title, presence: true
   validates :status, presence: true
+  validates :description, length: { maximum: 500 }, allow_blank: true
 
   enum status: { active: 0, completed: 1, failed: 2 }
 

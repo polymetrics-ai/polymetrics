@@ -12,6 +12,9 @@ import ConnectorConfiguration from '@/components/data-agent/ConnectorConfigurati
 import SyncInitiated from '@/components/data-agent/SyncInitiated';
 import QueryBlock from '@/components/data-agent/QueryBlock';
 import DataPresented from '@/components/data-agent/DataPresented';
+import { useQuery } from '@tanstack/react-query';
+import { getChatHistory } from '@/service/dataAgent';
+import ChatHistory from '@/components/data-agent/ChatHistory';
 
 const { useStepper } = defineStepper(...dataAgentSteps);
 
@@ -22,6 +25,11 @@ export const Route = createLazyFileRoute('/_authenticated/data-agent/')({
 export function DataAgent() {
     const [query, setQuery] = useState<string>('');
     const stepper = useStepper();
+
+    const { data: chatHistory, isLoading } = useQuery({
+        queryKey: ['dataAgentChatHistory'],
+        queryFn: getChatHistory
+    });
 
     const handleSendQuery = () => {
         if (query.trim()) {
@@ -177,36 +185,7 @@ export function DataAgent() {
                 </div>
             </div>
             <div className="w-80 overflow-hidden">
-                <div className="flex flex-col pl-8 pt-8 h-full bg-white border-l border-slate-200">
-                    <div className="flex flex-col h-full">
-                        <h2 className="text-xl font-semibold text-slate-800 mb-6">History</h2>
-                        <div className="space-y-6">
-                            <div className="group cursor-pointer">
-                                <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors">
-                                    <div className="border border-slate-200 p-2 rounded-lg bg-white shadow-sm group-hover:border-slate-300 transition-colors">
-                                        <img src="/connectors/github.svg" className="w-5 h-5" alt="Github" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-base font-medium text-slate-800 group-hover:text-slate-900">Stargazers</h3>
-                                        <p className="text-sm text-slate-500 group-hover:text-slate-600">Count of all the users who have starred the repo</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="group cursor-pointer">
-                                <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors">
-                                    <div className="border border-slate-200 p-2 rounded-lg bg-white shadow-sm group-hover:border-slate-300 transition-colors">
-                                        <img src="/connectors/stripe.svg" className="w-5 h-5" alt="Stripe" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-base font-medium text-slate-800 group-hover:text-slate-900">Revenue this month</h3>
-                                        <p className="text-sm text-slate-500 group-hover:text-slate-600">Total revenue this month from sales</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ChatHistory chatHistory={chatHistory} isLoading={isLoading} />
             </div>
         </main>
     );

@@ -8,9 +8,18 @@ module Api
 
         def chat
           result = initialize_chat_service.call
-          render_chat_success(result)
+          render json: ChatBlueprint.render_with_data(result[:chat], view: :chat, workflow_id: result[:workflow_id])
         rescue StandardError => e
           render_chat_error(e)
+        end
+
+        def history
+          chats = current_workspace.chats
+                                   .includes(:messages)
+                                   .where(user: current_user)
+                                   .order(created_at: :desc)
+
+          render json: ChatBlueprint.render_with_data(chats, view: :history)
         end
 
         private
@@ -22,16 +31,6 @@ module Api
             query: chat_params[:query],
             title: chat_params[:title]
           )
-        end
-
-        def render_chat_success(result)
-          render json: {
-            status: :success,
-            data: {
-              chat_id: result[:chat].id,
-              workflow_id: result[:workflow_id]
-            }
-          }
         end
 
         def render_chat_error(exception)

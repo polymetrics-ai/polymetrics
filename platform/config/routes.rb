@@ -20,7 +20,10 @@ Rails.application.routes.draw do
 
       namespace :agents do
         resources :data_agent, only: [] do
-          post :chat, on: :collection
+          collection do
+            post :chat
+            get :history
+          end
         end
       end
     end

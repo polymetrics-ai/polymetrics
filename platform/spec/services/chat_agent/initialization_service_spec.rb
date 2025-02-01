@@ -22,6 +22,7 @@ RSpec.describe ChatAgent::InitializationService do
       expect(chat.workspace_id).to eq(workspace.id)
       expect(chat.user_id).to eq(user.id)
       expect(chat.title).to eq(title)
+      expect(chat.description).to eq("This chat session is dedicated to managing and executing data integration tasks through the Data Agent. It tracks ETL pipelines, connection configurations, and query executions.")
       expect(chat.status).to eq("active")
     end
 
@@ -65,8 +66,7 @@ RSpec.describe ChatAgent::InitializationService do
 
       it "uses default title" do
         result = subject.call
-
-        expect(result[:chat].title).to eq("New Chat")
+        expect(result[:chat].title).to eq("Data Agent Chat")
       end
     end
 
@@ -77,6 +77,28 @@ RSpec.describe ChatAgent::InitializationService do
 
       it "raises the error" do
         expect { subject.call }.to raise_error(StandardError, "Workflow failed")
+      end
+    end
+
+    context "when creation fails" do
+      before do
+        allow(Chat).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
+      end
+
+      it "raises the error" do
+        expect { subject.call }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context "when message creation fails" do
+      before do
+        allow_any_instance_of(Chat).to receive(:messages).and_return(double(create!: nil))
+        allow_any_instance_of(Chat).to receive(:messages).and_raise(ActiveRecord::RecordInvalid)
+      end
+
+      it "rolls back the transaction" do
+        expect { subject.call }.to raise_error(ActiveRecord::RecordInvalid)
+        expect(Chat.count).to eq(0)
       end
     end
   end

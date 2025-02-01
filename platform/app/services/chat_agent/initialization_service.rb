@@ -31,7 +31,8 @@ module ChatAgent
       Chat.create!(
         workspace_id: @workspace_id,
         user_id: @user_id,
-        title: @title || "New Chat",
+        title: @title || "Data Agent Chat",
+        description: "This chat session is dedicated to managing and executing data integration tasks through the Data Agent. It tracks ETL pipelines, connection configurations, and query executions.",
         status: :active
       )
     end

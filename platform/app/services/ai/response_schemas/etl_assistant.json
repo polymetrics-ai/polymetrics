@@ -8,6 +8,14 @@
     "message": {
       "type": "string",
       "description": "Success or error message to display to the user"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title for the chat session"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the operation"
     }
   },
   "required": ["success", "message"],

@@ -88,6 +88,14 @@ module Ai
           parsed_response = fix_parser.parse(last_message.content)
         end
 
+        # Update chat with title and description if available
+        if parsed_response["title"] || parsed_response["description"]
+          @chat.update!(
+            title: parsed_response["title"] || @chat.title,
+            description: parsed_response["description"] || @chat.description
+          )
+        end
+
         {
           content: parsed_response,
           tool_calls: @tool_calls
