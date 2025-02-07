@@ -23,6 +23,7 @@ Rails.application.routes.draw do
           collection do
             post :chat
             get :history
+            get "chats/:chat_id/messages", to: "data_agent#chat_messages"
           end
         end
       end

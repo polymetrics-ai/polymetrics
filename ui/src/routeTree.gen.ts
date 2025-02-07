@@ -43,6 +43,9 @@ const AuthenticatedConnectionsIndexLazyImport = createFileRoute(
 const AuthenticatedChartsIndexLazyImport = createFileRoute(
   '/_authenticated/charts/',
 )()
+const AuthenticatedDataAgentChatIdLazyImport = createFileRoute(
+  '/_authenticated/data-agent/$chatId',
+)()
 const AuthenticatedConnectorsNewLazyImport = createFileRoute(
   '/_authenticated/connectors/new',
 )()
@@ -146,6 +149,16 @@ const AuthenticatedChartsIndexLazyRoute =
     import('./routes/_authenticated/charts/index.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedDataAgentChatIdLazyRoute =
+  AuthenticatedDataAgentChatIdLazyImport.update({
+    path: '/data-agent/$chatId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/data-agent/$chatId.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 const AuthenticatedConnectorsNewLazyRoute =
   AuthenticatedConnectorsNewLazyImport.update({
     path: '/connectors/new',
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConnectorsNewLazyImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/data-agent/$chatId': {
+      id: '/_authenticated/data-agent/$chatId'
+      path: '/data-agent/$chatId'
+      fullPath: '/data-agent/$chatId'
+      preLoaderRoute: typeof AuthenticatedDataAgentChatIdLazyImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/charts/': {
       id: '/_authenticated/charts/'
       path: '/charts'
@@ -281,6 +301,7 @@ export const routeTree = rootRoute.addChildren({
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedConnectorsIdLazyRoute,
     AuthenticatedConnectorsNewLazyRoute,
+    AuthenticatedDataAgentChatIdLazyRoute,
     AuthenticatedChartsIndexLazyRoute,
     AuthenticatedConnectionsIndexLazyRoute,
     AuthenticatedConnectorsIndexLazyRoute,
@@ -315,6 +336,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_authenticated/connectors/$id",
         "/_authenticated/connectors/new",
+        "/_authenticated/data-agent/$chatId",
         "/_authenticated/charts/",
         "/_authenticated/connections/",
         "/_authenticated/connectors/",
@@ -350,6 +372,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/connectors/new": {
       "filePath": "_authenticated/connectors/new.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/data-agent/$chatId": {
+      "filePath": "_authenticated/data-agent/$chatId.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/charts/": {

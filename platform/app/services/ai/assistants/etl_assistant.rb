@@ -59,6 +59,7 @@ module Ai
         [
           Ai::Tools::Connector::ConnectorSelectionTool.new(workspace_id: @workspace_id, chat_id: @chat_id, original_query: @query),
           Ai::Tools::Connection::ConnectionCreationTool.new(workspace_id: @workspace_id, chat_id: @chat_id),
+          Ai::Tools::Sync::SyncInitiatorTool.new(workspace_id: @workspace_id, chat_id: @chat_id),
           Ai::Tools::Query::QueryGenerationTool.new(workspace_id: @workspace_id, chat_id: @chat_id)
         ]
       end

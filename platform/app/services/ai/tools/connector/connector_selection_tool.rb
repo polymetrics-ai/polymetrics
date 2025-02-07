@@ -69,7 +69,7 @@ module Ai
 
         def handle_pipeline_action(parsed_response)
           parsed_response["content"].each do |content|
-            next unless content["action_type"] == "connection_creation"
+            next unless content["action_type"] == "connector_selection"
 
             ActiveRecord::Base.transaction do
               create_pipeline_for_content(content)
@@ -78,42 +78,29 @@ module Ai
         end
 
         def create_pipeline_for_content(content)
-          return if action_exists?(content)
+          # Find or create pipeline message
+          pipeline_message = @chat.messages.find_by(message_type: :pipeline) ||
+                             @chat.messages.create!(
+                               role: :assistant,
+                               content: {},
+                               message_type: :pipeline,
+                               answered: true
+                             )
 
-          pipeline_message = create_pipeline_message(content)
-          pipeline = create_pipeline(pipeline_message)
+          # Find or create pipeline
+          pipeline = pipeline_message.pipeline || pipeline_message.create_pipeline!(status: :pending)
+
+          # Check if action already exists
+          return if pipeline.pipeline_actions.exists?(action_type: :connector_selection)
+
           create_pipeline_action(pipeline, content)
-        end
-
-        def create_pipeline_message(content)
-          @chat.messages.create!(
-            content: content["action_data"].to_json,
-            role: :assistant,
-            message_type: :pipeline,
-            answered: true
-          )
-        end
-
-        def create_pipeline(message)
-          message.create_pipeline!(status: :pending)
-        end
-
-        def action_exists?(_content)
-          # First check if a pipeline message exists
-          pipeline_message = @chat.messages.find_by(message_type: :pipeline)
-          return false unless pipeline_message
-
-          # Then check if the pipeline has a connection_creation action
-          pipeline_message.pipeline&.pipeline_actions&.exists?(
-            action_type: :connection_creation
-          ) || false
         end
 
         def create_pipeline_action(pipeline, content)
           pipeline.pipeline_actions.create!(
-            action_type: :connection_creation,
+            action_type: :connector_selection,
             position: 0,
-            action_data: content["action_data"].to_json
+            action_data: JSON.parse(content["action_data"].to_json)
           )
         end
 

@@ -22,7 +22,9 @@ http_interactions:
         is the JSON Schema instance your output must adhere to. Include the enclosing
         markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"success\":{\"type\":\"boolean\",\"description\":\"Whether
         the operation was successful\"},\"message\":{\"type\":\"string\",\"description\":\"Success
-        or error message to display to the user\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n--------------\nCompletion:\n--------------\nSample
+        or error message to display to the user\"},\"title\":{\"type\":\"string\",\"description\":\"Title
+        for the chat session\"},\"description\":{\"type\":\"string\",\"description\":\"Detailed
+        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n--------------\nCompletion:\n--------------\nSample
         response\n--------------\n\nAbove, the Completion did not satisfy the constraints
         given in the Instructions.\nError:\n--------------\nFailed to parse. Text:
         \"Sample response\". Error: unexpected token at ''Sample response''\nText:
@@ -45,7 +47,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 27 Jan 2025 16:42:06 GMT
+      - Fri, 07 Feb 2025 16:10:57 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -57,55 +59,55 @@ http_interactions:
       Openai-Organization:
       - user-w9alqgscxndsn8ysy5tgcdlx
       Openai-Processing-Ms:
-      - '569'
+      - '1110'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
-      - '500'
+      - '10000'
       X-Ratelimit-Limit-Tokens:
-      - '30000'
+      - '2000000'
       X-Ratelimit-Remaining-Requests:
-      - '499'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '29532'
+      - '1999494'
       X-Ratelimit-Reset-Requests:
-      - 120ms
+      - 6ms
       X-Ratelimit-Reset-Tokens:
-      - 936ms
+      - 15ms
       X-Request-Id:
-      - req_eda1cacb0217e18c8758a91122354d9a
+      - req_d718632507a20e0a3c33b7b5a906f92d
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=0FWUvOngqF7reUbcQPFWYnu2xfGNvQEvLkiuk4ZWjPs-1737996126-1.0.1.1-7WYYzLA31RY6inQL7QHAMjtonCotY2.4zJb_CqdcDSC76soXEjwwxz_AO2Cj0eapdlZWoeYDhzxQCsXCAwaXLg;
-        path=/; expires=Mon, 27-Jan-25 17:12:06 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=bDxBNzCwP.HKz1ahIpl1SH.MCsr8Fb9qtOWG8rTgfuM-1738944657-1.0.1.1-D2LCnTRdksZTEk1O04Cxu0iMbyz4NC.i6SGOF1snRV0ETFAu_dgNz.__BTQlgIYB2VNsrDeybhmjh2Geu8cefw;
+        path=/; expires=Fri, 07-Feb-25 16:40:57 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=VGottZxGbFvke1cpvkXgyxxXSS2bH2XsZnsEfu.mZA0-1737996126275-0.0.1.1-604800000;
+      - _cfuvid=NxGfTVEk8zx7WLlhS1nIVWyM010SyJMvhFbOJX1Xr6E-1738944657155-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 908a31a7df1717ae-MAA
+      - 90e4a71f88847f7c-MAA
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-AuMTVulvtNDaFvFrCXBjYdvbJUgoV",
+          "id": "chatcmpl-AyLENR8RXdsINdKvau0ChzCxPduoO",
           "object": "chat.completion",
-          "created": 1737996125,
+          "created": 1738944655,
           "model": "gpt-4o-2024-08-06",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "```json\n{\"success\":true,\"message\":\"The operation was completed successfully.\"}\n```",
+                "content": "```json\n{\n  \"success\": true,\n  \"message\": \"Operation completed successfully.\",\n  \"title\": \"Chat Session Initiated\",\n  \"description\": \"The chat session has been successfully initiated without any errors.\"\n}\n```",
                 "refusal": null
               },
               "logprobs": null,
@@ -113,9 +115,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 385,
-            "completion_tokens": 19,
-            "total_tokens": 404,
+            "prompt_tokens": 415,
+            "completion_tokens": 48,
+            "total_tokens": 463,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -130,5 +132,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_50cad350e4"
         }
-  recorded_at: Mon, 27 Jan 2025 16:42:06 GMT
+  recorded_at: Fri, 07 Feb 2025 16:10:57 GMT
 recorded_with: VCR 6.3.1

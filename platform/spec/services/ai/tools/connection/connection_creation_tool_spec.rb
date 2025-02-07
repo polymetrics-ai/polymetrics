@@ -8,7 +8,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
   let(:workspace) { create(:workspace) }
   let(:chat) { create(:chat, workspace: workspace) }
   let(:connector) { create(:connector, workspace: workspace) }
-  let(:pipeline_message) { create(:message, chat: chat, message_type: "pipeline", content: pipeline_content.to_json) }
+  let(:message) { create(:message, chat: chat, message_type: "pipeline", content: {}) }
   let(:pipeline_content) do
     {
       source: {
@@ -17,8 +17,19 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
           { name: "stream1" },
           { name: "stream2" }
         ]
+      },
+      destination: {
+        connector_id: workspace.default_analytics_db.id
       }
     }
+  end
+
+  let(:pipeline) { create(:pipeline, message: message) }
+  let(:connector_selection_action) do
+    create(:pipeline_action,
+           :connector_selection,
+           pipeline: pipeline,
+           action_data: pipeline_content)
   end
 
   let(:mock_schema) do
@@ -70,7 +81,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
     # Mock the schema service to return our mock schema
     allow_any_instance_of(Catalogs::FetchSchemaService).to receive(:call).and_return(mock_schema)
 
-    pipeline_message
+    connector_selection_action
   end
 
   describe "#create_connection" do

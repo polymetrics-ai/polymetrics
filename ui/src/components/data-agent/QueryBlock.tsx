@@ -1,7 +1,19 @@
+import { FC } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
 
-export default function QueryBlock() {
-    const sqlQuery = `SELECT COUNT(DISTINCT user_id) as star_count FROM github_events WHERE repo_name = 'your-org/your-repo' AND event_type = 'WatchEvent' AND created_at >= NOW() - INTERVAL '30 days';`;
+interface QueryBlockProps {
+    query?: {
+        sql: string;
+        explanation?: string;
+    };
+}
+
+const QueryBlock: FC<QueryBlockProps> = ({ query }) => {
+    const sqlQuery = query?.sql ?? `SELECT * FROM table;`;
+
+    if (!sqlQuery) {
+        return null;
+    }
 
     return (
         <div className="mt-4">
@@ -22,6 +34,11 @@ export default function QueryBlock() {
                     </pre>
                 )}
             </Highlight>
+            {query?.explanation && (
+                <p className="text-sm text-emerald-700 mt-2">{query.explanation}</p>
+            )}
         </div>
     );
-} 
+};
+
+export default QueryBlock; 

@@ -18,8 +18,7 @@ module Ai
                - Match requirements with available API connectors and their streams
                - Consider data structure, required fields, and primary keys
             4. For destination:
-               - If user specifies a database, use that configuration
-               - Otherwise, use the default analytics database (marked as default_analytics_db: true)
+               - Use the default analytics database (marked as default_analytics_db: true)
             5. If the query is ambiguous or needs clarification, ask appropriate questions
 
             {format_instructions}

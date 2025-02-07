@@ -14,4 +14,12 @@ export interface Chat {
   message_count: number;
 }
 
-export interface ChatResponse extends Array<Chat> {} 
+export interface ChatResponse extends Array<Chat> {}
+
+export interface ChatMessage {
+  id: number;
+  content: string;
+  role: 'user' | 'system' | 'assistant';
+  message_type: 'text' | 'pipeline' | 'question';
+  created_at: string;
+} 

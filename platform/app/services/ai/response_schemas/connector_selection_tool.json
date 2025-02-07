@@ -26,7 +26,7 @@
             "properties": {
               "action_type": {
                 "type": "string",
-                "enum": ["connection_creation"],
+                "enum": ["connector_selection"],
                 "description": "Type of pipeline action"
               },
               "action_data": {

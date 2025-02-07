@@ -10,10 +10,11 @@ http_interactions:
         on their requirements.\n\nFollow these steps when helping users:\n1. Use the
         connector_selection_tool to find appropriate source and destination connectors\n2.
         If the connector_selection_tool returns a message, pass it to the user else
-        use the connection_creation_tool to create the pipeline\n3. If the user query
-        includes specific data requirements or analysis needs, use the query_generation_tool
-        to create appropriate SQL queries\n4. Always format your responses according
-        to the provided JSON schema\n5. For successful operations:\n  \"success\":
+        use the connection_creation_tool to create the pipeline\n3. If connection_creation_tool
+        creates a new connection, use the sync_initiator_tool to create the syncs\n4.
+        If the user query includes specific data requirements or analysis needs, use
+        the query_generation_tool to create appropriate SQL queries\n5. Always format
+        your responses according to the provided JSON schema\n6. For successful operations:\n  \"success\":
         true,\n  \"message\": \"Clear description of what was accomplished\"\n6. For
         operations needing clarification or with errors:\n   \"success\": false,\n   \"message\":
         \"Clear explanation of what information is needed or what went wrong\"\n\nRemember:\n-
@@ -38,12 +39,16 @@ http_interactions:
         is the JSON Schema instance your output must adhere to. Include the enclosing
         markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"success\":{\"type\":\"boolean\",\"description\":\"Whether
         the operation was successful\"},\"message\":{\"type\":\"string\",\"description\":\"Success
-        or error message to display to the user\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n"}]},{"role":"user","content":[{"type":"text","text":"Create
+        or error message to display to the user\"},\"title\":{\"type\":\"string\",\"description\":\"Title
+        for the chat session\"},\"description\":{\"type\":\"string\",\"description\":\"Detailed
+        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n"}]},{"role":"user","content":[{"type":"text","text":"Create
         a connection between source A and destination B"}]}],"tools":[{"type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","description":"Find
         appropriate connectors based on user query and requirements","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
         query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_connection_connection_creation_tool__create_connection","description":"Creates
         a new connection for query based on the selected connector and streams","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
-        query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_query_query_generation_tool__generate_query","description":"Generates
+        query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_sync_sync_initiator_tool__initiate_sync","description":"Initiates
+        data synchronization for a connection","parameters":{"type":"object","properties":{"connection_id":{"type":"string","description":"ID
+        of the connection to sync"}},"required":["connection_id"]}}},{"type":"function","function":{"name":"ai_tools_query_query_generation_tool__generate_query","description":"Generates
         SQL query based on destination schema and stream schema","parameters":{"type":"object","properties":{"query_requirements":{"type":"string","description":"Natural
         language description of query requirements"}},"required":["query_requirements"]}}}],"tool_choice":"auto","parallel_tool_calls":true,"model":"gpt-4o","temperature":0.7,"n":1}'
     headers:
@@ -63,7 +68,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 29 Jan 2025 12:38:10 GMT
+      - Fri, 07 Feb 2025 17:38:35 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -75,48 +80,48 @@ http_interactions:
       Openai-Organization:
       - user-w9alqgscxndsn8ysy5tgcdlx
       Openai-Processing-Ms:
-      - '1606'
+      - '1209'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
-      - '500'
+      - '10000'
       X-Ratelimit-Limit-Tokens:
-      - '30000'
+      - '2000000'
       X-Ratelimit-Remaining-Requests:
-      - '499'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '29322'
+      - '1999256'
       X-Ratelimit-Reset-Requests:
-      - 120ms
+      - 6ms
       X-Ratelimit-Reset-Tokens:
-      - 1.356s
+      - 22ms
       X-Request-Id:
-      - req_d6ab18f00bb8e89e8441ca27cde2e551
+      - req_77c9f69345d2037c2656a11947444de5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=RA8nggdSvwpA.B1kqvB2WXOSaqDSnpNFEWkbZAZL8WA-1738154290-1.0.1.1-IGRNYxywyVnCEbrpyD5ObP6FmLLEFl_bVfg4vYEy4W1Ebi66wd1hMJMXreBQbaTqrz9LwXE55fy0xp2la3LPnQ;
-        path=/; expires=Wed, 29-Jan-25 13:08:10 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=vC5jNR8_qnkcPFZmvs3dnLem_R4373FxXM_YEVx61dk-1738949915-1.0.1.1-f.QWtoNlhoi8VexnCqx55Ll_emYIzOr_QST2dA7iH0jml3WfhhtnN6eNJAiCHkm4gITU2NBAalGKSZOb5z8vDw;
+        path=/; expires=Fri, 07-Feb-25 18:08:35 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=abXS2iRcx3f1Savxpk5.zWDnwrIskZJy.7LDiM3rdrE-1738154290138-0.0.1.1-604800000;
+      - _cfuvid=zQf8xGhxbsiVz8ou7Gt9g6MMoALK_xgJPonZC1zFg7w-1738949915727-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9099470d3ed77f8b-MAA
+      - 90e5277d3bd51790-MAA
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Av1cWjaPVswBTKem1zyZ97JM9TJPB",
+          "id": "chatcmpl-AyMbCQotSQ8TzCyzvIWDWOJnGI3Us",
           "object": "chat.completion",
-          "created": 1738154288,
+          "created": 1738949914,
           "model": "gpt-4o-2024-08-06",
           "choices": [
             {
@@ -126,7 +131,7 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_cddOaj3Uq21kpP8YUXWALMpN",
+                    "id": "call_KMBnMpCjZQ3iJw8Qyz2Qsr0T",
                     "type": "function",
                     "function": {
                       "name": "ai_tools_connector_connector_selection_tool__find_connectors",
@@ -141,9 +146,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 694,
+            "prompt_tokens": 789,
             "completion_tokens": 31,
-            "total_tokens": 725,
+            "total_tokens": 820,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -158,7 +163,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_50cad350e4"
         }
-  recorded_at: Wed, 29 Jan 2025 12:38:10 GMT
+  recorded_at: Fri, 07 Feb 2025 17:38:35 GMT
 - request:
     method: post
     uri: https://openrouter.ai/api/v1/chat/completions
@@ -168,16 +173,15 @@ http_interactions:
         specialized in creating data pipelines. Your role is to help users set up
         source-to-destination data connections based on their requirements.\n\nAvailable
         connectors in the workspace:\nAPI Connectors:\n\n\nDatabase Connectors:\nConnector
-        Name: Default DuckDB\nConnector ID: 946\nIntegration Type: database\nConnector
+        Name: Default DuckDB\nConnector ID: 1043\nIntegration Type: database\nConnector
         Language: ruby\nDefault Analytics DB: Yes\nConnector Configuration: ---\ndatabase:
-        analytics_79373357.duckdb\ncredentials:\n  path: analytics_79373357.duckdb\n\n\n\nInstructions:\n1.
+        analytics_fc9e91cc.duckdb\ncredentials:\n  path: analytics_fc9e91cc.duckdb\n\n\n\nInstructions:\n1.
         Analyze the user''s query to understand their data integration needs\n2. Identify
         appropriate source which will be an API connector based on the query and destination
         which will be a database connector\n3. For source connectors:\n   - Match
         requirements with available API connectors and their streams\n   - Consider
         data structure, required fields, and primary keys\n4. For destination:\n   -
-        If user specifies a database, use that configuration\n   - Otherwise, use
-        the default analytics database (marked as default_analytics_db: true)\n5.
+        Use the default analytics database (marked as default_analytics_db: true)\n5.
         If the query is ambiguous or needs clarification, ask appropriate questions\n\nYou
         must format your output as a JSON value that adheres to a given \"JSON Schema\"
         instance.\n\n\"JSON Schema\" is a declarative language that allows you to
@@ -196,7 +200,7 @@ http_interactions:
         markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\",\"enum\":[\"message\",\"pipeline_action\"],\"description\":\"Type
         of response - either a message asking for clarification or pipeline action
         configuration\"},\"content\":{\"type\":\"array\",\"items\":{\"oneOf\":[{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Clarification
-        message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"connection_creation\"],\"description\":\"Type
+        message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"connector_selection\"],\"description\":\"Type
         of pipeline action\"},\"action_data\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
         of the source connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
         of the source connector\"},\"streams\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\",\"description\":\"Name
@@ -229,7 +233,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 29 Jan 2025 12:38:10 GMT
+      - Fri, 07 Feb 2025 17:38:36 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -250,7 +254,7 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9099471a797e802b-MAA
+      - 90e5278dff2c17ab-MAA
     body:
       encoding: ASCII-8BIT
       string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
@@ -263,11 +267,11 @@ http_interactions:
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n{\"id\":\"gen-1738154291-9FkvMMWP7sRyIwCQfi5S\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738154291,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\\"type\\\":\\\"message\\\",\\\"content\\\":[{\\\"message\\\":\\\"Could
-        you please specify the exact API connector for 'source A' and the database
-        connector for 'destination B'? Additionally, provide details on the specific
-        streams and fields you wish to integrate.\\\"}]}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":1007,\"completion_tokens\":55,\"total_tokens\":1062}}"
-  recorded_at: Wed, 29 Jan 2025 12:38:18 GMT
+        \        \n\n         \n\n         \n\n         \n\n         \n{\"id\":\"gen-1738949917-qOzfKO8U0U05sCrAxBDW\",\"provider\":\"Novita\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738949917,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\\"type\\\":\\\"message\\\",\\\"content\\\":[{\\\"message\\\":\\\"Could
+        you please provide more details about the API connector and the specific streams
+        you want to use from Source A? Also, are there any particular fields or data
+        structures you need to map to Destination B?\\\"}]}\\n```\",\"refusal\":null}}],\"system_fingerprint\":\"\",\"usage\":{\"prompt_tokens\":999,\"completion_tokens\":57,\"total_tokens\":1056}}"
+  recorded_at: Fri, 07 Feb 2025 17:38:40 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -278,10 +282,11 @@ http_interactions:
         on their requirements.\n\nFollow these steps when helping users:\n1. Use the
         connector_selection_tool to find appropriate source and destination connectors\n2.
         If the connector_selection_tool returns a message, pass it to the user else
-        use the connection_creation_tool to create the pipeline\n3. If the user query
-        includes specific data requirements or analysis needs, use the query_generation_tool
-        to create appropriate SQL queries\n4. Always format your responses according
-        to the provided JSON schema\n5. For successful operations:\n  \"success\":
+        use the connection_creation_tool to create the pipeline\n3. If connection_creation_tool
+        creates a new connection, use the sync_initiator_tool to create the syncs\n4.
+        If the user query includes specific data requirements or analysis needs, use
+        the query_generation_tool to create appropriate SQL queries\n5. Always format
+        your responses according to the provided JSON schema\n6. For successful operations:\n  \"success\":
         true,\n  \"message\": \"Clear description of what was accomplished\"\n6. For
         operations needing clarification or with errors:\n   \"success\": false,\n   \"message\":
         \"Clear explanation of what information is needed or what went wrong\"\n\nRemember:\n-
@@ -306,17 +311,21 @@ http_interactions:
         is the JSON Schema instance your output must adhere to. Include the enclosing
         markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"success\":{\"type\":\"boolean\",\"description\":\"Whether
         the operation was successful\"},\"message\":{\"type\":\"string\",\"description\":\"Success
-        or error message to display to the user\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n"}]},{"role":"user","content":[{"type":"text","text":"Create
-        a connection between source A and destination B"}]},{"role":"assistant","tool_calls":[{"id":"call_cddOaj3Uq21kpP8YUXWALMpN","type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","arguments":"{\"query\":\"Create
-        a connection between source A and destination B\"}"}}]},{"role":"tool","tool_call_id":"call_cddOaj3Uq21kpP8YUXWALMpN","content":[{"type":"text","text":"{:status=\u003e:success,
+        or error message to display to the user\"},\"title\":{\"type\":\"string\",\"description\":\"Title
+        for the chat session\"},\"description\":{\"type\":\"string\",\"description\":\"Detailed
+        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n"}]},{"role":"user","content":[{"type":"text","text":"Create
+        a connection between source A and destination B"}]},{"role":"assistant","tool_calls":[{"id":"call_KMBnMpCjZQ3iJw8Qyz2Qsr0T","type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","arguments":"{\"query\":\"Create
+        a connection between source A and destination B\"}"}}]},{"role":"tool","tool_call_id":"call_KMBnMpCjZQ3iJw8Qyz2Qsr0T","content":[{"type":"text","text":"{:status=\u003e:success,
         :data=\u003e{\"type\"=\u003e\"message\", \"content\"=\u003e[{\"message\"=\u003e\"Could
-        you please specify the exact API connector for ''source A'' and the database
-        connector for ''destination B''? Additionally, provide details on the specific
-        streams and fields you wish to integrate.\"}]}}"}]}],"tools":[{"type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","description":"Find
+        you please provide more details about the API connector and the specific streams
+        you want to use from Source A? Also, are there any particular fields or data
+        structures you need to map to Destination B?\"}]}}"}]}],"tools":[{"type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","description":"Find
         appropriate connectors based on user query and requirements","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
         query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_connection_connection_creation_tool__create_connection","description":"Creates
         a new connection for query based on the selected connector and streams","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
-        query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_query_query_generation_tool__generate_query","description":"Generates
+        query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_sync_sync_initiator_tool__initiate_sync","description":"Initiates
+        data synchronization for a connection","parameters":{"type":"object","properties":{"connection_id":{"type":"string","description":"ID
+        of the connection to sync"}},"required":["connection_id"]}}},{"type":"function","function":{"name":"ai_tools_query_query_generation_tool__generate_query","description":"Generates
         SQL query based on destination schema and stream schema","parameters":{"type":"object","properties":{"query_requirements":{"type":"string","description":"Natural
         language description of query requirements"}},"required":["query_requirements"]}}}],"tool_choice":"auto","parallel_tool_calls":true,"model":"gpt-4o","temperature":0.7,"n":1}'
     headers:
@@ -336,7 +345,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 29 Jan 2025 12:38:26 GMT
+      - Fri, 07 Feb 2025 17:38:43 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -348,55 +357,55 @@ http_interactions:
       Openai-Organization:
       - user-w9alqgscxndsn8ysy5tgcdlx
       Openai-Processing-Ms:
-      - '7318'
+      - '2391'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
-      - '500'
+      - '10000'
       X-Ratelimit-Limit-Tokens:
-      - '30000'
+      - '2000000'
       X-Ratelimit-Remaining-Requests:
-      - '499'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '29251'
+      - '1999184'
       X-Ratelimit-Reset-Requests:
-      - 120ms
+      - 6ms
       X-Ratelimit-Reset-Tokens:
-      - 1.498s
+      - 24ms
       X-Request-Id:
-      - req_4c1ffae810145e2b67ffa93825da86fb
+      - req_01370410cdf4f27758a2f14c8918f46b
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=wimYzyDegtudcq_QGsXWcHuS31yRlPCbdco0EzvBWU0-1738154306-1.0.1.1-Kf6hYZ2Gb8EwIDpF.NBuSPKjxBditYT3U48hwx9v.6WtRPYEY_YBBYXvKvNYSW13EyUfv.8c3FwVEKtqy8wvNA;
-        path=/; expires=Wed, 29-Jan-25 13:08:26 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=rCX56qAY2CScilYsWd_cClr_ByCnSCjPTzanDk8.98g-1738949923-1.0.1.1-GRFXRUUL.u_2aSBnOC5rw99yI_8DJnylhRzQAHcYHIqFHAof0RlcMuBX_D.5m3GVbXX.vvbK9a6qE.NIiemxKg;
+        path=/; expires=Fri, 07-Feb-25 18:08:43 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=Gv6d_R.x5ZMI.xh3wJsReJQoAj4TPOdM82SRES7BJlo-1738154306596-0.0.1.1-604800000;
+      - _cfuvid=Vqu8GGaIvHzJM2TqmsFpNVmzHgqyMmYRIU8xwx6.Yfw-1738949923574-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9099474fbb16a923-MAA
+      - 90e527ace8fd7ea4-MAA
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Av1ciJPHSnIbtDqt59LZCKc23XARO",
+          "id": "chatcmpl-AyMbJaumwN9dNXA0jwosiSYMrsq7p",
           "object": "chat.completion",
-          "created": 1738154300,
+          "created": 1738949921,
           "model": "gpt-4o-2024-08-06",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "```json\n{\"success\":false,\"message\":\"Could you please specify the exact API connector for 'source A' and the database connector for 'destination B'? Additionally, provide details on the specific streams and fields you wish to integrate.\"}\n```",
+                "content": "```json\n{\n  \"success\": false,\n  \"message\": \"Could you please provide more details about the API connector and the specific streams you want to use from Source A? Also, are there any particular fields or data structures you need to map to Destination B?\",\n  \"title\": \"Connection Setup Clarification Needed\",\n  \"description\": \"In order to create a connection between source A and destination B, additional details are needed regarding the API connector, specific streams, and any specific fields or data structures to be mapped.\"\n}\n```",
                 "refusal": null
               },
               "logprobs": null,
@@ -404,9 +413,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 800,
-            "completion_tokens": 51,
-            "total_tokens": 851,
+            "prompt_tokens": 898,
+            "completion_tokens": 111,
+            "total_tokens": 1009,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -421,5 +430,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_50cad350e4"
         }
-  recorded_at: Wed, 29 Jan 2025 12:38:26 GMT
+  recorded_at: Fri, 07 Feb 2025 17:38:43 GMT
 recorded_with: VCR 6.3.1

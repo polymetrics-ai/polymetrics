@@ -153,28 +153,28 @@ export const DEFAULT_CONNECTOR_ICON = '/connectors/default.svg';
 
 export const dataAgentSteps = [
     {
-        id: 'connector-identified',
-        title: 'Connector Identified',
-        description: 'Required connector has been identified for your request'
+        id: 'connector-selected',
+        title: 'Connector Selected',
+        description: 'Source and destination connectors identified'
     },
     {
-        id: 'connector-configured',
-        title: 'Connector Configuration',
-        description: 'Connection parameters have been prepared'
+        id: 'connection-created',
+        title: 'Connection Created',
+        description: 'Data pipeline connection established'
     },
     {
-        id: 'sync-initiated',
-        title: 'Sync Initiated',
-        description: 'Starting initial data synchronization'
+        id: 'sync-initialized',
+        title: 'Sync Initialized',
+        description: 'Data synchronization process started'
     },
     {
         id: 'query-generated',
         title: 'Query Generated',
-        description: 'SQL query created to fetch the requested information'
+        description: 'Analytical query created for execution'
     },
     {
-        id: 'data-presented',
-        title: 'Data Presented',
-        description: 'Query results formatted into a table view'
+        id: 'query-executed',
+        title: 'Query Executed',
+        description: 'Results available for analysis'
     }
 ] as const;

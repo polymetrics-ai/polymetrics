@@ -34,9 +34,10 @@ module Ai
 
         def extract_connection_params
           pipeline_message = @chat.messages.where(message_type: "pipeline").last
+          content = pipeline_message.pipeline.pipeline_actions.where(action_type: :connector_selection).last.action_data
           return {} if pipeline_message.blank?
 
-          JSON.parse(pipeline_message.content)
+          content
         end
 
         def extract_selected_streams(connection_params)
@@ -51,8 +52,11 @@ module Ai
 
           connection = ::Connection.find(@connection_id)
 
-          add_connection_to_chat(connection)
-          build_success_response(connection, selected_streams)
+          if connection.persisted?
+            add_connection_to_chat(connection)
+            create_connection_pipeline_action(connection, selected_streams)
+            build_success_response(connection, selected_streams)
+          end
         rescue ActiveRecord::RecordInvalid => e
           handle_existing_connection(e, selected_streams)
         end
@@ -81,6 +85,7 @@ module Ai
           if error.message.include?("Name has already been taken")
             existing_connection = find_existing_connection(error.record)
             add_connection_to_chat(existing_connection)
+            create_connection_pipeline_action(existing_connection, selected_streams)
             build_success_response(existing_connection, selected_streams)
           else
             handle_error(error.message)
@@ -106,6 +111,24 @@ module Ai
           ::Connector.find_by(
             id: connector_id,
             workspace_id: workspace_id
+          )
+        end
+
+        def create_connection_pipeline_action(connection, streams)
+          pipeline_message = @chat.messages.pipeline.last
+          return unless pipeline_message&.pipeline
+
+          pipeline = pipeline_message.pipeline
+          next_position = pipeline.pipeline_actions.maximum(:position).to_i + 1
+
+          pipeline.pipeline_actions.create!(
+            action_type: :connection_creation,
+            position: next_position,
+            action_data: {
+              connection_id: connection.id,
+              streams: streams,
+              created_at: Time.current.iso8601
+            }
           )
         end
       end
