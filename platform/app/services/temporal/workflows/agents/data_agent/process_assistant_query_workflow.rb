@@ -5,6 +5,7 @@ module Temporal
     module Agents
       module DataAgent
         class ProcessAssistantQueryWorkflow < ::Temporal::Workflow
+          # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           def execute(chat_id)
             @chat = Chat.find(chat_id)
             @pipeline = @chat.messages.find_by(message_type: :pipeline)&.pipeline
@@ -35,6 +36,7 @@ module Temporal
 
             @processed_result
           end
+          # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
           private
 

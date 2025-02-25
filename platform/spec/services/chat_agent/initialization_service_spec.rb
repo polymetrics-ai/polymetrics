@@ -22,7 +22,9 @@ RSpec.describe ChatAgent::InitializationService do
       expect(chat.workspace_id).to eq(workspace.id)
       expect(chat.user_id).to eq(user.id)
       expect(chat.title).to eq(title)
-      expect(chat.description).to eq("This chat session is dedicated to managing and executing data integration tasks through the Data Agent. It tracks ETL pipelines, connection configurations, and query executions.")
+      expect(chat.description).to eq("This chat session is dedicated to managing and executing data " \
+                                     "integration tasks through the Data Agent. It tracks ETL pipelines, " \
+                                     "connection configurations, and query executions.")
       expect(chat.status).to eq("active")
     end
 

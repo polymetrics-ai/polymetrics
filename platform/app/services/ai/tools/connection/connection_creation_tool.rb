@@ -3,6 +3,7 @@
 module Ai
   module Tools
     module Connection
+      # rubocop:disable Metrics/ClassLength
       class ConnectionCreationTool < BaseTool
         define_function(
           :create_connection,
@@ -184,6 +185,7 @@ module Ai
           parts.join("\n")
         end
       end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end

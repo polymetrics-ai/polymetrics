@@ -5,6 +5,7 @@ module Temporal
     module Agents
       module DataAgent
         class SqlGenerationActivity < ::Temporal::Activity
+          # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           def execute(chat_id:, query_requirements:)
             chat = Chat.find(chat_id)
             pipeline = chat.messages.find_by(message_type: :pipeline)&.pipeline
@@ -32,6 +33,7 @@ module Temporal
           rescue StandardError => e
             { status: :error, error: e.message }
           end
+          # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
           private
 

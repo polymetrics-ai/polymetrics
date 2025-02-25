@@ -5,6 +5,7 @@ module Temporal
     module Agents
       module DataAgent
         class CheckConnectionHealthActivity < ::Temporal::Activity
+          # rubocop:disable Metrics/CyclomaticComplexity
           def execute(chat_id:)
             chat = Chat.find(chat_id)
             recently_synced_healthy_connection_ids = []
@@ -23,6 +24,7 @@ module Temporal
           rescue StandardError
             { recently_synced_healthy_connection_ids: [] }
           end
+          # rubocop:enable Metrics/CyclomaticComplexity
         end
       end
     end

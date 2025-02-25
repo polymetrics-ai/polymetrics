@@ -5,6 +5,7 @@ module Temporal
     module Agents
       module DataAgent
         class ReadDatabaseDataWorkflow < ::Temporal::Workflow
+          # rubocop:disable Metrics/MethodLength
           def execute(connection_id, query, parent_workflow_classname)
             connection = ::Connection.find(connection_id)
 
@@ -28,6 +29,7 @@ module Temporal
 
             { status: :executed }
           end
+          # rubocop:enable Metrics/MethodLength
         end
       end
     end

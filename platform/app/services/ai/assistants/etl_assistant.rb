@@ -76,6 +76,7 @@ module Ai
         )
       end
 
+      # rubocop:disable Metrics/MethodLength
       def format_response(_response)
         last_message = @assistant.messages.last
 
@@ -102,6 +103,7 @@ module Ai
           tool_calls: @tool_calls
         }
       end
+      # rubocop:enable Metrics/MethodLength
     end
   end
 end

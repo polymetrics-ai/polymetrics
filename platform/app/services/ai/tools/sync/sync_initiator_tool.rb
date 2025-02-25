@@ -42,9 +42,7 @@ module Ai
         end
 
         def process_connection_sync(connection)
-          unless recently_synced_healthy_connection?(connection)
-            workflow_run_id = Connections::StartDataSyncService.new(connection).call
-          end
+          workflow_run_id = Connections::StartDataSyncService.new(connection).call unless recently_synced_healthy_connection?(connection)
           build_connection_result(connection, workflow_run_id)
         rescue StandardError => e
           build_connection_error(connection, e)

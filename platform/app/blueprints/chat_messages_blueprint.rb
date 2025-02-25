@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class ChatMessagesBlueprint < Blueprinter::Base
   identifier :id
 
@@ -90,6 +91,7 @@ class ChatMessagesBlueprint < Blueprinter::Base
     base_action.merge(data: {})
   end
 
+  # rubocop:disable Metrics/AbcSize
   def self.connector_selection_data(action_data, message)
     # Collect all connector IDs from all action data entries
     connector_ids = action_data.flat_map do |data|
@@ -106,6 +108,7 @@ class ChatMessagesBlueprint < Blueprinter::Base
       streams: action_data.flat_map { |d| d.dig("source", "streams") }.compact.uniq
     }
   end
+  # rubocop:enable Metrics/AbcSize
 
   def self.connection_creation_data(action_data, message)
     connection = message.chat.connections.find_by(id: action_data["connection_id"])
@@ -126,6 +129,7 @@ class ChatMessagesBlueprint < Blueprinter::Base
     }
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
   def self.sync_initialization_data(action, message)
     connections = message.chat.connections
     return {} unless connections.any?
@@ -150,6 +154,7 @@ class ChatMessagesBlueprint < Blueprinter::Base
       }
     end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
   def self.fetch_ordered_connectors(workspace, connector_ids)
     return [] if connector_ids.empty?
@@ -170,3 +175,4 @@ class ChatMessagesBlueprint < Blueprinter::Base
     }
   end
 end
+# rubocop:enable Metrics/ClassLength

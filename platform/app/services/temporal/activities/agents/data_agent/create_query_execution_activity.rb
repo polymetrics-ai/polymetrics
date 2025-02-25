@@ -5,7 +5,8 @@ module Temporal
     module Agents
       module DataAgent
         class CreateQueryExecutionActivity < ::Temporal::Activity
-          def execute(pipeline_id:, workflow_id:, query:, response_data: {})
+          # rubocop:disable Metrics/MethodLength
+          def execute(pipeline_id:, workflow_id:, query:)
             pipeline = Pipeline.find(pipeline_id)
             store_service = ::WorkflowStoreService.new
 
@@ -28,6 +29,7 @@ module Temporal
           rescue StandardError => e
             { status: :error, error: e.message }
           end
+          # rubocop:enable Metrics/MethodLength
 
           private
 

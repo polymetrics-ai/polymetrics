@@ -16,7 +16,7 @@ RSpec.describe Chat, type: :model do
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_presence_of(:status) }
 
-    context "description length validation" do
+    context "with description length validation" do
       it "allows blank description" do
         chat = build(:chat, description: nil)
         expect(chat).to be_valid

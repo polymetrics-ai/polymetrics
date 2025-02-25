@@ -5,6 +5,7 @@ module Temporal
     module Agents
       module DataAgent
         class ChatProcessingWorkflow < ::Temporal::Workflow
+          # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           def execute(params)
             initialize_workflow_state(params)
 
@@ -39,6 +40,7 @@ module Temporal
               handle_error(e.message)
             end
           end
+          # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
           private
 

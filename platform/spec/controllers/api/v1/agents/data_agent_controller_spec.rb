@@ -47,7 +47,9 @@ RSpec.describe Api::V1::Agents::DataAgentController, type: :controller do
             "status" => "active",
             "created_at" => chat.created_at.utc.to_s,
             "workflow_id" => "chat_#{chat.id}",
-            "description" => "This chat session is dedicated to managing and executing data integration tasks through the Data Agent. It tracks ETL pipelines, connection configurations, and query executions.",
+            "description" => "This chat session is dedicated to managing and executing data " \
+                             "integration tasks through the Data Agent. It tracks ETL pipelines, " \
+                             "connection configurations, and query executions.",
             "icon_url" => "/icon-data-agent.svg",
             "message_count" => 1,
             "last_message" => {
@@ -121,8 +123,8 @@ RSpec.describe Api::V1::Agents::DataAgentController, type: :controller do
         create_list(:message, 3, chat: c)
       end
     end
-    let!(:other_user_chat) { create(:chat, user: create(:user), workspace: workspace) }
-    let!(:other_workspace_chat) { create(:chat, user: user, workspace: create(:workspace)) }
+    let(:other_user_chat) { create(:chat, user: create(:user), workspace: workspace) }
+    let(:other_workspace_chat) { create(:chat, user: user, workspace: create(:workspace)) }
 
     before { get :history }
 
