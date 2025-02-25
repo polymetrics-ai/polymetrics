@@ -16,15 +16,7 @@ class ChatBlueprint < Blueprinter::Base
   end
 
   field :last_message do |chat|
-    last_message = chat.messages.last
-    next nil unless last_message
-
-    {
-      content: parse_content(last_message),
-      role: last_message.role,
-      message_type: last_message.message_type,
-      created_at: last_message.created_at
-    }
+    format_last_message(chat)
   end
 
   view :history do
@@ -33,15 +25,7 @@ class ChatBlueprint < Blueprinter::Base
       chat.messages.size
     end
     field :last_message do |chat|
-      last_message = chat.messages.last
-      next nil unless last_message
-
-      {
-        content: parse_content(last_message),
-        role: last_message.role,
-        message_type: last_message.message_type,
-        created_at: last_message.created_at
-      }
+      format_last_message(chat)
     end
   end
 
@@ -51,15 +35,7 @@ class ChatBlueprint < Blueprinter::Base
       options[:workflow_id]
     end
     field :last_message do |chat|
-      last_message = chat.messages.last
-      next nil unless last_message
-
-      {
-        content: parse_content(last_message),
-        role: last_message.role,
-        message_type: last_message.message_type,
-        created_at: last_message.created_at
-      }
+      format_last_message(chat)
     end
   end
 
@@ -77,5 +53,17 @@ class ChatBlueprint < Blueprinter::Base
     rescue JSON::ParserError
       message.content
     end
+  end
+
+  def self.format_last_message(chat)
+    last_message = chat.messages.last
+    return nil unless last_message
+
+    {
+      content: parse_content(last_message),
+      role: last_message.role,
+      message_type: last_message.message_type,
+      created_at: last_message.created_at
+    }
   end
 end

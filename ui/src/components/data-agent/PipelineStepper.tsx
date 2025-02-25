@@ -51,8 +51,8 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({ stepper, pipel
               <React.Fragment key={step.id}>
                 <li className="flex items-start gap-4">
                   <div className="flex flex-col items-center">
-                    <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center ${
-                      stepper.current.id === step.id ? 'bg-white border-2 border-emerald-500' : 
+                    <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-emerald-500${
+                      step.id ? 'bg-white border-2 border-emerald-500' : 
                       index < filteredSteps.indexOf(stepper.current) ? 'bg-emerald-500 text-white' : 
                       'bg-white border-2 border-slate-300'
                     }`}>
@@ -102,9 +102,10 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({ stepper, pipel
                           index < filteredSteps.indexOf(stepper.current) ? 'bg-emerald-500' : 'bg-transparent'
                         }`}
                         style={{
-                          height: step.id === 'connection-created' ? '120px' :
-                                 step.id === 'sync-initialized' ? '140px' :
-                                 '100px',
+                          height: 'auto',
+                          minHeight: step.id === 'connection-created' ? '120px' :
+                                    step.id === 'sync-initialized' ? '140px' :
+                                    '100px',
                           marginTop: '8px',
                           marginBottom: '-8px',
                           zIndex: 1

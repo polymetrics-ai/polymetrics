@@ -28,6 +28,10 @@ module Temporal
             )
 
             { status: :executed }
+          rescue ActiveRecord::RecordNotFound => e
+            { status: :error, error: "Connection not found: #{e.message}" }
+          rescue StandardError => e
+            { status: :error, error: "Failed to execute query: #{e.message}" }
           end
           # rubocop:enable Metrics/MethodLength
         end

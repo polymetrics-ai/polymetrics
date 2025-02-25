@@ -22,35 +22,49 @@ module RubyConnectors
           workflow_store = Services::Redis::WorkflowStoreService.new
 
           begin
-            connector_class = Object.const_get("RubyConnectors::#{params["connector_class_name"].capitalize}Connector::Reader")
-            reader = connector_class.new(params["configuration"])
-
-            result = reader.read(
-              query: params["query"],
-              offset: params["offset"].to_i,
-              limit: params["limit"].to_i
-            )
+            result = read_data_from_connector(params)
 
             workflow_key = "#{params["parent_workflow_id"]}:#{params["offset"]}-#{params["limit"]}"
             workflow_store.store_workflow_data(workflow_key, result)
 
-            { 
-              status: "success", 
-              workflow_id: params["workflow_id"],
-              workflow_key: workflow_key,
-              offset: params["offset"].to_i,
-              limit: params["limit"].to_i,
-              total_records: result[:total_records]
-            }
+            build_success_response(params, workflow_key, result)
           rescue StandardError => e
             ::Temporal.logger.error("ReadDatabaseDataActivity failed: #{e.message}")
-            {
-              workflow_id: params["workflow_id"],
-              offset: params["offset"].to_i,
-              error: e.message,
-              status: "error"
-            }
+            build_error_response(params, e)
           end
+        end
+
+        private
+
+        def read_data_from_connector(params)
+          connector_class = Object.const_get("RubyConnectors::#{params["connector_class_name"].capitalize}Connector::Reader")
+          reader = connector_class.new(params["configuration"])
+
+          reader.read(
+            query: params["query"],
+            offset: params["offset"].to_i,
+            limit: params["limit"].to_i
+          )
+        end
+
+        def build_success_response(params, workflow_key, result)
+          {
+            status: "success",
+            workflow_id: params["workflow_id"],
+            workflow_key: workflow_key,
+            offset: params["offset"].to_i,
+            limit: params["limit"].to_i,
+            total_records: result[:total_records]
+          }
+        end
+
+        def build_error_response(params, error)
+          {
+            workflow_id: params["workflow_id"],
+            offset: params["offset"].to_i,
+            error: error.message,
+            status: "error"
+          }
         end
       end
     end

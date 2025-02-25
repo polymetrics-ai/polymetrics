@@ -6,7 +6,8 @@ module Temporal
       module DataAgent
         class CreateQueryExecutionActivity < ::Temporal::Activity
           # rubocop:disable Metrics/MethodLength
-          def execute(pipeline_id:, workflow_id:, query:)
+          def execute(pipeline_id:, workflow_id:, query:, response_data: {})
+            @response_data = response_data.with_indifferent_access
             pipeline = Pipeline.find(pipeline_id)
             store_service = ::WorkflowStoreService.new
 

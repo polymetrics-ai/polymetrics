@@ -73,6 +73,9 @@ class Connection < ApplicationRecord
     notify_chat_workflows
   end
 
+  # TODO: This is a temporary solution to notify the chat workflows that the connection is healthy.
+  # We need to find a better way to do this.
+  # We need to move this to a workflow.
   def notify_chat_workflows
     chats.each do |chat|
       next if chat.status != "active"

@@ -62,10 +62,10 @@ RSpec.describe Temporal::Workflows::Agents::DataAgent::ReadDatabaseDataWorkflow 
         allow(Connection).to receive(:find).and_raise(ActiveRecord::RecordNotFound)
       end
 
-      it "raises RecordNotFound error" do
-        expect do
-          workflow.execute(-1, query, parent_workflow_classname)
-        end.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns an error status with the appropriate message" do
+        result = workflow.execute(-1, query, parent_workflow_classname)
+        expect(result[:status]).to eq(:error)
+        expect(result[:error]).to include("Connection not found: ActiveRecord::RecordNotFound")
       end
     end
 
@@ -75,10 +75,10 @@ RSpec.describe Temporal::Workflows::Agents::DataAgent::ReadDatabaseDataWorkflow 
           .and_raise(StandardError.new("Workflow start failed"))
       end
 
-      it "raises the error" do
-        expect do
-          workflow.execute(connection.id, query, parent_workflow_classname)
-        end.to raise_error(StandardError, "Workflow start failed")
+      it "returns an error status with the appropriate message" do
+        result = workflow.execute(connection.id, query, parent_workflow_classname)
+        expect(result[:status]).to eq(:error)
+        expect(result[:error]).to eq("Failed to execute query: Workflow start failed")
       end
     end
   end

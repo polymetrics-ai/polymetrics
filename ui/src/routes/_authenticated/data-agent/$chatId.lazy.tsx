@@ -73,6 +73,11 @@ function ChatView() {
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-6 pr-4">
+              {messages?.length === 0 && !isMessagesLoading && (
+                <div className="text-center text-slate-500">
+                  No messages yet. Start the conversation by asking a question.
+                </div>
+              )}
               {messages?.map((message) => {
                 if (message.role === 'user') {
                   return (
