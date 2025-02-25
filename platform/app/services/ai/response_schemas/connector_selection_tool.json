@@ -26,77 +26,82 @@
             "properties": {
               "action_type": {
                 "type": "string",
-                "enum": ["connection_creation"],
+                "enum": ["connector_selection"],
                 "description": "Type of pipeline action"
               },
               "action_data": {
-                "type": "object",
-                "properties": {
-                  "source": {
-                    "type": "object",
-                    "properties": {
-                      "connector_name": {
-                        "type": "string",
-                        "description": "Name of the source connector"
-                      },
-                      "connector_id": {
-                        "type": "string",
-                        "description": "ID of the source connector"
-                      },
-                      "streams": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "type": "string",
-                              "description": "Name of the stream"
-                            },
-                            "fields": {
-                              "type": "object",
-                              "properties": {
-                                "required": {
-                                  "type": "array",
-                                  "items": { "type": "string" }
-                                },
-                                "optional": {
-                                  "type": "array",
-                                  "items": { "type": "string" }
-                                },
-                                "primary_key": {
-                                  "type": "array",
-                                  "items": { "type": "string" }
-                                }
+                "type": "array",
+                "description": "Array of source and destination connectors based on user query",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "object",
+                      "properties": {
+                        "connector_name": {
+                          "type": "string",
+                          "description": "Name of the source connector"
+                        },
+                        "connector_id": {
+                          "type": "string",
+                          "description": "ID of the source connector"
+                        },
+                        "streams": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the stream"
                               },
-                              "required": ["required", "optional", "primary_key"]
-                            }
-                          },
-                          "required": ["name", "fields"]
+                              "fields": {
+                                "type": "object",
+                                "properties": {
+                                  "required": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                  },
+                                  "optional": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                  },
+                                  "primary_key": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                  }
+                                },
+                                "required": ["required", "optional", "primary_key"]
+                              }
+                            },
+                            "required": ["name", "fields"]
+                          }
                         }
-                      }
+                      },
+                      "required": ["connector_name", "connector_id", "streams"]
                     },
-                    "required": ["connector_name", "connector_id", "streams"]
+                    "destination": {
+                      "type": "object",
+                      "properties": {
+                        "connector_name": {
+                          "type": "string",
+                          "description": "Name of the destination database connector"
+                        },
+                        "connector_id": {
+                          "type": "string",
+                          "description": "ID of the destination database connector"
+                        },
+                        "is_default_analytics_db": {
+                          "type": "boolean",
+                          "description": "Whether to use default analytics database"
+                        }
+                      },
+                      "required": ["connector_name", "connector_id"]
+                    }
                   },
-                  "destination": {
-                    "type": "object",
-                    "properties": {
-                      "connector_name": {
-                        "type": "string",
-                        "description": "Name of the destination database connector"
-                      },
-                      "connector_id": {
-                        "type": "string",
-                        "description": "ID of the destination database connector"
-                      },
-                      "is_default_analytics_db": {
-                        "type": "boolean",
-                        "description": "Whether to use default analytics database"
-                      }
-                    },
-                    "required": ["connector_name", "connector_id"]
-                  }
+                  "required": ["source", "destination"]
                 },
-                "required": ["source", "destination"]
+                "minItems": 1
               }
             },
             "required": ["action_type", "action_data"],

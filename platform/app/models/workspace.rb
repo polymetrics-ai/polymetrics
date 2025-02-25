@@ -6,6 +6,7 @@ class Workspace < ApplicationRecord
   has_many :users, through: :user_workspace_memberships
   has_many :connectors, dependent: :destroy
   has_many :connections, dependent: :destroy
+  has_many :chats, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 255 }
   validates :name, uniqueness: { scope: :organization_id, message: :unique_within_organization }

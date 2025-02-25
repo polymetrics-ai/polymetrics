@@ -32,7 +32,7 @@ module Connectors
     def base_definition(connector)
       {
         name: connector["name"],
-        type: connector["type"],
+        integration_type: connector["integration_type"],
         language: connector["language"],
         class_name: connector["class_name"],
         operations: connector["operations"],

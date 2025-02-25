@@ -88,8 +88,9 @@ module Temporal
 
           # Use processes instead of threads, with fewer processes than threads
           # This may fail as we are not connecting to ActiveRecord in each process need to validate with multiple users
-          # rspec fails on in_processes
-          # Hypothesis that needs to be validated: is in_processes is working without restablishing connection to ActiveRecord may be due to temporal
+          # rspec fails in in_processes
+          # Hypothesis that needs to be validated: is in_processes is working without
+          # re-establishing connection to ActiveRecord may be due to temporal
           Parallel.each(chunk, parallel_options) do |record_id|
             sync_read_record = SyncReadRecord.find(record_id)
             activity.heartbeat

@@ -3,6 +3,7 @@
 class Sync < ApplicationRecord
   belongs_to :connection
   has_many :sync_runs, dependent: :destroy
+  has_many :sync_read_records, dependent: :destroy
 
   enum status: { synced: 0, syncing: 1, queued: 2, error: 3, action_required: 4 }
   enum sync_mode: {

@@ -56,7 +56,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 29 Jan 2025 12:39:34 GMT
+      - Fri, 07 Feb 2025 15:53:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -77,7 +77,7 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 90994923daf0802b-MAA
+      - 90e48d0ec8d0b297-MAA
     body:
       encoding: ASCII-8BIT
       string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
@@ -103,17 +103,14 @@ http_interactions:
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n{\"id\":\"gen-1738154374-pAkEYr7rtikmCapUJzm2\",\"provider\":\"Together\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738154374,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n{\"id\":\"gen-1738943588-DIFror7KbnO4TsjP9qsV\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738943588,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
         \ \\\"type\\\": \\\"pipeline_action\\\",\\n  \\\"content\\\": [\\n    {\\n
         \     \\\"action_type\\\": \\\"query_execution\\\",\\n      \\\"action_data\\\":
         {\\n        \\\"query\\\": \\\"SELECT category, SUM(sale_amount) AS total_sales
-        FROM ecommerce.sales GROUP BY category ORDER BY total_sales DESC;\\\",\\n
-        \       \\\"explanation\\\": \\\"This SQL query calculates the total sales
-        by product category by summing up the 'sale_amount' for each 'category' in
-        the 'sales' table. The results are grouped by 'category' and ordered by 'total_sales'
-        in descending order.\\\",\\n        \\\"warnings\\\": [],\\n        \\\"connection_id\\\":
-        \\\"\\\"\\n      }\\n    }\\n  ]\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":708,\"completion_tokens\":147,\"total_tokens\":855}}"
-  recorded_at: Wed, 29 Jan 2025 12:39:49 GMT
+        FROM ecommerce.sales GROUP BY category;\\\",\\n        \\\"explanation\\\":
+        \\\"This query calculates the total sales by product category. It selects
+        the 'category' column and sums the 'sale_amount' for each category, grouping
+        the results by 'category'.\\\",\\n        \\\"warnings\\\": [],\\n        \\\"connection_id\\\":
+        \\\"your_connection_id_here\\\"\\n      }\\n    }\\n  ]\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":709,\"completion_tokens\":134,\"total_tokens\":843}}"
+  recorded_at: Fri, 07 Feb 2025 15:53:49 GMT
 recorded_with: VCR 6.3.1

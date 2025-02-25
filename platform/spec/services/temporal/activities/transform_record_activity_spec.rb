@@ -44,7 +44,8 @@ RSpec.describe Temporal::Activities::TransformRecordActivity do
 
         expect(result).to eq({
                                success: false,
-                               error: "No records found to transform for sync run #{sync_run.id}"
+                               error: "No records found to transform for sync run #{sync_run.id}",
+                               type: :no_records
                              })
       end
     end

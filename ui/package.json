@@ -40,6 +40,7 @@
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hook-form": "^7.53.0",
+        "shadcn": "2.1.8",
         "tailwind-merge": "^2.5.2",
         "tailwindcss-animate": "^1.0.7",
         "zod": "^3.23.8",

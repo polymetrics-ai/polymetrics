@@ -98,47 +98,47 @@ module Ai
 
         def handle_pipeline_action(parsed_response)
           parsed_response["content"].each do |content|
-            next unless content["action_type"] == "query_execution"
+            next unless content["action_type"] == "query_generation"
 
             create_pipeline_for_content(content)
           end
         end
 
         def create_pipeline_for_content(content)
-          return if action_exists?
+          return if action_exists?(content)
 
-          pipeline_message = create_pipeline_message(content)
-          pipeline = create_pipeline(pipeline_message)
+          pipeline_message = find_or_create_pipeline_message(content)
+          pipeline = pipeline_message.pipeline || pipeline_message.create_pipeline!(status: :pending)
           create_pipeline_action(pipeline, content)
         end
 
-        def create_pipeline_message(content)
-          @chat.messages.create!(
-            content: content["action_data"].to_json,
-            role: :assistant,
-            message_type: :pipeline,
-            answered: true
+        def find_or_create_pipeline_message(_content)
+          @chat.messages.find_by(message_type: :pipeline) ||
+            @chat.messages.create!(
+              role: :assistant,
+              content: {},
+              message_type: :pipeline,
+              answered: true
+            )
+        end
+
+        def action_exists?(content)
+          pipeline_message = @chat.messages.find_by(message_type: :pipeline)
+          return false unless pipeline_message&.pipeline
+
+          pipeline_message.pipeline.pipeline_actions.exists?(
+            action_type: :query_generation,
+            action_data: JSON.parse(content["action_data"].to_json)
           )
         end
 
-        def create_pipeline(message)
-          message.create_pipeline!(status: :pending)
-        end
-
-        def action_exists?
-          pipeline_message = @chat.messages.find_by(message_type: :pipeline)
-          return false unless pipeline_message
-
-          pipeline_message.pipeline&.pipeline_actions&.exists?(
-            action_type: :query_execution
-          ) || false
-        end
-
         def create_pipeline_action(pipeline, content)
+          next_position = pipeline.pipeline_actions.maximum(:position).to_i + 1
+
           pipeline.pipeline_actions.create!(
-            action_type: :query_execution,
-            position: 0,
-            action_data: content["action_data"].to_json
+            action_type: :query_generation,
+            position: next_position,
+            action_data: JSON.parse(content["action_data"].to_json)
           )
         end
 

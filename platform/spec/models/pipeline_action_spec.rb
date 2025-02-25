@@ -18,75 +18,85 @@ RSpec.describe PipelineAction, type: :model do
   describe "enums" do
     it do
       expect(subject).to define_enum_for(:action_type)
-        .with_values(connection_creation: 0, query_execution: 1, summary_generation: 2)
+        .with_values(connector_selection: 0,
+                     connection_creation: 1,
+                     sync_initialization: 2,
+                     query_generation: 3,
+                     query_execution: 4)
     end
   end
 
   describe "action_data validation" do
-    context "when action_type is connection_creation" do
-      let(:action) { build(:pipeline_action, :connection_creation) }
+    context "when action_type is connector_selection" do
+      let(:action) { build(:pipeline_action, :connector_selection) }
 
-      it "is valid with required keys" do
+      it "is valid with nested connector IDs" do
         action.action_data = {
-          "source_connector_id" => 1,
-          "streams" => %w[users positions]
+          "source" => { "connector_id" => 1 },
+          "destination" => { "connector_id" => 2 }
         }
         expect(action).to be_valid
       end
 
-      it "is invalid without required keys" do
-        action.action_data = { "source_connector_id" => 1 }
+      it "is invalid with missing nested keys" do
+        action.action_data = { "source" => { "connector_id" => 1 } }
         expect(action).not_to be_valid
-        expect(action.errors[:action_data]).to include(/missing required keys: streams/)
+        expect(action.errors[:action_data]).to include(%r{missing required key: destination/connector_id})
+      end
+    end
+
+    context "when action_type is connection_creation" do
+      let(:action) { build(:pipeline_action, action_type: :connection_creation) }
+
+      it "is valid with required keys" do
+        action.action_data = {
+          "streams" => ["users"],
+          "created_at" => "2024-01-01T00:00:00Z",
+          "connection_id" => 123
+        }
+        expect(action).to be_valid
+      end
+
+      it "is invalid without created_at and connection_id" do
+        action.action_data = { "streams" => ["users"] }
+        expect(action).not_to be_valid
+        expect(action.errors[:action_data]).to include(/missing required keys: created_at, connection_id/)
+      end
+    end
+
+    context "when action_type is sync_initialization" do
+      let(:action) { build(:pipeline_action, action_type: :sync_initialization) }
+
+      it "is valid with connections data" do
+        action.action_data = { "connections" => ["connection_1"] }
+        expect(action).to be_valid
+      end
+
+      it "is invalid without connections" do
+        action.action_data = { "connection_id" => 123 }
+        expect(action).not_to be_valid
+        expect(action.errors[:action_data]).to include(/missing required keys: connections/)
       end
     end
 
     context "when action_type is query_execution" do
-      let(:action) { build(:pipeline_action, :query_execution) }
+      let(:action) { build(:pipeline_action, action_type: :query_execution) }
 
-      it "is valid with required keys" do
-        action.action_data = {
-          "query" => "SELECT * FROM users",
-          "connection_id" => 1
-        }
+      it "is valid with query_data" do
+        action.action_data = { "query_data" => { "sql" => "SELECT 1" } }
         expect(action).to be_valid
       end
 
-      it "is invalid without required keys" do
+      it "is invalid without query_data" do
         action.action_data = { "query" => "SELECT * FROM users" }
         expect(action).not_to be_valid
-        expect(action.errors[:action_data]).to include(/missing required keys: connection_id/)
-      end
-    end
-
-    context "when action_type is summary_generation" do
-      let(:action) { build(:pipeline_action, :summary_generation) }
-
-      it "is valid with required keys and query_action" do
-        query_action = create(:pipeline_action, :query_execution)
-        action.query_action = query_action
-        action.action_data = { "summary_description" => "Summarize user data" }
-        expect(action).to be_valid
-      end
-
-      it "is invalid without query_action" do
-        action.action_data = { "summary_description" => "Summarize user data" }
-        expect(action).not_to be_valid
-        expect(action.errors[:query_action_id])
-          .to include("must be present for summary generation actions")
-      end
-
-      it "is invalid without required keys" do
-        action.action_data = {}
-        expect(action).not_to be_valid
-        expect(action.errors[:action_data])
-          .to include(/missing required keys: summary_description/)
+        expect(action.errors[:action_data]).to include(/missing required keys: query_data/)
       end
     end
   end
 
   describe "result_data accessors" do
-    let(:action) { create(:pipeline_action) }
+    let(:action) { create(:pipeline_action, :query_execution) }
 
     it "stores and retrieves execution status" do
       action.execution_status = "completed"

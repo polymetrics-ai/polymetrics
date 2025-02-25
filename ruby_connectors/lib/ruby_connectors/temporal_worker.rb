@@ -28,12 +28,14 @@ module RubyConnectors
       worker.register_workflow(RubyConnectors::Temporal::Workflows::ReadApiDataWorkflow)
       worker.register_workflow(RubyConnectors::Temporal::Workflows::ReadFirstPageApiDataWorkflow)
       worker.register_workflow(RubyConnectors::Temporal::Workflows::WriteDatabaseDataWorkflow)
+      worker.register_workflow(RubyConnectors::Temporal::Workflows::ReadDatabaseDataWorkflow)
 
       # Register activities here
       worker.register_activity(RubyConnectors::Temporal::Activities::ConnectionStatusActivity)
       worker.register_activity(RubyConnectors::Temporal::Activities::FetchSchemaActivity)
       worker.register_activity(RubyConnectors::Temporal::Activities::ReadApiDataActivity)
       worker.register_activity(RubyConnectors::Temporal::Activities::WriteDatabaseDataActivity)
+      worker.register_activity(RubyConnectors::Temporal::Activities::ReadDatabaseDataActivity)
       worker.start
     end
   end

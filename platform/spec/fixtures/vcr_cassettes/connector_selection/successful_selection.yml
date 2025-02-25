@@ -6,25 +6,33 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"messages":[{"role":"user","content":"You are a Data Integration Assistant
-        specialized in creating data pipelines. Your role is to help users set up
-        source-to-destination data connections based on their requirements.\n\nAvailable
-        connectors in the workspace:\nAPI Connectors:\n\n\nDatabase Connectors:\nConnector
-        Name: Default DuckDB\nConnector ID: 975\nIntegration Type: database\nConnector
-        Language: ruby\nDefault Analytics DB: Yes\nConnector Configuration: ---\ndatabase:
-        analytics_fa7aec4e.duckdb\ncredentials:\n  path: analytics_fa7aec4e.duckdb\n\n\nConnector
-        Name: Connector 570\nConnector ID: 976\nIntegration Type: database\nConnector
-        Language: ruby\nDefault Analytics DB: No\nConnector Configuration: ---\nrepository_name:
-        rails/rails\n\n\nConnector Name: Connector 571\nConnector ID: 977\nIntegration
-        Type: database\nConnector Language: ruby\nDefault Analytics DB: No\nConnector
-        Configuration: ---\naccess_token: sample_token\n\n\n\nInstructions:\n1. Analyze
-        the user''s query to understand their data integration needs\n2. Identify
-        appropriate source which will be an API connector based on the query and destination
-        which will be a database connector\n3. For source connectors:\n   - Match
-        requirements with available API connectors and their streams\n   - Consider
-        data structure, required fields, and primary keys\n4. For destination:\n   -
-        If user specifies a database, use that configuration\n   - Otherwise, use
-        the default analytics database (marked as default_analytics_db: true)\n5.
-        If the query is ambiguous or needs clarification, ask appropriate questions\n\nYou
+        specialized in creating data pipelines.\nYour role is to help users set up
+        source-to-destination data connections based on their requirements.\n\n\u003cconnectors\u003e\n  Available
+        connectors in the workspace:\n  [\"---\\nid: 1127\\nworkspace_id: 717\\nconnector_language:
+        ruby\\nconfiguration:\\n  database: analytics_d536a8c1.duckdb\\n  credentials:\\n    path:
+        analytics_d536a8c1.duckdb\\nname: Default DuckDB\\nconnector_class_name: duckdb\\ndescription:
+        Default local analytics database for the workspace\\nconnected: true\\ncreated_at:
+        !ruby/object:ActiveSupport::TimeWithZone\\n  utc: 2025-02-24 17:04:18.445269000
+        Z\\n  zone: \u00261 !ruby/object:ActiveSupport::TimeZone\\n    name: Etc/UTC\\n  time:
+        2025-02-24 17:04:18.445269000 Z\\nupdated_at: !ruby/object:ActiveSupport::TimeWithZone\\n  utc:
+        2025-02-24 17:04:18.445269000 Z\\n  zone: *1\\n  time: 2025-02-24 17:04:18.445269000
+        Z\\ndefault_analytics_db: true\\nintegration_type: database\\n\", \"---\\nid:
+        1128\\nworkspace_id: 717\\nconnector_language: ruby\\nconfiguration:\\n  repository_name:
+        rails/rails\\nname: Connector 619\\nconnector_class_name: github\\ndescription:
+        A connector for GitHub\\nconnected: false\\ncreated_at: !ruby/object:ActiveSupport::TimeWithZone\\n  utc:
+        2025-02-24 17:04:18.446263000 Z\\n  zone: \u00261 !ruby/object:ActiveSupport::TimeZone\\n    name:
+        Etc/UTC\\n  time: 2025-02-24 17:04:18.446263000 Z\\nupdated_at: !ruby/object:ActiveSupport::TimeWithZone\\n  utc:
+        2025-02-24 17:04:18.446263000 Z\\n  zone: *1\\n  time: 2025-02-24 17:04:18.446263000
+        Z\\ndefault_analytics_db: false\\nintegration_type: api\\n\"]\n\u003c/connectors\u003e\n\n\u003cinstructions\u003e\n  1.
+        Analyze the user''s query to understand their data integration needs\n  2.
+        Identify appropriate sources which will be an API connector based on the query
+        and destination which will be a database connector\n  3. For source connectors:\n    -
+        Identify the correct connector id denoted by `id` based on the connector configuration
+        and other details of the connector provided\n    - Match requirements with
+        available API connectors and their streams\n    - Consider data structure,
+        required fields, and primary keys\n  4. For destination:\n    - Use the default
+        analytics database (marked as default_analytics_db: true)\n  5. If the query
+        is ambiguous or needs clarification, ask appropriate questions\n\u003c/instructions\u003e\n\n\u003cformat_instructions\u003e\n  You
         must format your output as a JSON value that adheres to a given \"JSON Schema\"
         instance.\n\n\"JSON Schema\" is a declarative language that allows you to
         annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
@@ -42,22 +50,25 @@ http_interactions:
         markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\",\"enum\":[\"message\",\"pipeline_action\"],\"description\":\"Type
         of response - either a message asking for clarification or pipeline action
         configuration\"},\"content\":{\"type\":\"array\",\"items\":{\"oneOf\":[{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Clarification
-        message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"connection_creation\"],\"description\":\"Type
-        of pipeline action\"},\"action_data\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
+        message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"connector_selection\"],\"description\":\"Type
+        of pipeline action\"},\"action_data\":{\"type\":\"array\",\"description\":\"Array
+        of source and destination connectors based on user query\",\"items\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
         of the source connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
         of the source connector\"},\"streams\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\",\"description\":\"Name
         of the stream\"},\"fields\":{\"type\":\"object\",\"properties\":{\"required\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"optional\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"primary_key\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"required\",\"optional\",\"primary_key\"]}},\"required\":[\"name\",\"fields\"]}}},\"required\":[\"connector_name\",\"connector_id\",\"streams\"]},\"destination\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
         of the destination database connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
         of the destination database connector\"},\"is_default_analytics_db\":{\"type\":\"boolean\",\"description\":\"Whether
-        to use default analytics database\"}},\"required\":[\"connector_name\",\"connector_id\"]}},\"required\":[\"source\",\"destination\"]}},\"required\":[\"action_type\",\"action_data\"],\"additionalProperties\":false}]},\"minItems\":1,\"description\":\"Array
-        of either messages or pipeline action configurations\"}},\"required\":[\"type\",\"content\"],\"additionalProperties\":false}\n```\n\n\nUser
-        Query: Please identify how many people starred my rails repo in Github?\n\nRemember:\n-
-        Source must be an API connector\n- Always use the exact stream names given
-        in the connector stream descriptions\n- Destination must be a database connector\n-
-        Validate stream compatibility and field mappings\n- If multiple options exist,
-        include all only one api source for one connection creation\n- If clarification
-        needed, ask specific questions\n- Consider data types and structure compatibility\n-
-        Only return the JSON response\n"}],"model":"deepseek/deepseek-chat","temperature":0.7,"n":1}'
+        to use default analytics database\"}},\"required\":[\"connector_name\",\"connector_id\"]}},\"required\":[\"source\",\"destination\"]},\"minItems\":1}},\"required\":[\"action_type\",\"action_data\"],\"additionalProperties\":false}]},\"minItems\":1,\"description\":\"Array
+        of either messages or pipeline action configurations\"}},\"required\":[\"type\",\"content\"],\"additionalProperties\":false}\n```\n\n\u003c/format_instructions\u003e\n\n\u003cuser_query\u003e\n  User
+        Query: how many people starred my rails repo in Github?\n\u003c/user_query\u003e\n\n\u003cremember\u003e\n  -
+        Analyze the users query to understand if one source is required or multiple
+        sources are required\n    and the select the correct connectors from the available
+        connectors to form the connections with source and destination\n  - Source
+        must be an API connector\n  - Always use the exact stream names given in the
+        connector stream descriptions\n  - Destination must be a database connector\n  -
+        Validate stream compatibility and field mappings\n  - If clarification needed,
+        ask specific questions\n  - Consider data types and structure compatibility\n  -
+        Only return the JSON response\n\u003c/remember\u003e\n"}],"model":"deepseek/deepseek-chat","temperature":0.7,"n":1}'
     headers:
       Content-Type:
       - application/json
@@ -75,7 +86,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 29 Jan 2025 13:28:29 GMT
+      - Mon, 24 Feb 2025 17:04:18 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -96,29 +107,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 909990cb08847ebb-MAA
+      - 917108b4184c17b3-MAA
     body:
       encoding: ASCII-8BIT
       string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n{\"id\":\"gen-1738157309-llSD8QSOchNDnXs4iSUp\",\"provider\":\"Novita\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738157309,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\\"type\\\":\\\"pipeline_action\\\",\\\"content\\\":[{\\\"action_type\\\":\\\"connection_creation\\\",\\\"action_data\\\":{\\\"source\\\":{\\\"connector_name\\\":\\\"GitHub
-        API\\\",\\\"connector_id\\\":\\\"123\\\",\\\"streams\\\":[{\\\"name\\\":\\\"repository_stargazers\\\",\\\"fields\\\":{\\\"required\\\":[\\\"user_id\\\",\\\"starred_at\\\"],\\\"optional\\\":[],\\\"primary_key\\\":[\\\"user_id\\\"]}}]},\\\"destination\\\":{\\\"connector_name\\\":\\\"Default
-        DuckDB\\\",\\\"connector_id\\\":\\\"975\\\",\\\"is_default_analytics_db\\\":true}}}]}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":0,\"completion_tokens\":0,\"total_tokens\":0}}"
-  recorded_at: Wed, 29 Jan 2025 13:28:46 GMT
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n{\"id\":\"gen-1740416659-Q8feRVICQlZooILU1L6F\",\"provider\":\"Fireworks\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1740416659,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
+        \ \\\"type\\\": \\\"pipeline_action\\\",\\n  \\\"content\\\": [\\n    {\\n
+        \     \\\"action_type\\\": \\\"connector_selection\\\",\\n      \\\"action_data\\\":
+        [\\n        {\\n          \\\"source\\\": {\\n            \\\"connector_name\\\":
+        \\\"Connector 619\\\",\\n            \\\"connector_id\\\": \\\"1128\\\",\\n
+        \           \\\"streams\\\": [\\n              {\\n                \\\"name\\\":
+        \\\"repository_stargazers\\\",\\n                \\\"fields\\\": {\\n                  \\\"required\\\":
+        [\\\"user\\\", \\\"starred_at\\\"],\\n                  \\\"optional\\\":
+        [],\\n                  \\\"primary_key\\\": [\\\"user\\\"]\\n                }\\n
+        \             }\\n            ]\\n          },\\n          \\\"destination\\\":
+        {\\n            \\\"connector_name\\\": \\\"Default DuckDB\\\",\\n            \\\"connector_id\\\":
+        \\\"1127\\\",\\n            \\\"is_default_analytics_db\\\": true\\n          }\\n
+        \       }\\n      ]\\n    }\\n  ]\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":1529,\"completion_tokens\":173,\"total_tokens\":1702}}"
+  recorded_at: Mon, 24 Feb 2025 17:04:26 GMT
 recorded_with: VCR 6.3.1

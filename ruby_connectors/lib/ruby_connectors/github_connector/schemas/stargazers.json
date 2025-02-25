@@ -8,10 +8,6 @@
   "x-default_sync_mode": "incremental_dedup",
   "x-source_defined_primary_key": ["id"],
   "properties": {
-    "repository": {
-      "type": "string",
-      "description": "The repository that was starred by the user"
-    },
     "login": {
       "type": "string",
       "description": "The username of the user",

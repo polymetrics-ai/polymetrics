@@ -53,4 +53,24 @@
       @apply rounded bg-black/50 shadow-[0_0_1px_rgba(255,255,255,0.5)] ml-8;
     }
   }
+
+  .chat-input-transition {
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  .input-bar-enter-active {
+    animation: inputEnter 1s ease-out forwards;
+  }
+}
+
+@keyframes inputEnter {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

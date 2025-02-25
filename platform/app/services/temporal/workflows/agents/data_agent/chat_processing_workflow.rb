@@ -5,6 +5,7 @@ module Temporal
     module Agents
       module DataAgent
         class ChatProcessingWorkflow < ::Temporal::Workflow
+          # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           def execute(params)
             initialize_workflow_state(params)
 
@@ -14,14 +15,32 @@ module Temporal
 
               return handle_error(process_result[:error]) if process_result[:status] == :error
 
-              # Save response using activity. TODO: Uncomment this once the process_message activity is implemented
-              # save_response(process_result)
+              health_result = Activities::Agents::DataAgent::CheckConnectionHealthActivity.execute!(chat_id: @chat_id)
 
+              completed_connections = Set.new(health_result[:recently_synced_healthy_connection_ids])
+
+              workflow.on_signal("connection_healthy") do |signal_data|
+                completed_connections.add(signal_data[:connection_id])
+              end
+
+              workflow.wait_until do
+                completed_connections == Set.new(@chat.connections.pluck(:id))
+              end
+
+              process_assistant_query_workflow_id = "process_assistant_query_workflow-chat_id-#{@chat.id}"
+
+              Temporal::Workflows::Agents::DataAgent::ProcessAssistantQueryWorkflow.execute!(
+                @chat.id,
+                options: { task_queue: "platform_queue", workflow_id: process_assistant_query_workflow_id }
+              )
+
+              save_response(process_result)
               handle_success(process_result)
             rescue StandardError => e
               handle_error(e.message)
             end
           end
+          # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
           private
 
@@ -45,8 +64,7 @@ module Temporal
             Activities::Agents::DataAgent::ChatProcessingActivity.execute!(
               chat_id: @chat_id,
               content: response[:content],
-              tool_calls: response[:tool_calls],
-              start_to_close_timeout: 30
+              tool_calls: response[:tool_calls]
             )
           end
 

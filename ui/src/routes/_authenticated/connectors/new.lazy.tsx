@@ -70,7 +70,8 @@ function AddConnector() {
                         ...formData
                     },
                     connector_class_name: selectedDefinition?.class_name,
-                    connector_language: selectedDefinition?.language
+                    connector_language: selectedDefinition?.language,
+                    integration_type: selectedDefinition?.integration_type
                 }
             };
             

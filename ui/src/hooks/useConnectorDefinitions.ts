@@ -28,7 +28,7 @@ interface ConnectionSpecification {
 
 export interface Definition {
     name: string;
-    type: string;
+    integration_type: string;
     language: 'ruby';
     class_name: string;
     operations: Array<'connect' | 'read' | 'write'>;

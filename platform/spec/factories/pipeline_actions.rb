@@ -4,20 +4,20 @@ FactoryBot.define do
   factory :pipeline_action do
     pipeline
     sequence(:position) { |n| n }
-    action_type { :connection_creation }
+    action_type { :connector_selection }
     action_data do
       {
-        "source_connector_id" => create(:connector).id,
-        "streams" => %w[users orders]
+        "source" => { "connector_id" => create(:connector).id },
+        "destination" => { "connector_id" => create(:connector).id }
       }
     end
 
-    trait :connection_creation do
-      action_type { :connection_creation }
+    trait :connector_selection do
+      action_type { :connector_selection }
       action_data do
         {
-          "source_connector_id" => create(:connector).id,
-          "streams" => %w[users orders]
+          "source" => { "connector_id" => create(:connector).id },
+          "destination" => { "connector_id" => create(:connector).id }
         }
       end
     end
@@ -26,16 +26,12 @@ FactoryBot.define do
       action_type { :query_execution }
       action_data do
         {
-          "query" => "SELECT * FROM users",
-          "connection_id" => create(:connection).id
+          "query_data" => {
+            "sql" => "SELECT * FROM users",
+            "connection_id" => create(:connection).id
+          }
         }
       end
-    end
-
-    trait :summary_generation do
-      action_type { :summary_generation }
-      association :query_action, factory: %i[pipeline_action query_execution]
-      action_data { { "summary_description" => "Summarize user data" } }
     end
 
     trait :with_result do
@@ -44,6 +40,31 @@ FactoryBot.define do
           "execution_status" => "completed",
           "error_message" => nil,
           "output" => { "rows_affected" => 10 }
+        }
+      end
+    end
+
+    trait :connection_creation do
+      action_type { :connection_creation }
+      action_data do
+        {
+          "streams" => ["users"],
+          "created_at" => Time.current.iso8601,
+          "connection_id" => create(:connection).id
+        }
+      end
+    end
+
+    trait :sync_initialization do
+      action_type { :sync_initialization }
+      action_data do
+        {
+          "connections" => [
+            {
+              "connection_id" => create(:connection).id,
+              "connection_workflow_run_id" => SecureRandom.uuid
+            }
+          ]
         }
       end
     end

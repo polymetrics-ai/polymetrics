@@ -59,7 +59,7 @@ RSpec.describe SyncReadRecord, type: :model do
                         data: { "test" => "data" },
                         sync: sync,
                         sync_run: sync_run)
-        expect(record.signature.length).to be > 0
+        expect(record.signature.length).to be_positive
       end
     end
 

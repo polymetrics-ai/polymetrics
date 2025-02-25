@@ -31,6 +31,7 @@ module Temporal
         if @sync_run.sync_read_records.empty?
           return {
             success: false,
+            type: :no_records,
             error: "No records found to transform for sync run #{sync_run_id}"
           }
         end
