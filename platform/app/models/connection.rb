@@ -20,7 +20,7 @@ class Connection < ApplicationRecord
   validates :namespace, presence: true
   validates :sync_frequency, presence: true, if: :frequency_required?
 
-  aasm column: :status, whiny_transitions: true  do
+  aasm column: :status, whiny_transitions: true do
     state :created, initial: true
     state :healthy, :failed, :running, :paused
 
@@ -51,6 +51,8 @@ class Connection < ApplicationRecord
     end
   end
 
+  after_commit :check_health_status, if: :saved_change_to_status?
+
   private
 
   def log_failure
@@ -63,5 +65,26 @@ class Connection < ApplicationRecord
 
   def frequency_required?
     scheduled? || cron?
+  end
+
+  def check_health_status
+    return unless status_previously_changed?(to: "healthy")
+
+    notify_chat_workflows
+  end
+
+  def notify_chat_workflows
+    chats.each do |chat|
+      next if chat.status != "active"
+
+      workflow_id = "chat_#{chat.id}"
+      Temporal.signal_workflow(
+        "Temporal::Workflows::Agents::DataAgent::ChatProcessingWorkflow",
+        "connection_healthy",
+        workflow_id,
+        nil,
+        { connection_id: id }
+      )
+    end
   end
 end

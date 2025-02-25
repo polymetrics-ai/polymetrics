@@ -4,7 +4,7 @@ module Ai
   module Prompts
     module Tools
       class QueryGenerationPrompt
-        def self.content(destination_database_schemas:, json_schemas:, query_requirements:)
+        def self.content(destination_database_schemas:, json_schemas:, query_requirements:, sample_data: nil)
           schemas = process_schemas(destination_database_schemas)
 
           <<~INSTRUCTIONS
@@ -14,6 +14,7 @@ module Ai
             #{format_table_names(schemas)}
             #{format_schema_names(schemas)}
             #{format_json_schemas(json_schemas)}
+            #{format_sample_data(sample_data)}
             **Database Type**: duckDB
 
             #{format_requirements}
@@ -40,14 +41,27 @@ module Ai
         end
 
         def self.format_json_schemas(schemas)
-          json = schemas.present? ? schemas.to_json : "No schema available"
+          json = schemas.present? ? schemas.to_yaml : "No schema available"
           "**JSON Schemas**:\n#{json}"
+        end
+
+        def self.format_sample_data(sample_data)
+          return "" if sample_data.blank?
+
+          <<~SAMPLE.chomp
+            **Sample Data**:
+            ```yaml
+            #{sample_data.map(&:to_yaml)}
+            ```
+          SAMPLE
         end
 
         def self.format_requirements
           <<~REQS.chomp
             ### Requirements:
-            - Include any necessary WHERE conditions based on user input.
+            - Use the x-sql-example provided in the json schema to build the sql query.
+            - If the sample data is provided, use it while building the query along with the json schema.
+            - Only add conditional operators to the query if user ask the condition in the query requirements.
             - Specify the columns to select from each table.
             - Ensure that the syntax aligns with the specified database type.
             - Ensure we have schema names and table names along with the json schema else return an error message.

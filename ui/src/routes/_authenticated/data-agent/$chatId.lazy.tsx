@@ -25,9 +25,12 @@ function ChatView() {
   const [query, setQuery] = useState<string>('');
   const navigate = useNavigate();
 
+  // TODO: Update to use websocket
   const { data: messages, isLoading: isMessagesLoading } = useQuery({
     queryKey: ['dataAgentMessages', chatId],
     queryFn: () => getMessages(chatId),
+    refetchInterval: 5000,
+    refetchOnWindowFocus: false
   });
 
   const stepper = useStepper();

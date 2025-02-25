@@ -51,7 +51,7 @@ module Temporal
         end
 
         transformation_result = transform_data
-        unless transformation_result[:success]
+        unless transformation_result[:success] || transformation_result[:type] == :no_records
           handle_error(transformation_result[:error])
           return {
             success: false,
@@ -60,14 +60,16 @@ module Temporal
           }
         end
 
-        load_result = load_data
-        unless load_result[:success]
-          handle_error(load_result[:error])
-          return {
-            success: false,
-            status: "error",
-            error: load_result[:error]
-          }
+        if transformation_result[:type] != :no_records
+          load_result = load_data
+          unless load_result[:success]
+            handle_error(load_result[:error])
+            return {
+              success: false,
+              status: "error",
+              error: load_result[:error]
+            }
+          end
         end
 
         update_sync_status_activity("synced")
@@ -143,7 +145,7 @@ module Temporal
 
       def transform_data
         transformation_result = Activities::TransformRecordActivity.execute!(@sync_run_id)
-        return { success: false, error: transformation_result[:error] } unless transformation_result[:success]
+        return { success: false, error: transformation_result[:error], type: transformation_result[:type] } unless transformation_result[:success]
 
         conversion_result = Activities::ConvertReadRecordActivity.execute!(@sync_run_id)
         if conversion_result[:success]

@@ -16,6 +16,7 @@ module Temporal
               if status == :success
                 create_success_message(chat, content)
                 update_tool_calls(chat, tool_calls)
+                chat.update!(status: :completed)
               else
                 create_error_message(chat, error_message)
                 chat.failed!
@@ -32,7 +33,7 @@ module Temporal
 
           def create_success_message(chat, content)
             chat.messages.create!(
-              content: content,
+              content: content["description"],
               role: :assistant,
               message_type: :text
             )

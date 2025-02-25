@@ -98,7 +98,7 @@ module Ai
 
         def handle_pipeline_action(parsed_response)
           parsed_response["content"].each do |content|
-            next unless content["action_type"] == "query_execution"
+            next unless content["action_type"] == "query_generation"
 
             create_pipeline_for_content(content)
           end
@@ -127,7 +127,7 @@ module Ai
           return false unless pipeline_message&.pipeline
 
           pipeline_message.pipeline.pipeline_actions.exists?(
-            action_type: :query_execution,
+            action_type: :query_generation,
             action_data: JSON.parse(content["action_data"].to_json)
           )
         end
@@ -136,7 +136,7 @@ module Ai
           next_position = pipeline.pipeline_actions.maximum(:position).to_i + 1
 
           pipeline.pipeline_actions.create!(
-            action_type: :query_execution,
+            action_type: :query_generation,
             position: next_position,
             action_data: JSON.parse(content["action_data"].to_json)
           )

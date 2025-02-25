@@ -8,49 +8,55 @@
   "x-default_sync_mode": "incremental_dedup",
   "x-source_defined_primary_key": ["name"],
   "properties": {
-    "repository": {
-      "description": "The fully qualified name or unique identifier of the repository containing the branch. This could be in the format 'owner/repo'.",
-      "type": "string"
-    },
     "name": {
+      "x-sql-example": "SELECT name FROM sample_schema.sample_table",
       "description": "The unique reference name of the branch within the repository. This is typically in the format 'refs/heads/branch-name'. Can be null if the branch is being created.",
       "type": ["null", "string"]
     },
     "commit": {
+      "x-sql-example": "SELECT commit FROM sample_schema.sample_table",
       "description": "Metadata about the most recent commit on this branch. May be null if the branch is empty or being initialized.",
       "type": ["null", "object"],
       "properties": {
         "sha": {
+          "x-sql-example": "SELECT commit.sha FROM sample_schema.sample_table",
           "description": "The 40-character SHA-1 hash of the commit, serving as its immutable and unique identifier.",
           "type": ["null", "string"]
         },
         "url": {
+          "x-sql-example": "SELECT commit.url FROM sample_schema.sample_table",
           "description": "The fully qualified API endpoint URL for retrieving detailed information about the commit. This URL is specific to the GitHub API.",
           "type": ["null", "string"]
         }
       }
     },
     "protected": {
+      "x-sql-example": "SELECT protected FROM sample_schema.sample_table",
       "description": "A boolean flag indicating whether the branch has any protection rules applied. True if protected, false otherwise. May be null if the protection status is unknown or not applicable.",
       "type": ["null", "boolean"]
     },
     "protection": {
+      "x-sql-example": "SELECT protection FROM sample_schema.sample_table",
       "description": "Detailed configuration of the protection rules for this branch. This object is present only if the branch is protected.",
       "type": ["null", "object"],
       "properties": {
         "enabled": {
+          "x-sql-example": "SELECT protection.enabled FROM sample_schema.sample_table",
           "description": "A boolean flag indicating if branch protection is currently active and enforced. May be null if the status is unknown.",
           "type": ["null", "boolean"]
         },
         "required_status_checks": {
+          "x-sql-example": "SELECT protection.required_status_checks FROM sample_schema.sample_table",
           "description": "Configuration for mandatory status checks that must pass before merging is allowed.",
           "type": ["null", "object"],
           "properties": {
             "enforcement_level": {
+              "x-sql-example": "SELECT protection.required_status_checks.enforcement_level FROM sample_schema.sample_table",
               "description": "The strictness level of status check enforcement. Possible values include 'strict' (require branches to be up to date before merging) and 'non_admins' (enforce status checks for non-administrators).",
               "type": ["null", "string"]
             },
             "contexts": {
+              "x-sql-example": "SELECT protection.required_status_checks.contexts FROM sample_schema.sample_table",
               "description": "An array of status check names that must pass before merging is allowed. This is a legacy field and may be deprecated in favor of 'checks'.",
               "type": ["null", "array"],
               "items": {
@@ -59,6 +65,7 @@
               }
             },
             "checks": {
+              "x-sql-example": "SELECT protection.required_status_checks.checks FROM sample_schema.sample_table",
               "description": "Detailed specifications for each required status check, providing more granular control than 'contexts'.",
               "type": ["null", "array"],
               "items": {
@@ -66,10 +73,12 @@
                 "type": "object",
                 "properties": {
                   "context": {
+                    "x-sql-example": "SELECT protection.required_status_checks.checks.context FROM sample_schema.sample_table",
                     "description": "The name or identifier of the status check. This should match the 'context' field of status checks.",
                     "type": ["null", "string"]
                   },
                   "app_id": {
+                    "x-sql-example": "SELECT protection.required_status_checks.checks.app_id FROM sample_schema.sample_table",
                     "description": "The unique numeric identifier of the GitHub App associated with this status check. Null if not associated with a GitHub App.",
                     "type": ["null", "integer"]
                   }
@@ -81,6 +90,7 @@
       }
     },
     "protection_url": {
+      "x-sql-example": "SELECT protection_url FROM sample_schema.sample_table",
       "description": "The fully qualified API endpoint URL for managing and viewing branch protection settings. This URL is specific to the GitHub API and may require appropriate authentication to access.",
       "type": ["null", "string"]
     }

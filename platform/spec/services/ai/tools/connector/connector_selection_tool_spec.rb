@@ -22,7 +22,9 @@ RSpec.describe Ai::Tools::Connector::ConnectorSelectionTool do
   describe "#find_connectors" do
     context "with valid connectors" do
       it "creates pipeline messages with connector selection" do
-        VCR.use_cassette("connector_selection/successful_selection", record: :once) do
+        VCR.use_cassette("connector_selection/successful_selection",
+                         match_requests_on: %i[method uri],
+                         record: :new_episodes) do
           result = subject.find_connectors(query: original_query)
 
           expect(result[:status]).to eq(:success)

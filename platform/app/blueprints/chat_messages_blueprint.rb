@@ -15,46 +15,7 @@ class ChatMessagesBlueprint < Blueprinter::Base
     {
       id: message.pipeline.id,
       status: message.pipeline.status,
-      actions: message.pipeline.pipeline_actions.map do |action|
-        base_action = {
-          id: action.id,
-          action_type: action.action_type,
-          position: action.position,
-          created_at: action.created_at
-        }
-
-        case action.action_type.to_sym
-        when :connector_selection
-          base_action.merge(
-            data: connector_selection_data(action, message)
-          )
-        when :connection_creation
-          base_action.merge(
-            data: connection_creation_data(action, message)
-          )
-        when :sync_initialization
-          base_action.merge(
-            data: sync_initialization_data(action, message)
-          )
-        when :query_generation
-          base_action.merge(
-            data: {
-              # TODO: Add generated query details
-              sql: "", # Parse from action_data
-              parameters: {}
-            }
-          )
-        when :query_execution
-          base_action.merge(
-            data: {
-              query: action.action_data["query"],
-              explanation: action.action_data["explanation"]
-            }
-          )
-        else
-          base_action.merge(data: {})
-        end
-      end
+      actions: message.pipeline.pipeline_actions.map { |action| process_pipeline_action(action, message) }
     }
   end
 
@@ -64,59 +25,90 @@ class ChatMessagesBlueprint < Blueprinter::Base
     }
   end
 
-  def self.connector_selection_data(action, message)
-    action_data = begin
-      action.action_data
-    rescue StandardError
-      {}
-    end
-    return {} if action_data.blank?
+  private_class_method def self.process_pipeline_action(action, message)
+    base_action = action_base_data(action)
+    action_handler = ACTION_HANDLERS[action.action_type.to_sym] || :handle_default_action
 
-    connector_ids = extract_connector_ids(action_data)
-    connectors = fetch_ordered_connectors(message.chat.workspace, connector_ids)
+    send(action_handler, action, message, base_action)
+  end
 
+  def self.action_base_data(action)
     {
-      connectors: map_connectors_with_display_names(connectors, action_data, connector_ids)
+      id: action.id,
+      action_type: action.action_type,
+      position: action.position,
+      created_at: action.created_at
     }
   end
 
-  def self.extract_connector_ids(action_data)
-    [
-      action_data.dig("source", "connector_id")&.to_i,
-      action_data.dig("destination", "connector_id")&.to_i
-    ].compact
+  ACTION_HANDLERS = {
+    connector_selection: :handle_connector_selection,
+    connection_creation: :handle_connection_creation,
+    sync_initialization: :handle_sync_initialization,
+    query_execution: :handle_query_execution,
+    query_generation: :handle_query_generation
+  }.freeze
+
+  def self.handle_connector_selection(action, message, base_action)
+    base_action.merge(
+      data: connector_selection_data(action.action_data, message)
+    )
   end
 
-  def self.fetch_ordered_connectors(workspace, connector_ids)
-    return [] if connector_ids.empty?
-
-    workspace.connectors
-             .where(id: connector_ids)
-             .index_by(&:id)
-             .values_at(*connector_ids)
-             .compact
+  def self.handle_connection_creation(action, message, base_action)
+    base_action.merge(
+      data: action.action_data.map { |data| connection_creation_data(data, message) }
+    )
   end
 
-  def self.map_connectors_with_display_names(connectors, _action_data, _original_ids)
-    connectors.map do |connector|
-      {
-        id: connector.id,
-        name: connector.connector_class_name.capitalize,
-        icon_url: connector.icon_url,
-        display_name: connector.name
+  def self.handle_sync_initialization(action, message, base_action)
+    base_action.merge(
+      data: sync_initialization_data(action, message)
+    )
+  end
+
+  def self.handle_query_execution(action, _message, base_action)
+    base_action.merge(
+      data: {
+        query_data: action.action_data["query_data"]["data"],
+        limit: action.action_data["query_data"]["limit"],
+        total_records: action.action_data["query_data"]["total_records"]
       }
-    end
+    )
   end
 
-  def self.connection_creation_data(action, message)
-    action_data = begin
-      action.action_data
-    rescue StandardError
-      {}
-    end
-    return {} if action_data.blank?
+  def self.handle_query_generation(action, _message, base_action)
+    base_action.merge(
+      data: {
+        query: action.action_data["query"],
+        explanation: action.action_data["explanation"]
+      }
+    )
+  end
 
-    connection = message.chat.workspace.connections.find_by(id: action_data["connection_id"])
+  def self.handle_default_action(_action, _message, base_action)
+    base_action.merge(data: {})
+  end
+
+  def self.connector_selection_data(action_data, message)
+    # Collect all connector IDs from all action data entries
+    connector_ids = action_data.flat_map do |data|
+      [
+        data.dig("source", "connector_id")&.to_i,
+        data.dig("destination", "connector_id")&.to_i
+      ].compact
+    end.uniq
+
+    connectors = fetch_ordered_connectors(message.chat.workspace, connector_ids)
+
+    {
+      connectors: connectors.map { |c| map_connector(c) },
+      streams: action_data.flat_map { |d| d.dig("source", "streams") }.compact.uniq
+    }
+  end
+
+  def self.connection_creation_data(action_data, message)
+    connection = message.chat.connections.find_by(id: action_data["connection_id"])
     return {} unless connection
 
     {
@@ -135,27 +127,46 @@ class ChatMessagesBlueprint < Blueprinter::Base
   end
 
   def self.sync_initialization_data(action, message)
-    action_data = begin
-      action.action_data
-    rescue StandardError
-      {}
+    connections = message.chat.connections
+    return {} unless connections.any?
+
+    action_data = action.action_data["connections"] || []
+
+    connections.map do |connection|
+      connection_data = action_data.find { |c| c["connection_id"] == connection.id.to_s }
+
+      {
+        connection_id: connection.id,
+        workflow_run_id: connection_data&.dig("connection_workflow_run_id"),
+        syncs: connection.syncs.map do |sync|
+          last_run = sync.sync_runs.last
+          {
+            status: sync.status,
+            stream_name: sync.stream_name,
+            last_synced_at: last_run&.completed_at,
+            connection_name: connection.name
+          }
+        end
+      }
     end
-    return {} if action_data.blank?
+  end
 
-    connection = message.chat.workspace.connections.find_by(id: action_data["connection_id"])
-    return {} unless connection
+  def self.fetch_ordered_connectors(workspace, connector_ids)
+    return [] if connector_ids.empty?
 
+    workspace.connectors
+             .where(id: connector_ids)
+             .index_by(&:id)
+             .values_at(*connector_ids)
+             .compact
+  end
+
+  def self.map_connector(connector)
     {
-      connection_id: connection.id,
-      workflow_run_id: action_data["connection_workflow_run_id"],
-      syncs: connection.syncs.map do |sync|
-        last_run = sync.sync_runs.last
-        {
-          status: sync.status,
-          stream_name: sync.stream_name,
-          last_synced_at: last_run&.completed_at
-        }
-      end
+      id: connector.id,
+      name: connector.connector_class_name.capitalize,
+      icon_url: connector.icon_url,
+      display_name: connector.name
     }
   end
 end

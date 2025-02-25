@@ -12,7 +12,7 @@ RSpec.describe Connectors::ListService do
         "connectors" => [
           {
             "name" => "Connector1",
-            "type" => "source",
+            "integration_type" => "api",
             "language" => "ruby",
             "class_name" => "Connector1Class",
             "operations" => ["read"],
@@ -22,7 +22,7 @@ RSpec.describe Connectors::ListService do
           },
           {
             "name" => "Connector2",
-            "type" => "destination",
+            "integration_type" => "database",
             "language" => "python",
             "class_name" => "Connector2Class",
             "operations" => ["write"],
@@ -54,7 +54,7 @@ RSpec.describe Connectors::ListService do
     it "correctly maps connector attributes" do
       expect(service_call.first).to include(
         name: "Connector1",
-        type: "source",
+        integration_type: "api",
         language: "ruby",
         class_name: "Connector1Class"
       )

@@ -13,7 +13,12 @@ interface SyncStream {
 }
 
 interface SyncInitiatedProps {
-    syncs?: SyncStream[];
+    pipeline_data?: {
+        actions?: Array<{
+            action_type: string;
+            data: any;
+        }>;
+    };
 }
 
 const getStatusColor = (status: string) => {
@@ -46,16 +51,31 @@ const getStatusDescription = (status: string) => {
     }
 };
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+const formatDate = (dateString: string | null) => {
+    if (!dateString) return '-';
+    
+    return new Date(dateString).toLocaleString('en-US', {
         day: 'numeric',
         month: 'short',
-        year: 'numeric'
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
     });
 };
 
-const SyncInitiated: FC<SyncInitiatedProps> = ({ syncs }) => {
-    if (!syncs?.length) return null;
+const SyncInitiated: FC<SyncInitiatedProps> = ({ pipeline_data }) => {
+    const syncAction = pipeline_data?.actions?.find(a => a.action_type === "sync_initialization");
+    const connections = syncAction?.data || [];
+    const syncs = connections.flatMap((conn: any) => 
+        (conn.syncs || []).map((sync: any) => ({
+            ...sync,
+            connection_id: conn.connection_id,
+            workflow_run_id: conn.workflow_run_id
+        }))
+    );
+
+    if (!syncs.length) return null;
 
     return (
         <div className="mt-4">
@@ -69,12 +89,13 @@ const SyncInitiated: FC<SyncInitiatedProps> = ({ syncs }) => {
                                     <div className="w-2 h-2 ml-2"></div>
                                 </div>
                             </th>
+                            <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">CONNECTION</th>
                             <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">STREAM NAME</th>
                             <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">LAST SYNCED</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {syncs.map((sync, index) => (
+                        {syncs.map((sync: SyncStream, index: number) => (
                             <tr 
                                 key={`${sync.stream_name}-${index}`}
                                 className={`border-b border-slate-200 ${
@@ -100,6 +121,7 @@ const SyncInitiated: FC<SyncInitiatedProps> = ({ syncs }) => {
                                         </TooltipProvider>
                                     </div>
                                 </td>
+                                <td className="px-4 py-3 text-sm text-slate-700">{sync.connection_name}</td>
                                 <td className="px-4 py-3 text-sm text-slate-700">{sync.stream_name}</td>
                                 <td className="px-4 py-3 text-sm text-slate-700">{formatDate(sync.last_synced_at)}</td>
                             </tr>

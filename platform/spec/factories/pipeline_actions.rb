@@ -26,8 +26,10 @@ FactoryBot.define do
       action_type { :query_execution }
       action_data do
         {
-          "query" => "SELECT * FROM users",
-          "connection_id" => create(:connection).id
+          "query_data" => {
+            "sql" => "SELECT * FROM users",
+            "connection_id" => create(:connection).id
+          }
         }
       end
     end
@@ -57,8 +59,12 @@ FactoryBot.define do
       action_type { :sync_initialization }
       action_data do
         {
-          "connection_id" => create(:connection).id,
-          "connection_workflow_run_id" => SecureRandom.uuid
+          "connections" => [
+            {
+              "connection_id" => create(:connection).id,
+              "connection_workflow_run_id" => SecureRandom.uuid
+            }
+          ]
         }
       end
     end

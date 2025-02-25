@@ -52,19 +52,19 @@ class PipelineAction < ApplicationRecord
   end
 
   def validate_sync_initialization_schema
-    required_keys = %w[connection_id connection_workflow_run_id]
+    required_keys = %w[connections]
     validate_required_keys(required_keys)
   end
 
-  def validate_query_execution_schema
-    required_keys = %w[query connection_id]
+  def validate_query_generation_schema
+    required_keys = %w[query]
     optional_keys = %w[warnings explanation]
     validate_required_keys(required_keys)
     validate_allowed_keys(required_keys + optional_keys)
   end
 
-  def validate_query_generation_schema
-    required_keys = ["summary_description"]
+  def validate_query_execution_schema
+    required_keys = ["query_data"]
     validate_required_keys(required_keys)
   end
 

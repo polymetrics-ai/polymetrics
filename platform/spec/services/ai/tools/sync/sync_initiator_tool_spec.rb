@@ -20,30 +20,31 @@ RSpec.describe Ai::Tools::Sync::SyncInitiatorTool do
            chat: chat,
            message_type: "pipeline",
            pipeline: pipeline)
+    chat.connections << connection
   end
 
   describe "#initiate_sync" do
     context "when sync is successful" do
       it "initiates sync and creates pipeline action" do
-        result = subject.initiate_sync(connection_id: connection.id)
+        result = subject.initiate_sync
 
         expect(result[:success]).to be true
         action = PipelineAction.last
         expect(action.action_type).to eq("sync_initialization")
-        expect(action.action_data["connection_id"]).to eq(connection.id)
-        expect(action.action_data["connection_workflow_run_id"]).to eq(workflow_run_id)
+        expect(action.action_data["connections"].first["connection_id"]).to eq(connection.id)
+        expect(action.action_data["connections"].first["connection_workflow_run_id"]).to eq(workflow_run_id)
       end
     end
 
     context "when connection is already running" do
       before do
-        allow(Connection).to receive(:find).and_return(connection)
-        allow(connection).to receive(:running?).and_return(true)
+        allow_any_instance_of(Connection).to receive(:running?).and_return(true)
+        allow(Connections::StartDataSyncService).to receive(:new).and_call_original
       end
 
       it "returns without initiating sync" do
         expect(Connections::StartDataSyncService).not_to receive(:new)
-        subject.initiate_sync(connection_id: connection.id)
+        subject.initiate_sync
       end
     end
 
@@ -53,10 +54,10 @@ RSpec.describe Ai::Tools::Sync::SyncInitiatorTool do
       end
 
       it "handles the error gracefully" do
-        result = subject.initiate_sync(connection_id: connection.id)
+        result = subject.initiate_sync
+        failed_result = result[:results].find { |r| r[:status] == :failed }
 
-        expect(result[:status]).to eq(:error)
-        expect(result[:error]).to include("Sync failed")
+        expect(failed_result[:error]).to include("Sync failed")
       end
     end
   end
@@ -64,9 +65,14 @@ RSpec.describe Ai::Tools::Sync::SyncInitiatorTool do
   describe "private methods" do
     describe "#create_sync_pipeline_action" do
       it "creates a sync initialization action" do
-        create(:message, chat: chat, pipeline: pipeline, message_type: "pipeline")
+        sync_results = [{
+          connection_id: connection.id,
+          connection_workflow_run_id: workflow_run_id,
+          status: :success
+        }]
 
-        action = subject.send(:create_sync_pipeline_action, connection, workflow_run_id)
+        subject.send(:create_sync_pipeline_action, sync_results)
+        action = PipelineAction.last
 
         expect(action).to be_persisted
         expect(action.pipeline).to eq(pipeline)
@@ -76,13 +82,19 @@ RSpec.describe Ai::Tools::Sync::SyncInitiatorTool do
 
     describe "#build_success_response" do
       it "returns formatted success response" do
-        response = subject.send(:build_success_response, connection, workflow_run_id)
+        sync_results = [{
+          connection_id: connection.id,
+          connection_workflow_run_id: workflow_run_id,
+          status: :success
+        }]
 
-        expect(response).to eq({
-                                 success: true,
-                                 message: "Sync initiated for connection #{connection.id}",
-                                 connection_workflow_run_id: workflow_run_id
-                               })
+        response = subject.send(:build_success_response, sync_results)
+
+        expect(response).to include(
+          success: true,
+          message: "Sync initiated for 1 connections",
+          results: sync_results
+        )
       end
     end
   end

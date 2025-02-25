@@ -67,33 +67,30 @@ RSpec.describe PipelineAction, type: :model do
     context "when action_type is sync_initialization" do
       let(:action) { build(:pipeline_action, action_type: :sync_initialization) }
 
-      it "is valid with workflow run ID" do
-        action.action_data = {
-          "connection_id" => 123,
-          "connection_workflow_run_id" => "uuid-1234"
-        }
+      it "is valid with connections data" do
+        action.action_data = { "connections" => ["connection_1"] }
         expect(action).to be_valid
       end
 
-      it "is invalid without workflow run ID" do
+      it "is invalid without connections" do
         action.action_data = { "connection_id" => 123 }
         expect(action).not_to be_valid
-        expect(action.errors[:action_data]).to include(/missing required keys: connection_workflow_run_id/)
+        expect(action.errors[:action_data]).to include(/missing required keys: connections/)
       end
     end
 
     context "when action_type is query_execution" do
-      let(:action) { build(:pipeline_action, :query_execution) }
+      let(:action) { build(:pipeline_action, action_type: :query_execution) }
 
-      it "is valid with optional explanation" do
-        action.action_data["explanation"] = "Sample explanation"
+      it "is valid with query_data" do
+        action.action_data = { "query_data" => { "sql" => "SELECT 1" } }
         expect(action).to be_valid
       end
 
-      it "is invalid with unexpected keys" do
-        action.action_data["invalid_key"] = "bad_data"
+      it "is invalid without query_data" do
+        action.action_data = { "query" => "SELECT * FROM users" }
         expect(action).not_to be_valid
-        expect(action.errors[:action_data]).to include(/invalid keys: invalid_key/)
+        expect(action.errors[:action_data]).to include(/missing required keys: query_data/)
       end
     end
   end

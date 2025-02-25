@@ -1,6 +1,6 @@
 connectors:
   - name: Github
-    type: API
+    integration_type: api
     language: ruby
     class_name: github
     operations:
@@ -11,7 +11,7 @@ connectors:
     version: 1.0.0
     maintainer: Polymetrics
   - name: DuckDB
-    type: Database
+    integration_type: database
     language: ruby
     class_name: duckdb
     operations:
@@ -22,7 +22,7 @@ connectors:
     version: 1.0.0
     maintainer: Polymetrics
   - name: PostgreSQL
-    type: Database
+    integration_type: database
     language: javascript
     class_name: postgresql
     operations:
@@ -33,7 +33,7 @@ connectors:
     version: 1.0.0
     maintainer: Polymetrics
   - name: Salesforce CRM
-    type: API
+    integration_type: api
     language: javascript
     class_name: salesforce_crm
     operations:

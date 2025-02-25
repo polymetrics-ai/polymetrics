@@ -6,7 +6,7 @@ RSpec.describe Temporal::Activities::Agents::DataAgent::ChatProcessingActivity d
   let(:chat) { create(:chat) }
   let(:activity_context) { instance_double("Temporal::Activity::Context", logger: Rails.logger) }
   let(:activity) { described_class.new(activity_context) }
-  let(:content) { "Test response" }
+  let(:content) { { "description" => "Test response" } }
   let(:tool_calls) { [{ "name" => "test_tool" }] }
 
   describe "#execute" do
@@ -17,7 +17,7 @@ RSpec.describe Temporal::Activities::Agents::DataAgent::ChatProcessingActivity d
         end.to change(chat.messages, :count).by(1)
 
         message = chat.messages.last
-        expect(message.content).to eq(content)
+        expect(message.content).to eq(content["description"])
         expect(message.role).to eq("assistant")
       end
 

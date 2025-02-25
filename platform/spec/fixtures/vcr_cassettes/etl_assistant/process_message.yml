@@ -7,29 +7,24 @@ http_interactions:
       encoding: UTF-8
       string: '{"messages":[{"role":"system","content":[{"type":"text","text":"You
         are an ETL Assistant that helps users plan and create data pipelines based
-        on their requirements.\n\nFollow these steps when helping users:\n1. Use the
-        connector_selection_tool to find appropriate source and destination connectors\n2.
-        If the connector_selection_tool returns a message, pass it to the user else
-        use the connection_creation_tool to create the pipeline\n3. If connection_creation_tool
-        creates a new connection, use the sync_initiator_tool to create the syncs\n4.
-        If the user query includes specific data requirements or analysis needs, use
-        the query_generation_tool to create appropriate SQL queries\n5. Always format
-        your responses according to the provided JSON schema\n6. For successful operations:\n  \"success\":
-        true,\n  \"message\": \"Clear description of what was accomplished\"\n6. For
-        operations needing clarification or with errors:\n   \"success\": false,\n   \"message\":
-        \"Clear explanation of what information is needed or what went wrong\"\n\nRemember:\n-
-        Always select the connectors first before creating the connection\n- If the
-        user asks for specific data analysis or filtering, use the query_generation_tool\n-
-        Always provide clear, actionable messages\n- For errors, explain what information
-        is missing\n- For success, summarize what was configured\n- Always pass the
-        query as it is into the tools without any modifications\n\nYou must format
-        your output as a JSON value that adheres to a given \"JSON Schema\" instance.\n\n\"JSON
-        Schema\" is a declarative language that allows you to annotate and validate
-        JSON documents.\n\nFor example, the example \"JSON Schema\" instance {\"properties\":
-        {\"foo\": {\"description\": \"a list of test words\", \"type\": \"array\",
-        \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould match
-        an object with one required property, \"foo\". The \"type\" property specifies
-        \"foo\" must be an \"array\", and the \"description\" property semantically
+        on their requirements.\nAnalyze the Connectors in our repo first before asking
+        any further questions.\n\n\u003cinstructions\u003e\n  Follow these steps when
+        helping users:\n  1. Use the connector_selection_tool to find appropriate
+        source and destination connectors\n  2. If the connector_selection_tool returns
+        a message, pass it to the user else use the connection_creation_tool to create
+        the pipeline\n  3. Use the sync_initiator_tool to create the syncs, if connection_creation_tool
+        creates a new connection\n  4. Always format your responses according to the
+        provided JSON schema\n  5. For successful operations:\n    \"success\": true,\n    \"message\":
+        \"Clear description of what was accomplished\"\n  6. For operations needing
+        clarification or with errors:\n    \"success\": false,\n    \"message\": \"Clear
+        explanation of what information is needed or what went wrong\"\n\u003c/instructions\u003e\n\n\u003cformat_instructions\u003e\n  You
+        must format your output as a JSON value that adheres to a given \"JSON Schema\"
+        instance.\n\n\"JSON Schema\" is a declarative language that allows you to
+        annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
+        instance {\"properties\": {\"foo\": {\"description\": \"a list of test words\",
+        \"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould
+        match an object with one required property, \"foo\". The \"type\" property
+        specifies \"foo\" must be an \"array\", and the \"description\" property semantically
         describes it as \"a list of test words\". The items within \"foo\" must be
         strings.\nThus, the object {\"foo\": [\"bar\", \"baz\"]} is a well-formatted
         instance of this example \"JSON Schema\". The object {\"properties\": {\"foo\":
@@ -41,16 +36,18 @@ http_interactions:
         the operation was successful\"},\"message\":{\"type\":\"string\",\"description\":\"Success
         or error message to display to the user\"},\"title\":{\"type\":\"string\",\"description\":\"Title
         for the chat session\"},\"description\":{\"type\":\"string\",\"description\":\"Detailed
-        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n"}]},{"role":"user","content":[{"type":"text","text":"Create
+        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n\u003c/format_instructions\u003e\n\n\u003cremember\u003e\n  -
+        Always assume we have the connectors for the user query before asking any
+        further questions\n  - Always select the connectors first before creating
+        the connection\n  - Always provide clear, actionable messages\n  - For errors,
+        explain what information is missing\n  - For success, summarize what was configured\n  -
+        Always pass the query as it is into the tools without any modifications\n\u003c/remember\u003e\n"}]},{"role":"user","content":[{"type":"text","text":"Create
         a connection between source A and destination B"}]}],"tools":[{"type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","description":"Find
         appropriate connectors based on user query and requirements","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
         query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_connection_connection_creation_tool__create_connection","description":"Creates
         a new connection for query based on the selected connector and streams","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
         query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_sync_sync_initiator_tool__initiate_sync","description":"Initiates
-        data synchronization for a connection","parameters":{"type":"object","properties":{"connection_id":{"type":"string","description":"ID
-        of the connection to sync"}},"required":["connection_id"]}}},{"type":"function","function":{"name":"ai_tools_query_query_generation_tool__generate_query","description":"Generates
-        SQL query based on destination schema and stream schema","parameters":{"type":"object","properties":{"query_requirements":{"type":"string","description":"Natural
-        language description of query requirements"}},"required":["query_requirements"]}}}],"tool_choice":"auto","parallel_tool_calls":true,"model":"gpt-4o","temperature":0.7,"n":1}'
+        data synchronization for all connections in a chat"}}],"tool_choice":"auto","parallel_tool_calls":true,"model":"gpt-4o","temperature":0.1,"n":1}'
     headers:
       Content-Type:
       - application/json
@@ -68,7 +65,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 07 Feb 2025 17:38:35 GMT
+      - Mon, 24 Feb 2025 17:07:42 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -80,7 +77,7 @@ http_interactions:
       Openai-Organization:
       - user-w9alqgscxndsn8ysy5tgcdlx
       Openai-Processing-Ms:
-      - '1209'
+      - '823'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
@@ -90,38 +87,38 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '1999256'
+      - '1999240'
       X-Ratelimit-Reset-Requests:
       - 6ms
       X-Ratelimit-Reset-Tokens:
       - 22ms
       X-Request-Id:
-      - req_77c9f69345d2037c2656a11947444de5
+      - req_644cc5ec6be1a8b9b955f9a82019ff5a
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=vC5jNR8_qnkcPFZmvs3dnLem_R4373FxXM_YEVx61dk-1738949915-1.0.1.1-f.QWtoNlhoi8VexnCqx55Ll_emYIzOr_QST2dA7iH0jml3WfhhtnN6eNJAiCHkm4gITU2NBAalGKSZOb5z8vDw;
-        path=/; expires=Fri, 07-Feb-25 18:08:35 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=g2rgsUqPw80LgfPyCJ9.1CdnvdnqxrP02oFjYD6_GXI-1740416862-1.0.1.1-FLr0WZkCnrOHcSO8e9mPprunQnvTtsYoBxLaKynZWP0DF18QCWITeVCGF3rvPKh70FjlEfl69TuJbX1xAiKeBA;
+        path=/; expires=Mon, 24-Feb-25 17:37:42 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=zQf8xGhxbsiVz8ou7Gt9g6MMoALK_xgJPonZC1zFg7w-1738949915727-0.0.1.1-604800000;
+      - _cfuvid=oJ3stIkaHJ3BzKDai6kCQrfAFisOwgdriU8Em_vVDHk-1740416862372-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 90e5277d3bd51790-MAA
+      - 91710da6dc8e17a6-MAA
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-AyMbCQotSQ8TzCyzvIWDWOJnGI3Us",
+          "id": "chatcmpl-B4WDdUS9icGYNg0VXVS1y7FS8Xgd3",
           "object": "chat.completion",
-          "created": 1738949914,
+          "created": 1740416861,
           "model": "gpt-4o-2024-08-06",
           "choices": [
             {
@@ -131,7 +128,7 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_KMBnMpCjZQ3iJw8Qyz2Qsr0T",
+                    "id": "call_XBYXK36857EFtqoxdP42dOe3",
                     "type": "function",
                     "function": {
                       "name": "ai_tools_connector_connector_selection_tool__find_connectors",
@@ -146,9 +143,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 789,
+            "prompt_tokens": 763,
             "completion_tokens": 31,
-            "total_tokens": 820,
+            "total_tokens": 794,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -161,28 +158,35 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_50cad350e4"
+          "system_fingerprint": "fp_eb9dce56a8"
         }
-  recorded_at: Fri, 07 Feb 2025 17:38:35 GMT
+  recorded_at: Mon, 24 Feb 2025 17:07:42 GMT
 - request:
     method: post
     uri: https://openrouter.ai/api/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"messages":[{"role":"user","content":"You are a Data Integration Assistant
-        specialized in creating data pipelines. Your role is to help users set up
-        source-to-destination data connections based on their requirements.\n\nAvailable
-        connectors in the workspace:\nAPI Connectors:\n\n\nDatabase Connectors:\nConnector
-        Name: Default DuckDB\nConnector ID: 1043\nIntegration Type: database\nConnector
-        Language: ruby\nDefault Analytics DB: Yes\nConnector Configuration: ---\ndatabase:
-        analytics_fc9e91cc.duckdb\ncredentials:\n  path: analytics_fc9e91cc.duckdb\n\n\n\nInstructions:\n1.
-        Analyze the user''s query to understand their data integration needs\n2. Identify
-        appropriate source which will be an API connector based on the query and destination
-        which will be a database connector\n3. For source connectors:\n   - Match
-        requirements with available API connectors and their streams\n   - Consider
-        data structure, required fields, and primary keys\n4. For destination:\n   -
-        Use the default analytics database (marked as default_analytics_db: true)\n5.
-        If the query is ambiguous or needs clarification, ask appropriate questions\n\nYou
+        specialized in creating data pipelines.\nYour role is to help users set up
+        source-to-destination data connections based on their requirements.\n\n\u003cconnectors\u003e\n  Available
+        connectors in the workspace:\n  [\"---\\nid: 1041\\nworkspace_id: 658\\nconnector_language:
+        ruby\\nconfiguration:\\n  database: analytics_c22e1a4a.duckdb\\n  credentials:\\n    path:
+        analytics_c22e1a4a.duckdb\\nname: Default DuckDB\\nconnector_class_name: duckdb\\ndescription:
+        Default local analytics database for the workspace\\nconnected: true\\ncreated_at:
+        !ruby/object:ActiveSupport::TimeWithZone\\n  utc: 2025-02-24 17:07:40.939414000
+        Z\\n  zone: \u00261 !ruby/object:ActiveSupport::TimeZone\\n    name: Etc/UTC\\n  time:
+        2025-02-24 17:07:40.939414000 Z\\nupdated_at: !ruby/object:ActiveSupport::TimeWithZone\\n  utc:
+        2025-02-24 17:07:40.939414000 Z\\n  zone: *1\\n  time: 2025-02-24 17:07:40.939414000
+        Z\\ndefault_analytics_db: true\\nintegration_type: database\\n\"]\n\u003c/connectors\u003e\n\n\u003cinstructions\u003e\n  1.
+        Analyze the user''s query to understand their data integration needs\n  2.
+        Identify appropriate sources which will be an API connector based on the query
+        and destination which will be a database connector\n  3. For source connectors:\n    -
+        Identify the correct connector id denoted by `id` based on the connector configuration
+        and other details of the connector provided\n    - Match requirements with
+        available API connectors and their streams\n    - Consider data structure,
+        required fields, and primary keys\n  4. For destination:\n    - Use the default
+        analytics database (marked as default_analytics_db: true)\n  5. If the query
+        is ambiguous or needs clarification, ask appropriate questions\n\u003c/instructions\u003e\n\n\u003cformat_instructions\u003e\n  You
         must format your output as a JSON value that adheres to a given \"JSON Schema\"
         instance.\n\n\"JSON Schema\" is a declarative language that allows you to
         annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
@@ -201,21 +205,24 @@ http_interactions:
         of response - either a message asking for clarification or pipeline action
         configuration\"},\"content\":{\"type\":\"array\",\"items\":{\"oneOf\":[{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Clarification
         message to ask the user\"}},\"required\":[\"message\"],\"additionalProperties\":false},{\"type\":\"object\",\"properties\":{\"action_type\":{\"type\":\"string\",\"enum\":[\"connector_selection\"],\"description\":\"Type
-        of pipeline action\"},\"action_data\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
+        of pipeline action\"},\"action_data\":{\"type\":\"array\",\"description\":\"Array
+        of source and destination connectors based on user query\",\"items\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
         of the source connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
         of the source connector\"},\"streams\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\",\"description\":\"Name
         of the stream\"},\"fields\":{\"type\":\"object\",\"properties\":{\"required\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"optional\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"primary_key\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"required\",\"optional\",\"primary_key\"]}},\"required\":[\"name\",\"fields\"]}}},\"required\":[\"connector_name\",\"connector_id\",\"streams\"]},\"destination\":{\"type\":\"object\",\"properties\":{\"connector_name\":{\"type\":\"string\",\"description\":\"Name
         of the destination database connector\"},\"connector_id\":{\"type\":\"string\",\"description\":\"ID
         of the destination database connector\"},\"is_default_analytics_db\":{\"type\":\"boolean\",\"description\":\"Whether
-        to use default analytics database\"}},\"required\":[\"connector_name\",\"connector_id\"]}},\"required\":[\"source\",\"destination\"]}},\"required\":[\"action_type\",\"action_data\"],\"additionalProperties\":false}]},\"minItems\":1,\"description\":\"Array
-        of either messages or pipeline action configurations\"}},\"required\":[\"type\",\"content\"],\"additionalProperties\":false}\n```\n\n\nUser
-        Query: Create a connection between source A and destination B\n\nRemember:\n-
-        Source must be an API connector\n- Always use the exact stream names given
-        in the connector stream descriptions\n- Destination must be a database connector\n-
-        Validate stream compatibility and field mappings\n- If multiple options exist,
-        include all only one api source for one connection creation\n- If clarification
-        needed, ask specific questions\n- Consider data types and structure compatibility\n-
-        Only return the JSON response\n"}],"model":"deepseek/deepseek-chat","temperature":0.7,"n":1}'
+        to use default analytics database\"}},\"required\":[\"connector_name\",\"connector_id\"]}},\"required\":[\"source\",\"destination\"]},\"minItems\":1}},\"required\":[\"action_type\",\"action_data\"],\"additionalProperties\":false}]},\"minItems\":1,\"description\":\"Array
+        of either messages or pipeline action configurations\"}},\"required\":[\"type\",\"content\"],\"additionalProperties\":false}\n```\n\n\u003c/format_instructions\u003e\n\n\u003cuser_query\u003e\n  User
+        Query: Create a connection between source A and destination B\n\u003c/user_query\u003e\n\n\u003cremember\u003e\n  -
+        Analyze the users query to understand if one source is required or multiple
+        sources are required\n    and the select the correct connectors from the available
+        connectors to form the connections with source and destination\n  - Source
+        must be an API connector\n  - Always use the exact stream names given in the
+        connector stream descriptions\n  - Destination must be a database connector\n  -
+        Validate stream compatibility and field mappings\n  - If clarification needed,
+        ask specific questions\n  - Consider data types and structure compatibility\n  -
+        Only return the JSON response\n\u003c/remember\u003e\n"}],"model":"deepseek/deepseek-chat","temperature":0.7,"n":1}'
     headers:
       Content-Type:
       - application/json
@@ -233,7 +240,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 07 Feb 2025 17:38:36 GMT
+      - Mon, 24 Feb 2025 17:07:43 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -254,24 +261,21 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 90e5278dff2c17ab-MAA
+      - 91710daef817a91f-MAA
     body:
       encoding: ASCII-8BIT
       string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
         \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n{\"id\":\"gen-1738949917-qOzfKO8U0U05sCrAxBDW\",\"provider\":\"Novita\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1738949917,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\\"type\\\":\\\"message\\\",\\\"content\\\":[{\\\"message\\\":\\\"Could
-        you please provide more details about the API connector and the specific streams
-        you want to use from Source A? Also, are there any particular fields or data
-        structures you need to map to Destination B?\\\"}]}\\n```\",\"refusal\":null}}],\"system_fingerprint\":\"\",\"usage\":{\"prompt_tokens\":999,\"completion_tokens\":57,\"total_tokens\":1056}}"
-  recorded_at: Fri, 07 Feb 2025 17:38:40 GMT
+        \        \n\n         \n{\"id\":\"gen-1740416863-yBmezR4RgDrif3DlxwMt\",\"provider\":\"InferenceNet\",\"model\":\"deepseek/deepseek-chat\",\"object\":\"chat.completion\",\"created\":1740416863,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
+        \ \\\"type\\\": \\\"message\\\",\\n  \\\"content\\\": [\\n    {\\n      \\\"message\\\":
+        \\\"Could you please clarify what you mean by 'source A' and 'destination
+        B'? Specifically, I need to know the API connector details for 'source A'
+        and the data structure you want to integrate. Additionally, confirm if 'destination
+        B' refers to the default analytics database or another destination.\\\"\\n
+        \   }\\n  ]\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":1259,\"completion_tokens\":88,\"total_tokens\":1347}}"
+  recorded_at: Mon, 24 Feb 2025 17:07:53 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -279,29 +283,24 @@ http_interactions:
       encoding: UTF-8
       string: '{"messages":[{"role":"system","content":[{"type":"text","text":"You
         are an ETL Assistant that helps users plan and create data pipelines based
-        on their requirements.\n\nFollow these steps when helping users:\n1. Use the
-        connector_selection_tool to find appropriate source and destination connectors\n2.
-        If the connector_selection_tool returns a message, pass it to the user else
-        use the connection_creation_tool to create the pipeline\n3. If connection_creation_tool
-        creates a new connection, use the sync_initiator_tool to create the syncs\n4.
-        If the user query includes specific data requirements or analysis needs, use
-        the query_generation_tool to create appropriate SQL queries\n5. Always format
-        your responses according to the provided JSON schema\n6. For successful operations:\n  \"success\":
-        true,\n  \"message\": \"Clear description of what was accomplished\"\n6. For
-        operations needing clarification or with errors:\n   \"success\": false,\n   \"message\":
-        \"Clear explanation of what information is needed or what went wrong\"\n\nRemember:\n-
-        Always select the connectors first before creating the connection\n- If the
-        user asks for specific data analysis or filtering, use the query_generation_tool\n-
-        Always provide clear, actionable messages\n- For errors, explain what information
-        is missing\n- For success, summarize what was configured\n- Always pass the
-        query as it is into the tools without any modifications\n\nYou must format
-        your output as a JSON value that adheres to a given \"JSON Schema\" instance.\n\n\"JSON
-        Schema\" is a declarative language that allows you to annotate and validate
-        JSON documents.\n\nFor example, the example \"JSON Schema\" instance {\"properties\":
-        {\"foo\": {\"description\": \"a list of test words\", \"type\": \"array\",
-        \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould match
-        an object with one required property, \"foo\". The \"type\" property specifies
-        \"foo\" must be an \"array\", and the \"description\" property semantically
+        on their requirements.\nAnalyze the Connectors in our repo first before asking
+        any further questions.\n\n\u003cinstructions\u003e\n  Follow these steps when
+        helping users:\n  1. Use the connector_selection_tool to find appropriate
+        source and destination connectors\n  2. If the connector_selection_tool returns
+        a message, pass it to the user else use the connection_creation_tool to create
+        the pipeline\n  3. Use the sync_initiator_tool to create the syncs, if connection_creation_tool
+        creates a new connection\n  4. Always format your responses according to the
+        provided JSON schema\n  5. For successful operations:\n    \"success\": true,\n    \"message\":
+        \"Clear description of what was accomplished\"\n  6. For operations needing
+        clarification or with errors:\n    \"success\": false,\n    \"message\": \"Clear
+        explanation of what information is needed or what went wrong\"\n\u003c/instructions\u003e\n\n\u003cformat_instructions\u003e\n  You
+        must format your output as a JSON value that adheres to a given \"JSON Schema\"
+        instance.\n\n\"JSON Schema\" is a declarative language that allows you to
+        annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
+        instance {\"properties\": {\"foo\": {\"description\": \"a list of test words\",
+        \"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould
+        match an object with one required property, \"foo\". The \"type\" property
+        specifies \"foo\" must be an \"array\", and the \"description\" property semantically
         describes it as \"a list of test words\". The items within \"foo\" must be
         strings.\nThus, the object {\"foo\": [\"bar\", \"baz\"]} is a well-formatted
         instance of this example \"JSON Schema\". The object {\"properties\": {\"foo\":
@@ -313,21 +312,24 @@ http_interactions:
         the operation was successful\"},\"message\":{\"type\":\"string\",\"description\":\"Success
         or error message to display to the user\"},\"title\":{\"type\":\"string\",\"description\":\"Title
         for the chat session\"},\"description\":{\"type\":\"string\",\"description\":\"Detailed
-        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n"}]},{"role":"user","content":[{"type":"text","text":"Create
-        a connection between source A and destination B"}]},{"role":"assistant","tool_calls":[{"id":"call_KMBnMpCjZQ3iJw8Qyz2Qsr0T","type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","arguments":"{\"query\":\"Create
-        a connection between source A and destination B\"}"}}]},{"role":"tool","tool_call_id":"call_KMBnMpCjZQ3iJw8Qyz2Qsr0T","content":[{"type":"text","text":"{:status=\u003e:success,
+        description of the operation\"}},\"required\":[\"success\",\"message\"],\"additionalProperties\":false}\n```\n\n\u003c/format_instructions\u003e\n\n\u003cremember\u003e\n  -
+        Always assume we have the connectors for the user query before asking any
+        further questions\n  - Always select the connectors first before creating
+        the connection\n  - Always provide clear, actionable messages\n  - For errors,
+        explain what information is missing\n  - For success, summarize what was configured\n  -
+        Always pass the query as it is into the tools without any modifications\n\u003c/remember\u003e\n"}]},{"role":"user","content":[{"type":"text","text":"Create
+        a connection between source A and destination B"}]},{"role":"assistant","tool_calls":[{"id":"call_XBYXK36857EFtqoxdP42dOe3","type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","arguments":"{\"query\":\"Create
+        a connection between source A and destination B\"}"}}]},{"role":"tool","tool_call_id":"call_XBYXK36857EFtqoxdP42dOe3","content":[{"type":"text","text":"{:status=\u003e:success,
         :data=\u003e{\"type\"=\u003e\"message\", \"content\"=\u003e[{\"message\"=\u003e\"Could
-        you please provide more details about the API connector and the specific streams
-        you want to use from Source A? Also, are there any particular fields or data
-        structures you need to map to Destination B?\"}]}}"}]}],"tools":[{"type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","description":"Find
+        you please clarify what you mean by ''source A'' and ''destination B''? Specifically,
+        I need to know the API connector details for ''source A'' and the data structure
+        you want to integrate. Additionally, confirm if ''destination B'' refers to
+        the default analytics database or another destination.\"}]}}"}]}],"tools":[{"type":"function","function":{"name":"ai_tools_connector_connector_selection_tool__find_connectors","description":"Find
         appropriate connectors based on user query and requirements","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
         query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_connection_connection_creation_tool__create_connection","description":"Creates
         a new connection for query based on the selected connector and streams","parameters":{"type":"object","properties":{"query":{"type":"string","description":"User
         query and requirements"}},"required":["query"]}}},{"type":"function","function":{"name":"ai_tools_sync_sync_initiator_tool__initiate_sync","description":"Initiates
-        data synchronization for a connection","parameters":{"type":"object","properties":{"connection_id":{"type":"string","description":"ID
-        of the connection to sync"}},"required":["connection_id"]}}},{"type":"function","function":{"name":"ai_tools_query_query_generation_tool__generate_query","description":"Generates
-        SQL query based on destination schema and stream schema","parameters":{"type":"object","properties":{"query_requirements":{"type":"string","description":"Natural
-        language description of query requirements"}},"required":["query_requirements"]}}}],"tool_choice":"auto","parallel_tool_calls":true,"model":"gpt-4o","temperature":0.7,"n":1}'
+        data synchronization for all connections in a chat"}}],"tool_choice":"auto","parallel_tool_calls":true,"model":"gpt-4o","temperature":0.1,"n":1}'
     headers:
       Content-Type:
       - application/json
@@ -345,7 +347,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 07 Feb 2025 17:38:43 GMT
+      - Mon, 24 Feb 2025 17:07:57 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -357,7 +359,7 @@ http_interactions:
       Openai-Organization:
       - user-w9alqgscxndsn8ysy5tgcdlx
       Openai-Processing-Ms:
-      - '2391'
+      - '3236'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
@@ -367,45 +369,45 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '1999184'
+      - '1999145'
       X-Ratelimit-Reset-Requests:
       - 6ms
       X-Ratelimit-Reset-Tokens:
-      - 24ms
+      - 25ms
       X-Request-Id:
-      - req_01370410cdf4f27758a2f14c8918f46b
+      - req_f55329b9f1249afe22f1879a5d83aa2f
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=rCX56qAY2CScilYsWd_cClr_ByCnSCjPTzanDk8.98g-1738949923-1.0.1.1-GRFXRUUL.u_2aSBnOC5rw99yI_8DJnylhRzQAHcYHIqFHAof0RlcMuBX_D.5m3GVbXX.vvbK9a6qE.NIiemxKg;
-        path=/; expires=Fri, 07-Feb-25 18:08:43 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=BXjRRpfruYAYdCLhxK40Moc8qoDVVKG7E8LpaZA3f4Y-1740416877-1.0.1.1-GflLxg48bK5NztGw_NcnoAa2U3dPd3L4bPuCS4irKGnONMFUWVMDgTeVSxPRiObkqJZS11fCDJJHrSS1WSUUMg;
+        path=/; expires=Mon, 24-Feb-25 17:37:57 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=Vqu8GGaIvHzJM2TqmsFpNVmzHgqyMmYRIU8xwx6.Yfw-1738949923574-0.0.1.1-604800000;
+      - _cfuvid=v.19MORRPn5vmYbbbm_PUPd3QfZi6JOcPKUxuMrWMFg-1740416877752-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 90e527ace8fd7ea4-MAA
+      - 91710df7e9f37fa5-MAA
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-AyMbJaumwN9dNXA0jwosiSYMrsq7p",
+          "id": "chatcmpl-B4WDqdpZQCOoWBfNbSyOmgrNG6B7w",
           "object": "chat.completion",
-          "created": 1738949921,
+          "created": 1740416874,
           "model": "gpt-4o-2024-08-06",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "```json\n{\n  \"success\": false,\n  \"message\": \"Could you please provide more details about the API connector and the specific streams you want to use from Source A? Also, are there any particular fields or data structures you need to map to Destination B?\",\n  \"title\": \"Connection Setup Clarification Needed\",\n  \"description\": \"In order to create a connection between source A and destination B, additional details are needed regarding the API connector, specific streams, and any specific fields or data structures to be mapped.\"\n}\n```",
+                "content": "```json\n{\n  \"success\": false,\n  \"message\": \"Could you please clarify what you mean by 'source A' and 'destination B'? Specifically, I need to know the API connector details for 'source A' and the data structure you want to integrate. Additionally, confirm if 'destination B' refers to the default analytics database or another destination.\",\n  \"title\": \"Clarification Needed for Connection Setup\",\n  \"description\": \"The request to create a connection between 'source A' and 'destination B' requires more specific details about the connectors and destinations involved. Please provide the API connector details for 'source A' and confirm the destination for 'destination B'.\"\n}\n```",
                 "refusal": null
               },
               "logprobs": null,
@@ -413,9 +415,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 898,
-            "completion_tokens": 111,
-            "total_tokens": 1009,
+            "prompt_tokens": 891,
+            "completion_tokens": 143,
+            "total_tokens": 1034,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -428,7 +430,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_50cad350e4"
+          "system_fingerprint": "fp_eb9dce56a8"
         }
-  recorded_at: Fri, 07 Feb 2025 17:38:43 GMT
+  recorded_at: Mon, 24 Feb 2025 17:07:57 GMT
 recorded_with: VCR 6.3.1

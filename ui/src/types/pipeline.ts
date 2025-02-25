@@ -16,11 +16,11 @@ export interface PipelineData {
     progress: number;
     records_transferred: number;
   };
-  query_generation?: {
+  query_execution?: {
     sql: string;
     parameters: Record<string, any>;
   };
-  query_execution?: {
+  query_generation?: {
     result_count: number;
     execution_time: number;
   };

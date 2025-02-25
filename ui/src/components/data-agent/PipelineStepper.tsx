@@ -1,15 +1,12 @@
 import * as React from 'react'
 import { Separator } from '@/components/ui/separator'
 import ConnectorIdentified from '@/components/data-agent/ConnectorIdentified'
-import ConnectorConfiguration from '@/components/data-agent/ConnectorConfiguration'
 import SyncInitiated from '@/components/data-agent/SyncInitiated'
 import QueryBlock from '@/components/data-agent/QueryBlock'
 import DataPresented from '@/components/data-agent/DataPresented'
 import { Stepper } from '@stepperize/react'
 import { dataAgentSteps } from '@/constants/constants'
 import ConnectionCreated from '@/components/data-agent/ConnectionCreated'
-import SyncInitialized from '@/components/data-agent/SyncInitialized'
-import QueryResults from '@/components/data-agent/QueryResults'
 import { PipelineData } from '@/types/pipeline'
 
 type Mutable<T> = T extends readonly (infer U)[] ? U[] : T
@@ -24,7 +21,8 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({ stepper, pipel
     'connector_selection': 'connector-selected',
     'connection_creation': 'connection-created',
     'sync_initialization': 'sync-initialized',
-    'query_execution': 'query-generated'
+    'query_generation': 'query-generated',
+    'query_execution': 'query-executed'
   };
 
   const filteredSteps = stepper.all.filter(step => 
@@ -40,13 +38,20 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({ stepper, pipel
         <div className="flex justify-start mb-4">
           <h3 className="text-base font-medium text-slate-800">Pipeline</h3>
         </div>
-        <nav aria-label="Pipeline Steps" className="group">
-          <ol className="flex flex-col" aria-orientation="vertical">
+        <nav aria-label="Pipeline Steps" className="group relative">
+          <div 
+            className="absolute left-4 top-4 w-[2px] bg-slate-200"
+            style={{
+              height: 'calc(100% - 32px)',
+              zIndex: 0
+            }}
+          />
+          <ol className="flex flex-col relative" aria-orientation="vertical">
             {filteredSteps.map((step, index, array) => (
               <React.Fragment key={step.id}>
                 <li className="flex items-start gap-4">
                   <div className="flex flex-col items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center ${
                       stepper.current.id === step.id ? 'bg-white border-2 border-emerald-500' : 
                       index < filteredSteps.indexOf(stepper.current) ? 'bg-emerald-500 text-white' : 
                       'bg-white border-2 border-slate-300'
@@ -90,18 +95,19 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({ stepper, pipel
                         </svg>
                       )}
                     </div>
+                    
                     {index < array.length - 1 && (
-                      <Separator 
-                        orientation="vertical" 
-                        className={`h-full w-[2px] ${
-                          index < filteredSteps.indexOf(stepper.current) ? 'bg-emerald-500' : 'bg-slate-200'
+                      <div 
+                        className={`w-[2px] ${
+                          index < filteredSteps.indexOf(stepper.current) ? 'bg-emerald-500' : 'bg-transparent'
                         }`}
                         style={{
-                          marginTop: '8px',
-                          marginBottom: '-8px',
                           height: step.id === 'connection-created' ? '120px' :
                                  step.id === 'sync-initialized' ? '140px' :
-                                 '100px'
+                                 '100px',
+                          marginTop: '8px',
+                          marginBottom: '-8px',
+                          zIndex: 1
                         }}
                       />
                     )}
@@ -117,38 +123,47 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({ stepper, pipel
                       />
                     )}
                     {step.id === 'connection-created' && (
-                      <ConnectionCreated
-                        source={pipelineData?.actions
-                          ?.find(a => a.action_type === 'connection_creation')
-                          ?.data.source}
-                        destination={pipelineData?.actions
-                          ?.find(a => a.action_type === 'connection_creation')
-                          ?.data.destination}
-                        streams={pipelineData?.actions
-                          ?.find(a => a.action_type === 'connection_creation')
-                          ?.data.streams}
-                      />
+                      pipelineData?.actions
+                        ?.find(a => a.action_type === 'connection_creation')
+                        ?.data?.map((connection, index) => (
+                          <ConnectionCreated
+                            key={index}
+                            source={connection.source}
+                            destination={connection.destination}
+                            streams={connection.streams}
+                          />
+                        ))
                     )}
                     {step.id === 'sync-initialized' && (
                       <SyncInitiated
-                        syncs={pipelineData?.actions
-                          ?.find(a => a.action_type === 'sync_initialization')
-                          ?.data.syncs}
+                        pipeline_data={pipelineData}
                       />
                     )}
                     {step.id === 'query-generated' && (
                       <QueryBlock 
                         query={{
                           sql: pipelineData?.actions
-                            ?.find(a => a.action_type === 'query_execution')
+                            ?.find(a => a.action_type === 'query_generation')
                             ?.data.query,
                           explanation: pipelineData?.actions
-                            ?.find(a => a.action_type === 'query_execution')
+                            ?.find(a => a.action_type === 'query_generation')
                             ?.data.explanation
                         }}
                       />
                     )}
-                    {step.id === 'query-executed' && <DataPresented />}
+                    {step.id === 'query-executed' && (
+                      <DataPresented 
+                        queryData={pipelineData?.actions
+                          ?.find(a => a.action_type === 'query_execution')
+                          ?.data.query_data}
+                        limit={pipelineData?.actions
+                          ?.find(a => a.action_type === 'query_execution')
+                          ?.data.limit}
+                        totalRecords={pipelineData?.actions
+                          ?.find(a => a.action_type === 'query_execution')
+                          ?.data.total_records}
+                      />
+                    )}
                   </div>
                 </li>
               </React.Fragment>

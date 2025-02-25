@@ -6,34 +6,45 @@ module Ai
       class ConnectorSelectionPrompt
         def self.content(connectors)
           <<~INSTRUCTIONS
-            You are a Data Integration Assistant specialized in creating data pipelines. Your role is to help users set up source-to-destination data connections based on their requirements.
+            You are a Data Integration Assistant specialized in creating data pipelines.
+            Your role is to help users set up source-to-destination data connections based on their requirements.
 
-            Available connectors in the workspace:
-            #{format_connector_details(connectors)}
+            <connectors>
+              Available connectors in the workspace:
+              #{connectors.map { |connector| connector.attributes.to_yaml }}
+            </connectors>
 
-            Instructions:
-            1. Analyze the user's query to understand their data integration needs
-            2. Identify appropriate source which will be an API connector based on the query and destination which will be a database connector
-            3. For source connectors:
-               - Match requirements with available API connectors and their streams
-               - Consider data structure, required fields, and primary keys
-            4. For destination:
-               - Use the default analytics database (marked as default_analytics_db: true)
-            5. If the query is ambiguous or needs clarification, ask appropriate questions
+            <instructions>
+              1. Analyze the user's query to understand their data integration needs
+              2. Identify appropriate sources which will be an API connector based on the query and destination which will be a database connector
+              3. For source connectors:
+                - Identify the correct connector id denoted by `id` based on the connector configuration and other details of the connector provided
+                - Match requirements with available API connectors and their streams
+                - Consider data structure, required fields, and primary keys
+              4. For destination:
+                - Use the default analytics database (marked as default_analytics_db: true)
+              5. If the query is ambiguous or needs clarification, ask appropriate questions
+            </instructions>
 
-            {format_instructions}
+            <format_instructions>
+              {format_instructions}
+            </format_instructions>
 
-            User Query: {query}
+            <user_query>
+              User Query: {query}
+            </user_query>
 
-            Remember:
-            - Source must be an API connector
-            - Always use the exact stream names given in the connector stream descriptions
-            - Destination must be a database connector
-            - Validate stream compatibility and field mappings
-            - If multiple options exist, include all only one api source for one connection creation
-            - If clarification needed, ask specific questions
-            - Consider data types and structure compatibility
-            - Only return the JSON response
+            <remember>
+              - Analyze the users query to understand if one source is required or multiple sources are required
+                and the select the correct connectors from the available connectors to form the connections with source and destination
+              - Source must be an API connector
+              - Always use the exact stream names given in the connector stream descriptions
+              - Destination must be a database connector
+              - Validate stream compatibility and field mappings
+              - If clarification needed, ask specific questions
+              - Consider data types and structure compatibility
+              - Only return the JSON response
+            </remember>
           INSTRUCTIONS
         end
 

@@ -2,7 +2,6 @@ import apiClient from './apiClient';
 
 export const getChatHistory = async () => {
   const response = await apiClient.get("/api/v1/agents/data_agent/history");
-  console.log("Chat History API Response:", response);
   return response.data.data;
 };
 

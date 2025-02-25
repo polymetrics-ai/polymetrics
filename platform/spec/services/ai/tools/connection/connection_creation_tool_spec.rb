@@ -10,7 +10,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
   let(:connector) { create(:connector, workspace: workspace) }
   let(:message) { create(:message, chat: chat, message_type: "pipeline", content: {}) }
   let(:pipeline_content) do
-    {
+    [{
       source: {
         connector_id: connector.id,
         streams: [
@@ -21,7 +21,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
       destination: {
         connector_id: workspace.default_analytics_db.id
       }
-    }
+    }]
   end
 
   let(:pipeline) { create(:pipeline, message: message) }
@@ -89,7 +89,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
       result = subject.create_connection(query: "test query")
 
       expect(result[:success]).to be true
-      expect(result[:connection_id]).to be_present
+      expect(result[:connection_ids]).to eq(chat.connections.pluck(:id))
       expect(result[:message]).to include("Successfully created connection with 2 streams: stream1, stream2")
     end
 
@@ -108,7 +108,7 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
 
         expect(result[:success]).to be true
         expect(result[:message]).to include("Using existing connection")
-        expect(result[:connection_id]).to eq(existing_connection.id)
+        expect(result[:connection_ids]).to eq([existing_connection.id])
       end
     end
 
@@ -120,8 +120,8 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
       it "handles the error gracefully" do
         result = subject.create_connection(query: "test query")
 
-        expect(result[:status]).to eq(:error)
-        expect(result[:error]).to include("Connection failed")
+        expect(result[:success]).to be false
+        expect(result[:message]).to include("Failed to create 1 connections")
       end
     end
   end
@@ -130,14 +130,14 @@ RSpec.describe Ai::Tools::Connection::ConnectionCreationTool do
     describe "#extract_connection_params" do
       it "extracts connection params from the pipeline message" do
         params = subject.send(:extract_connection_params)
-        expect(params["source"]["connector_id"]).to eq(connector.id)
-        expect(params["source"]["streams"].pluck("name")).to eq(%w[stream1 stream2])
+        expect(params.first["source"]["connector_id"]).to eq(connector.id)
+        expect(params.first["source"]["streams"].pluck("name")).to eq(%w[stream1 stream2])
       end
     end
 
     describe "#extract_selected_streams" do
       it "returns the list of stream names" do
-        params = subject.send(:extract_connection_params)
+        params = subject.send(:extract_connection_params).first
         streams = subject.send(:extract_selected_streams, params)
         expect(streams).to eq(%w[stream1 stream2])
       end

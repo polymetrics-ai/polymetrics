@@ -17,6 +17,8 @@ worker.register_workflow(Temporal::Workflows::Extractors::StartConnectorDataFetc
 worker.register_workflow(Temporal::Workflows::Extractors::StartFirstPageWorkflow)
 worker.register_workflow(Temporal::Workflows::Loaders::DatabaseDataLoaderWorkflow)
 worker.register_workflow(Temporal::Workflows::Agents::DataAgent::ChatProcessingWorkflow)
+worker.register_workflow(Temporal::Workflows::Agents::DataAgent::ProcessAssistantQueryWorkflow)
+worker.register_workflow(Temporal::Workflows::Agents::DataAgent::ReadDatabaseDataWorkflow)
 
 # Register activities
 worker.register_activity(Temporal::Activities::LogSyncErrorActivity)
@@ -38,5 +40,7 @@ worker.register_activity(Temporal::Activities::UpdateWriteCompletionActivity)
 worker.register_activity(Temporal::Activities::UpdateSyncRunActivity)
 worker.register_activity(Temporal::Activities::Agents::DataAgent::ProcessMessageActivity)
 worker.register_activity(Temporal::Activities::Agents::DataAgent::ChatProcessingActivity)
-
+worker.register_activity(Temporal::Activities::Agents::DataAgent::CreateQueryExecutionActivity)
+worker.register_activity(Temporal::Activities::Agents::DataAgent::SqlGenerationActivity)
+worker.register_activity(Temporal::Activities::Agents::DataAgent::CheckConnectionHealthActivity)
 worker.start

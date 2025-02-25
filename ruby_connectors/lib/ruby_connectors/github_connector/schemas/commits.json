@@ -1,167 +1,173 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
-  "title": "Commits",
-  "description": "Detailed information about a commit in a GitHub repository, including its repository, branch, creation timestamp, URL, SHA, and detailed commit metadata.",
+  "title": "Commit",
+  "description": "Detailed information about a GitHub commit including metadata, author information, and file changes",
   "x-stream_name": "commits",
   "x-source_defined_primary_key": ["sha"],
   "x-supported_sync_modes": ["incremental_dedup"],
   "x-default_sync_mode": "incremental_dedup",
   "properties": {
-    "repository": {
-      "description": "The fully qualified name or unique identifier of the repository containing the commit, typically in the format 'owner/repo'.",
-      "type": "string"
-    },
-    "branch": {
-      "description": "The name of the branch where the commit was applied. May be null for detached HEAD states or if the branch information is not available.",
-      "type": ["null", "string"]
-    },
-    "created_at": {
-      "description": "The timestamp in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) indicating when the commit was created in the repository.",
-      "type": "string",
-      "format": "date-time"
-    },
     "url": {
-      "description": "The fully qualified API endpoint URL for retrieving detailed information about the commit. May be null if the URL is not available.",
-      "type": ["null", "string"]
+      "description": "API URL to fetch the commit details",
+      "x-sql-example": "SELECT url FROM sample_schema.sample_table",
+      "type": "string",
+      "format": "uri"
     },
     "sha": {
-      "description": "The 40-character SHA-1 hash that uniquely identifies the commit within the repository.",
-      "type": ["null", "string"]
+      "description": "The 40-character SHA-1 hash uniquely identifying the commit",
+      "x-sql-example": "SELECT sha FROM sample_schema.sample_table",
+      "type": "string"
     },
     "node_id": {
-      "description": "The globally unique identifier for the commit in the GitHub GraphQL API, typically a base64-encoded string.",
-      "type": ["null", "string"]
+      "description": "Globally unique identifier for the commit in GitHub's GraphQL API",
+      "x-sql-example": "SELECT node_id FROM sample_schema.sample_table",
+      "type": "string"
     },
     "html_url": {
-      "description": "The fully qualified web URL where the commit can be viewed in a browser interface.",
-      "type": ["null", "string"]
+      "description": "Browser-viewable URL of the commit in GitHub's web interface",
+      "x-sql-example": "SELECT html_url FROM sample_schema.sample_table",
+      "type": "string",
+      "format": "uri"
     },
     "comments_url": {
-      "description": "The fully qualified API endpoint URL for retrieving and managing comments associated with the commit.",
-      "type": ["null", "string"]
+      "description": "API endpoint URL for accessing commit comments",
+      "x-sql-example": "SELECT comments_url FROM sample_schema.sample_table",
+      "type": "string",
+      "format": "uri"
     },
     "commit": {
-      "description": "Detailed metadata about the commit, including authorship, content information, and verification details.",
-      "type": ["null", "object"],
+      "description": "Core commit metadata including message, author, and verification status",
+      "x-sql-example": "SELECT commit FROM sample_schema.sample_table",
+      "type": "object",
       "properties": {
+        "url": {
+          "description": "API URL for the commit object",
+          "type": "string",
+          "format": "uri"
+        },
         "author": {
-          "description": "Information about the individual who originally created the commit content.",
-          "type": ["null", "object"],
-          "properties": {
-            "name": {
-              "description": "The name of the commit author as configured in the local Git environment at the time of commit creation.",
-              "type": ["null", "string"]
-            },
-            "email": {
-              "description": "The email address of the commit author as configured in the local Git environment at the time of commit creation.",
-              "type": ["null", "string"]
-            },
-            "date": {
-              "description": "The timestamp in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) when the commit was authored.",
-              "type": "string",
-              "format": "date-time"
+          "description": "Original author of the commit content",
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string", "description": "Author's name as configured in Git"},
+                "email": {"type": "string", "description": "Author's email as configured in Git"},
+                "date": {"type": "string", "format": "date-time", "description": "Timestamp of authorship"}
+              }
             }
-          }
+          ]
         },
         "committer": {
-          "description": "Information about the individual who applied the commit to the repository, which may differ from the author in cases of commit amending or cherry-picking.",
-          "type": ["null", "object"],
-          "properties": {
-            "name": {
-              "description": "The name of the committer as configured in the Git environment when the commit was applied to the repository.",
-              "type": ["null", "string"]
-            },
-            "email": {
-              "description": "The email address of the committer as configured in the Git environment when the commit was applied to the repository.",
-              "type": ["null", "string"]
-            },
-            "date": {
-              "description": "The timestamp in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) when the commit was applied to the repository.",
-              "type": "string",
-              "format": "date-time"
+          "description": "User who committed the changes to the repository",
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string", "description": "Committer's name", "x-sql-example": "SELECT commit.committer.name FROM sample_schema.sample_table"},
+                "email": {"type": "string", "description": "Committer's email", "x-sql-example": "SELECT commit.committer.email FROM sample_schema.sample_table"},
+                "date": {"type": "string", "format": "date-time", "description": "Timestamp of commit", "x-sql-example": "SELECT commit.committer.date FROM sample_schema.sample_table"}
+              }
             }
-          }
+          ]
         },
         "message": {
-          "description": "The full text of the commit message, including both the subject line and the body.",
-          "type": ["null", "string"]
-        },
-        "tree": {
-          "description": "Reference to the Git tree object representing the state of the repository file system after the commit was applied.",
-          "type": ["null", "object"],
-          "properties": {
-            "sha": {
-              "description": "The 40-character SHA-1 hash of the Git tree object.",
-              "type": ["null", "string"]
-            },
-            "url": {
-              "description": "The fully qualified API endpoint URL for retrieving the Git tree object.",
-              "type": ["null", "string"]
-            }
-          }
-        },
-        "url": {
-          "description": "The fully qualified API endpoint URL for retrieving the commit object details.",
-          "type": ["null", "string"]
+          "description": "Full commit message including subject and body",
+          "type": "string"
         },
         "comment_count": {
-          "description": "The total number of comments directly attached to the commit.",
-          "type": ["null", "integer"]
+          "description": "Number of comments attached to the commit",
+          "type": "integer"
+        },
+        "tree": {
+          "description": "Reference to the Git tree object representing the repository state",
+          "type": "object",
+          "properties": {
+            "sha": {"type": "string", "description": "SHA-1 hash of the tree object"},
+            "url": {"type": "string", "format": "uri", "description": "API URL for the tree object"}
+          },
+          "required": ["sha", "url"]
         },
         "verification": {
-          "description": "Information about the cryptographic verification of the commit signature, if applicable.",
-          "type": ["null", "object"],
+          "description": "Cryptographic verification status of the commit signature",
+          "type": "object",
           "properties": {
-            "verified": {
-              "description": "Boolean flag indicating whether the commit signature was successfully verified against a known public key.",
-              "type": ["null", "boolean"]
-            },
-            "reason": {
-              "description": "A human-readable explanation of the verification status, such as 'valid', 'unsigned', or 'gpg verification failed'.",
-              "type": ["null", "string"]
-            },
-            "signature": {
-              "description": "The cryptographic signature string, if present. This is typically a PGP signature.",
-              "type": ["null", "string"]
-            },
-            "payload": {
-              "description": "The payload against which the signature was verified, typically containing commit metadata.",
-              "type": ["null", "string"]
-            }
-          }
+            "verified": {"type": "boolean", "description": "Whether the signature was successfully verified"},
+            "reason": {"type": "string", "description": "Verification status explanation"},
+            "payload": {"type": ["string", "null"], "description": "Signed payload content"},
+            "signature": {"type": ["string", "null"], "description": "Cryptographic signature string"},
+            "verified_at": {"type": ["string", "null"], "description": "Timestamp of verification"}
+          },
+          "required": ["verified", "reason", "payload", "signature", "verified_at"]
         }
-      }
+      },
+      "required": ["author", "committer", "comment_count", "message", "tree", "url"]
     },
     "author": {
-      "description": "Detailed information about the GitHub user account associated with the commit author.",
-      "$ref": "user.json"
+      "description": "GitHub user account of the commit author",
+      "x-sql-example": "SELECT author FROM sample_schema.sample_table",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "login": {"type": "string", "description": "GitHub username"},
+            "id": {"type": "integer", "format": "int64", "description": "GitHub user ID"},
+            "avatar_url": {"type": "string", "format": "uri", "description": "URL of user's avatar image"},
+            "html_url": {"type": "string", "format": "uri", "description": "GitHub profile URL"},
+            "type": {"type": "string", "description": "Type of user account (User/Organization)"},
+            "site_admin": {"type": "boolean", "description": "Administrator status in GitHub"}
+          },
+          "required": ["login", "id", "avatar_url", "html_url", "type", "site_admin"]
+        },
+        {"type": "null"}
+      ]
     },
     "committer": {
-      "description": "Detailed information about the GitHub user account associated with the individual who applied the commit.",
-      "$ref": "user.json"
+      "description": "GitHub user account of the committer",
+      "x-sql-example": "SELECT committer FROM sample_schema.sample_table",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "login": {"type": "string", "description": "GitHub username"},
+            "id": {"type": "integer", "format": "int64", "description": "GitHub user ID"},
+            "avatar_url": {"type": "string", "format": "uri", "description": "URL of user's avatar image"},
+            "html_url": {"type": "string", "format": "uri", "description": "GitHub profile URL"},
+            "type": {"type": "string", "description": "Type of user account (User/Organization)"},
+            "site_admin": {"type": "boolean", "description": "Administrator status in GitHub"}
+          },
+          "required": ["login", "id", "avatar_url", "html_url", "type", "site_admin"]
+        },
+        {"type": "null"}
+      ]
     },
     "parents": {
-      "description": "An array of references to the immediate parent commits of this commit. Most commits have one parent, merge commits have two or more.",
-      "type": ["null", "array"],
+      "description": "Immediate ancestor commits in the commit history",
+      "x-sql-example": "SELECT parents FROM sample_schema.sample_table",
+      "type": "array",
       "items": {
-        "description": "Information about a single parent commit.",
-        "type": ["null", "object"],
+        "type": "object",
         "properties": {
-          "sha": {
-            "description": "The 40-character SHA-1 hash of the parent commit.",
-            "type": ["null", "string"]
-          },
-          "url": {
-            "description": "The fully qualified API endpoint URL for retrieving details about the parent commit.",
-            "type": ["null", "string"]
-          },
-          "html_url": {
-            "description": "The fully qualified web URL where the parent commit can be viewed in a browser interface.",
-            "type": ["null", "string"]
-          }
-        }
+          "sha": {"type": "string", "description": "Parent commit SHA"},
+          "url": {"type": "string", "format": "uri", "description": "API URL for parent commit"},
+          "html_url": {"type": "string", "format": "uri", "description": "Web URL for parent commit"}
+        },
+        "required": ["sha", "url"]
       }
     }
-  }
+  },
+  "required": [
+    "url",
+    "sha",
+    "node_id",
+    "html_url",
+    "comments_url",
+    "commit",
+    "author",
+    "committer",
+    "parents"
+  ]
 }

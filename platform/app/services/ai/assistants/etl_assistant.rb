@@ -55,12 +55,12 @@ module Ai
         ).format(format_instructions: @parser.get_format_instructions)
       end
 
+      # Ai::Tools::Query::QueryGenerationTool.new(workspace_id: @workspace_id, chat_id: @chat_id)
       def build_tools
         [
           Ai::Tools::Connector::ConnectorSelectionTool.new(workspace_id: @workspace_id, chat_id: @chat_id, original_query: @query),
           Ai::Tools::Connection::ConnectionCreationTool.new(workspace_id: @workspace_id, chat_id: @chat_id),
-          Ai::Tools::Sync::SyncInitiatorTool.new(workspace_id: @workspace_id, chat_id: @chat_id),
-          Ai::Tools::Query::QueryGenerationTool.new(workspace_id: @workspace_id, chat_id: @chat_id)
+          Ai::Tools::Sync::SyncInitiatorTool.new(workspace_id: @workspace_id, chat_id: @chat_id)
         ]
       end
 
@@ -72,7 +72,7 @@ module Ai
 
         Langchain::LLM::OpenAI.new(
           api_key: ENV.fetch("OPENAI_API_KEY"),
-          default_options: { temperature: 0.7, chat_model: "gpt-4o" }
+          default_options: { temperature: 0.1, chat_model: "gpt-4o" }
         )
       end
 
