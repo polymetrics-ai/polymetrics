@@ -20,11 +20,12 @@ module Temporal
       def execute(sync_run_id)
         @sync_run = SyncRun.find(sync_run_id)
         @sync = @sync_run.sync
+        @failed_records = []
 
         unless @sync_run.extraction_completed
           return {
             success: false,
-            error: "Extraction already completed for sync run #{sync_run_id}"
+            error: "Extraction not completed for sync run #{sync_run_id}"
           }
         end
 
@@ -37,6 +38,12 @@ module Temporal
         end
 
         begin
+          # Initialize the Redis key for this sync run
+          @redis_key = "sync:#{@sync.id}:run:#{@sync_run.id}:transformed"
+
+          # Clear any existing transformed data for this run
+          redis.del(@redis_key)
+
           transform_read_records
 
           total_records = @sync_run.total_records_read
@@ -54,12 +61,8 @@ module Temporal
             }.compact
           end
         rescue StandardError => e
-          activity.logger.error(
-            "Failed to transform records for sync run #{sync_run_id}: #{e.message}",
-            error: e,
-            sync_run_id: @sync_run.id,
-            sync_id: @sync.id
-          )
+          activity.logger.error("Failed to transform records for sync run #{sync_run_id}: #{e.message}")
+
           { success: false, error: e.message }
         end
       end
@@ -70,24 +73,24 @@ module Temporal
       # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       def transform_read_records
         record_ids = @sync_run.sync_read_records.pluck(:id)
-        @failed_records = []
         processed_records = Set.new
 
-        Parallel.each(record_ids, in_threads: 10) do |record_id|
-          ActiveRecord::Base.connection_pool.with_connection do
-            sync_read_record = SyncReadRecord.find(record_id)
+        # Process records in batches to avoid memory issues
+        record_ids.each_slice(100) do |batch_ids|
+          batch_records = SyncReadRecord.where(id: batch_ids)
+
+          batch_records.each do |sync_read_record|
             result = transform_single_record(sync_read_record)
             activity.heartbeat
+
             if result[:success]
-              processed_records.add(record_id)
+              processed_records.add(sync_read_record.id)
             else
-              @failed_records << { id: record_id, error: result[:error] }
+              @failed_records << { id: sync_read_record.id, error: result[:error] }
             end
           rescue StandardError => e
-            @failed_records << { id: record_id, error: e.message }
-            handle_record_error(record_id, e)
-          ensure
-            ActiveRecord::Base.connection_pool.release_connection
+            @failed_records << { id: sync_read_record.id, error: e.message }
+            handle_record_error(sync_read_record.id, e)
           end
         end
       end
@@ -128,10 +131,11 @@ module Temporal
         transformed_record
       end
 
+      # Updated to store data in a single Redis hash
       def store_transformed_data(record_id, data)
-        redis_key = "sync:#{@sync.id}:transformed:#{record_id}"
-        redis.set(redis_key, data.to_json)
-        redis.expire(redis_key, 7.days.to_i)
+        # Store the data with the record_id as the hash field
+        redis.hset(@redis_key, record_id.to_s, data.to_json)
+        redis.expire(@redis_key, 7.days.to_i)
       end
 
       def redis

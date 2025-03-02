@@ -35,60 +35,71 @@ module Temporal
           process_write_records
           { success: true }
         rescue StandardError => e
+          activity.logger.error("Failed to process write records: #{e.message}")
+
           { success: false, error: e.message }
         end
       end
 
       private
 
-      # rubocop:disable Metrics/AbcSize
+      # Efficiently process write records in predetermined batches
       def process_write_records
-        record_ids = @sync_run.sync_write_records.where(status: :pending).pluck(:id)
-        total_batches = (record_ids.size.to_f / BATCH_SIZE).ceil
+        # Get pending records count and calculate batches
+        total_records = @sync_run.sync_write_records.where(status: :pending).count
+        total_batches = (total_records.to_f / BATCH_SIZE).ceil
 
-        processed_records = { records: [], write_record_ids: [] }
-
-        record_ids.each_slice(BATCH_SIZE).with_index(1) do |batch_ids, batch_number|
+        # Process each batch with a clear iteration pattern
+        total_batches.times do |batch_index|
           activity.heartbeat
-          process_batch(batch_ids, processed_records)
 
-          # Store batch data in Redis when we reach BATCH_SIZE or it's the last batch
-          if processed_records[:records].size >= BATCH_SIZE || batch_number == total_batches
-            store_batch_data(processed_records, batch_number)
-            processed_records = { records: [], write_record_ids: [] }
-          end
+          batch_number = batch_index + 1
+          offset = batch_index * BATCH_SIZE
+
+          # Load and process this batch
+          process_batch(batch_number, offset)
         end
 
+        # Start the write workflow with the calculated batch count
         start_write_workflow(total_batches)
       end
-      # rubocop:enable Metrics/AbcSize
 
-      def process_batch(batch_ids, processed_records)
-        Parallel.each(batch_ids, in_threads: 10) do |record_id|
-          ActiveRecord::Base.connection_pool.with_connection do
-            record = @sync_run.sync_write_records.find(record_id)
-            processed_records[:records] << record.data
-            processed_records[:write_record_ids] << record.id
-            activity.heartbeat
-          rescue StandardError => e
-            handle_record_error(record_id, e)
-          ensure
-            ActiveRecord::Base.connection_pool.release_connection
-          end
-        end
+      # Process a single batch of records
+      def process_batch(batch_number, offset)
+        # Fetch a batch of records efficiently
+        records_batch = fetch_records_batch(offset)
+        return if records_batch.empty?
+
+        # Prepare the batch data structure
+        processed_records = {
+          records: records_batch.map(&:data),
+          write_record_ids: records_batch.map(&:id)
+        }
+
+        # Store batch in Redis
+        store_batch_data(processed_records, batch_number)
       end
 
+      # Fetch a batch of records from the database
+      def fetch_records_batch(offset)
+        @sync_run.sync_write_records
+                 .where(status: :pending)
+                 .select(:id, :data)
+                 .limit(BATCH_SIZE)
+                 .offset(offset)
+                 .to_a
+      end
+
+      # Store batch data in Redis - Fixed to properly handle Redis operations
       def store_batch_data(processed_records, batch_number)
         workflow_id = "write_data_#{@sync_run.id}"
         redis_key = "#{workflow_id}:#{batch_number}"
-        @workflow_store.store_workflow_data(redis_key, processed_records)
-      end
 
-      def handle_record_error(record_id, error)
-        activity.logger.error(
-          "Failed to process record #{record_id}: #{error.message}"
-        )
-        raise error
+        # Store data first
+        @workflow_store.store_workflow_data(redis_key, processed_records)
+      rescue Redis::CommandError => e
+        activity.logger.error("Redis error while storing batch data: #{e.message}")
+        raise e
       end
 
       def start_write_workflow(total_batches)

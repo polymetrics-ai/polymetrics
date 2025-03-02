@@ -11,7 +11,7 @@ module Ai
 
             <connectors>
               Available connectors in the workspace:
-              #{connectors.map { |connector| connector.attributes.to_yaml }}
+              #{format_connector_details(connectors)}
             </connectors>
 
             <instructions>

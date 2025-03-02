@@ -13,9 +13,14 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
                   source_defined_primary_key: ["id"])
   end
   let(:sync_run) { create(:sync_run, sync: sync) }
-  let(:sync_read_record_data) { [{ "id" => 1, "name" => "Test" }] }
-  let(:redis) { Redis.new(url: "redis://localhost:6379/1") }
-  let(:mock_incremental_service) { instance_double(Etl::Extractors::ConvertReadRecord::IncrementalDedupService, call: true) }
+  let(:redis_key) { "sync:#{sync.id}:run:#{sync_run.id}:transformed" }
+  let(:record_data) { [{ "id" => 1, "name" => "Test" }] }
+  let(:mock_incremental_service) { instance_double(Etl::Extractors::ConvertReadRecord::IncrementalDedupService) }
+
+  before do
+    allow(Etl::Extractors::ConvertReadRecord::IncrementalDedupService).to receive(:new).and_return(mock_incremental_service)
+    allow(mock_incremental_service).to receive(:call).and_return({ success: true, transformation_completed: true })
+  end
 
   describe "#execute" do
     context "when extraction is not completed" do
@@ -63,134 +68,92 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
     end
 
     context "when sync_run has read records to process" do
-      let!(:sync_read_record) do
-        create(:sync_read_record, sync: sync, sync_run: sync_run, data: sync_read_record_data,
+      let(:sync_read_record) do
+        create(:sync_read_record, sync: sync, sync_run: sync_run, data: { "original" => "data" },
                                   extraction_completed_at: Time.current)
       end
 
       before do
+        sync_read_record
         sync_run.update!(extraction_completed: true, total_records_read: 1)
-
-        # Store transformed data in Redis
-        redis_key = "sync:#{sync.id}:transformed:#{sync_read_record.id}"
-        redis.set(redis_key, sync_read_record_data.to_json)
       end
 
-      after do
-        redis.flushdb
-      end
+      it "initializes the incremental dedup service with correct parameters" do
+        expect(Etl::Extractors::ConvertReadRecord::IncrementalDedupService).to receive(:new)
+          .with(sync_run, activity_context)
+          .and_return(mock_incremental_service)
 
-      it "processes records and updates sync_run status" do
-        result = activity.execute(sync_run.id)
-
-        expect(result[:success]).to be true
-        expect(result[:transformation_completed]).to be true
-      end
-
-      it "creates write records for each data entry" do
-        expect { activity.execute(sync_run.id) }
-          .to change(SyncWriteRecord, :count).by(1)
-      end
-
-      it "marks read record as processed" do
         activity.execute(sync_run.id)
-        expect(sync_read_record.reload.extraction_completed_at).to be_present
+      end
+
+      it "calls the incremental dedup service" do
+        expect(mock_incremental_service).to receive(:call)
+
+        activity.execute(sync_run.id)
+      end
+
+      it "returns the result from the incremental dedup service" do
+        service_result = {
+          success: true,
+          transformation_completed: true,
+          custom_field: "test value"
+        }
+
+        allow(mock_incremental_service).to receive(:call).and_return(service_result)
+
+        result = activity.execute(sync_run.id)
+        expect(result).to eq(service_result)
       end
     end
 
-    context "when some records fail to process" do
+    context "when an error occurs during processing" do
+      let(:sync_read_record) do
+        create(:sync_read_record, sync: sync, sync_run: sync_run,
+                                  extraction_completed_at: Time.current)
+      end
+
       before do
-        sync_run.update!(extraction_completed: true, total_records_read: 2)
-
-        # Create valid record and store its transformed data in Redis
-        valid_record = create(:sync_read_record,
-                              sync: sync,
-                              sync_run: sync_run,
-                              data: sync_read_record_data,
-                              extraction_completed_at: Time.current)
-
-        redis_key = "sync:#{sync.id}:transformed:#{valid_record.id}"
-        redis.set(redis_key, sync_read_record_data.to_json)
-
-        # Create invalid record that will fail
-        invalid_record = create(:sync_read_record,
-                                sync: sync,
-                                sync_run: sync_run,
-                                data: "invalid",
-                                extraction_completed_at: Time.current)
-
-        invalid_record_key = "sync:#{sync.id}:transformed:#{invalid_record.id}"
-        redis.set(invalid_record_key, invalid_record.data.to_json)
+        sync_read_record
+        sync_run.update!(extraction_completed: true, total_records_read: 1)
+        allow(mock_incremental_service).to receive(:call).and_raise(StandardError.new("Test error"))
       end
 
-      after do
-        redis.flushdb
-      end
+      it "logs the error and returns a failure result" do
+        expect(logger).to receive(:error) do |message|
+          expect(message).to include("Failed to convert records for sync run #{sync_run.id}: Test error")
+        end
 
-      it "returns partial success with warnings" do
         result = activity.execute(sync_run.id)
 
-        expect(result[:success]).to be true
-        expect(result[:warning]).to include("1 out of 2 records failed to convert")
-        expect(result[:failed_records]).to be_present
-      end
-    end
-  end
-
-  describe "#create_write_records" do
-    context "with invalid data format" do
-      let!(:sync_read_record) { create(:sync_read_record, sync: sync, sync_run: sync_run, data: "invalid") }
-
-      it "logs error and skips record creation" do
-        expect(Rails.logger).to receive(:error).with("Invalid data format for sync_read_record #{sync_read_record.id}")
-
-        expect do
-          activity.send(:create_write_records, sync_read_record)
-        end.not_to change(SyncWriteRecord, :count)
+        expect(result).to eq({
+                               success: false,
+                               error: "Test error"
+                             })
       end
     end
 
-    context "with empty data" do
-      let!(:sync_read_record) do
-        create(:sync_read_record,
-               sync: sync,
-               sync_run: sync_run,
-               data: [{ "test" => "initial" }])
+    context "with a non-incremental sync" do
+      let(:sync) do
+        create(:sync, connection: connection,
+                      supported_sync_modes: ["incremental_append"],
+                      sync_mode: "incremental_append",
+                      source_defined_primary_key: ["id"])
+      end
+
+      let(:sync_read_record) do
+        create(:sync_read_record, sync: sync, sync_run: sync_run,
+                                  extraction_completed_at: Time.current)
       end
 
       before do
-        sync_read_record.update_column(:data, "[]")
+        sync_read_record
+        sync_run.update!(extraction_completed: true, total_records_read: 1)
       end
 
-      it "skips record creation" do
+      it "raises a NotImplementedError" do
         expect do
-          activity.send(:create_write_records, sync_read_record)
-        end.not_to change(SyncWriteRecord, :count)
-      end
-    end
-
-    context "with valid array data" do
-      let!(:sync_read_record) do
-        create(:sync_read_record,
-               sync: sync,
-               sync_run: sync_run,
-               data: [{ "key1" => "value1" }, { "key2" => "value2" }])
-      end
-
-      it "creates write records for each data entry" do
-        expect do
-          activity.send(:create_write_records, sync_read_record)
-        end.to change(SyncWriteRecord, :count).by(2)
-      end
-
-      it "creates write records with correct associations" do
-        activity.send(:create_write_records, sync_read_record)
-
-        write_record = SyncWriteRecord.last
-        expect(write_record.sync).to eq(sync)
-        expect(write_record.sync_run).to eq(sync_run)
-        expect(write_record.sync_read_record).to eq(sync_read_record)
-        expect(write_record.data).to be_present
+          activity.execute(sync_run.id)
+        end.to raise_error(NotImplementedError, /Non-incremental dedup sync processing is not supported/)
       end
     end
   end
@@ -202,6 +165,14 @@ RSpec.describe Temporal::Activities::ConvertReadRecordActivity do
       expect(retry_policy[:interval]).to eq(1)
       expect(retry_policy[:backoff]).to eq(1)
       expect(retry_policy[:max_attempts]).to eq(3)
+    end
+  end
+
+  describe "timeout settings" do
+    it "has the correct timeout settings" do
+      timeouts = described_class.instance_variable_get(:@timeouts)
+
+      expect(timeouts[:start_to_close]).to eq(3600)
     end
   end
 end
