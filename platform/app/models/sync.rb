@@ -21,7 +21,37 @@ class Sync < ApplicationRecord
   validates :schedule_type, presence: true
   validates :sync_frequency, presence: true, unless: :manual?
 
+  before_destroy :cleanup_redis_keys
+
   def supports_incremental?
     supported_sync_modes.include?("incremental")
+  end
+
+  private
+
+  def cleanup_redis_keys
+    redis = initialize_redis
+    delete_bloom_filter_keys(redis)
+    delete_run_specific_keys(redis)
+    delete_other_sync_keys(redis)
+
+    Rails.logger.info("Cleaned up Redis keys for Sync ##{id}")
+  rescue StandardError => e
+    Rails.logger.error("Failed to cleanup Redis keys for Sync ##{id}: #{e.message}")
+  end
+
+  def delete_bloom_filter_keys(redis)
+    bloom_filter_key = "sync:#{id}:signatures:bloom"
+    redis.del(bloom_filter_key)
+  end
+
+  def delete_run_specific_keys(redis)
+    sync_run_keys = redis.keys("sync:#{id}:run:*")
+    redis.del(*sync_run_keys) if sync_run_keys.any?
+  end
+
+  def delete_other_sync_keys(redis)
+    other_sync_keys = redis.keys("sync:#{id}:*")
+    redis.del(*other_sync_keys) if other_sync_keys.any?
   end
 end

@@ -5,6 +5,7 @@ module Etl
     module ConvertReadRecord
       class ProcessDeletionsService
         REDIS_KEY_TTL = 7.days.to_i # Keep sync run data for 7 days
+        BATCH_SIZE = 1000 # Process records in batches
 
         def initialize(sync_run, sync_read_record_id, sync_read_record_data)
           @sync_run = sync_run
@@ -31,55 +32,89 @@ module Etl
           return [] if deleted_signatures.empty?
 
           # Exclude records that were already processed as deletions or creates in this sync run
-          existing_processed_signatures = SyncWriteRecord
-                                          .where(sync_run_id: @sync_run.id)
-                                          .where(destination_action: %i[delete create insert])
-                                          .pluck(:primary_key_signature)
-
-          deleted_signatures - existing_processed_signatures
+          # Use a more efficient query by batching
+          exclude_already_processed_signatures(deleted_signatures)
         end
 
-        def create_delete_records(signatures)
-          # Fetch the last known state of these records
-          last_known_records = SyncWriteRecord
-                               .where(sync_id: @sync.id, primary_key_signature: signatures)
-                               .where.not(destination_action: :delete)
-                               .order(created_at: :desc)
+        def exclude_already_processed_signatures(signatures)
+          result = signatures.dup
 
-          last_known_records.each do |record|
-            SyncWriteRecord.create!(
-              sync: @sync,
-              sync_run: @sync_run,
+          signatures.each_slice(BATCH_SIZE) do |batch|
+            existing = SyncWriteRecord
+                       .where(sync_run_id: @sync_run.id)
+                       .where(destination_action: %i[delete create insert])
+                       .where(primary_key_signature: batch)
+                       .pluck(:primary_key_signature)
+
+            result -= existing if existing.any?
+          end
+
+          result
+        end
+
+        def create_delete_records(deleted_signatures)
+          deleted_signatures.each_slice(BATCH_SIZE) do |batch_signatures|
+            # Find records to delete in the database
+            records_to_delete = find_records_to_delete(batch_signatures)
+
+            # Skip if nothing to delete
+            next if records_to_delete.empty?
+
+            # Create delete records in bulk
+            create_delete_records_batch(records_to_delete)
+          end
+        end
+
+        def find_records_to_delete(signatures)
+          # Find the latest versions of records with these signatures
+          SyncWriteRecord
+            .where(sync_id: @sync.id, primary_key_signature: signatures)
+            .order(primary_key_signature: :asc, created_at: :desc)
+            .select("DISTINCT ON (primary_key_signature) *")
+        end
+
+        # rubocop:disable Metrics/MethodLength
+        def create_delete_records_batch(records)
+          attributes = records.map do |record|
+            record_with_system_fields = record.data.deep_dup
+            record_with_system_fields["_polymetrics_id"] = record.data_signature
+
+            {
+              sync_id: @sync.id,
+              sync_run_id: @sync_run.id,
               sync_read_record_id: @sync_read_record_id,
-              data: record.data, # Use the last known data for the record
+              data: record_with_system_fields,
               primary_key_signature: record.primary_key_signature,
               data_signature: record.data_signature,
-              destination_action: :delete
-            )
+              destination_action: :delete,
+              created_at: Time.current,
+              updated_at: Time.current
+            }
           end
+
+          SyncWriteRecord.insert_all!(attributes)
+        end
+        # rubocop:enable Metrics/MethodLength
+
+        def previous_sync_run_id
+          @previous_sync_run_id ||= @sync.sync_runs
+                                         .where.not(id: @sync_run.id)
+                                         .where(extraction_completed: true)
+                                         .order(created_at: :desc)
+                                         .limit(1)
+                                         .pick(:id)
+        end
+
+        def previous_sync_run_key
+          "sync:#{@sync.id}:run:#{previous_sync_run_id}:signatures"
+        end
+
+        def current_sync_run_key
+          "sync:#{@sync.id}:run:#{@sync_run.id}:signatures"
         end
 
         def redis
           @redis ||= initialize_redis
-        end
-
-        def current_sync_run_key
-          "sync:#{@sync.id}:run:#{@sync_run.id}:pk_signatures"
-        end
-
-        def previous_sync_run_key
-          return nil unless previous_sync_run_id
-
-          "sync:#{@sync.id}:run:#{previous_sync_run_id}:pk_signatures"
-        end
-
-        def previous_sync_run_id
-          @previous_sync_run_id ||= SyncRun
-                                    .where(sync_id: @sync.id, extraction_completed: true)
-                                    .where(id: ...@sync_run.id)
-                                    .order(id: :desc)
-                                    .limit(1)
-                                    .pick(:id)
         end
       end
     end

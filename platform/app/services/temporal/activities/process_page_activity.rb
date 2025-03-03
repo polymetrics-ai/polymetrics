@@ -68,9 +68,7 @@ module Temporal
       end
 
       def handle_page_error(page_number, error)
-        activity.logger.error(
-          "Failed to process page #{page_number}: #{error.message}"
-        )
+        activity.logger.error("Failed to process page #{page_number}: #{error.message}")
         raise error
       end
 

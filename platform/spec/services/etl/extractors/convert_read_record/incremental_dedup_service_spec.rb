@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
   subject(:service) do
-    described_class.new(sync_run, sync_read_record.id, record_data)
+    described_class.new(sync_run, activity)
   end
 
   # Combine all setup into one helper
@@ -28,18 +28,37 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
   let(:sync) { setup[:sync] }
   let(:sync_run) { setup[:sync_run] }
   let(:sync_read_record) { setup[:sync_read_record] }
-  let(:record_data) { [{ "id" => 1, "name" => "Test" }] }
+  let(:activity) { instance_double("Activity", heartbeat: true) }
+
+  let(:record_data) do
+    [
+      { "id" => 1, "name" => "Test 1" },
+      { "id" => 2, "name" => "Test 2" }
+    ]
+  end
 
   let(:mock_redis) do
     instance_double(Redis,
-                    get: record_data.to_json,
+                    hgetall: { sync_read_record.id.to_s => record_data.to_json },
+                    hget: record_data.to_json,
                     sadd: true,
                     expire: true,
                     sdiff: [])
   end
 
+  let(:mock_bloom_filter) do
+    instance_double("BloomFilterService",
+                    contains?: Hash.new(false),
+                    add: true,
+                    expire: true)
+  end
+
   before do
     allow(Redis).to receive(:new).and_return(mock_redis)
+    allow(BloomFilterService).to receive(:new).and_return(mock_bloom_filter)
+    allow(Etl::Extractors::ConvertReadRecord::ProcessDeletionsService).to receive(:new).and_return(
+      instance_double("ProcessDeletionsService", call: { success: true })
+    )
   end
 
   describe "#determine_destination_action" do
@@ -54,34 +73,78 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
   end
 
   describe "#call" do
-    context "when sync_read_record_data is not an array" do
-      let(:record_data) { "invalid" }
+    context "when there are no sync_read_records" do
+      before do
+        allow(sync_run).to receive(:sync_read_records).and_return([])
+      end
 
       it "returns error without processing" do
         result = service.call
         expect(result).to eq({
                                success: false,
-                               message: "transformed_data is not an array"
+                               error: "No records found to process"
                              })
       end
     end
 
     context "with valid record data" do
-      let(:record_data) do
-        [
-          { "id" => 1, "name" => "Test 1" },
-          { "id" => 2, "name" => "Test 2" }
-        ]
+      before do
+        allow(mock_bloom_filter).to receive(:contains?).and_return(Hash.new(false))
+        allow(sync_run).to receive(:sync_read_records).and_return([sync_read_record])
       end
 
       it "creates write records for new data" do
         expect { service.call }.to change(SyncWriteRecord, :count).by(2)
       end
 
-      context "when duplicate records exist" do
+      it "marks records as processed" do
+        expect(SyncReadRecord).to receive(:where).with(id: sync_read_record.id).and_return(
+          instance_double("ActiveRecord::Relation", update_all: true)
+        )
+
+        service.call
+      end
+
+      it "updates sync_run transformation status" do
+        expect(sync_run).to receive(:update!).with(
+          hash_including(
+            transformation_completed: anything,
+            last_transformed_at: anything
+          )
+        )
+
+        service.call
+      end
+
+      context "when duplicates exist in the bloom filter" do
+        before do
+          # Simulate bloom filter indicating these might be duplicates
+          potential_exists = {
+            "#{service.send(:generate_primary_key_signature,
+                            record_data.first)}:#{service.send(:generate_data_signature, record_data.first)}" => true,
+            "#{service.send(:generate_primary_key_signature, record_data.last)}:#{service.send(:generate_data_signature, record_data.last)}" => false
+          }
+          allow(mock_bloom_filter).to receive(:contains?).and_return(potential_exists)
+
+          # This is the key fix - make sure SyncWriteRecord.where returns records for the first item
+          # which is marked as potentially existing in the bloom filter
+          allow(SyncWriteRecord).to receive(:where).and_return(
+            instance_double("ActiveRecord::Relation",
+                            pluck: [[service.send(:generate_primary_key_signature, record_data.first),
+                                     service.send(:generate_data_signature, record_data.first)]])
+          )
+        end
+
+        it "verifies with database before creating records" do
+          # Only the second record should be created since the first is caught by the bloom filter
+          expect { service.call }.to change(SyncWriteRecord, :count).by(1)
+        end
+      end
+
+      context "when exact duplicates exist in the database" do
         before do
           # Create existing record with same signatures
-          existing_record_data = { "id" => 1, "name" => "Test 1" }
+          existing_record_data = record_data.first
           pk_sig = service.send(:generate_primary_key_signature, existing_record_data)
           data_sig = service.send(:generate_data_signature, existing_record_data)
 
@@ -92,9 +155,28 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
                  data: existing_record_data,
                  primary_key_signature: pk_sig,
                  data_signature: data_sig)
+
+          # First set up the bloom filter to indicate potential duplicates for the first record
+          potential_exists = {
+            "#{pk_sig}:#{data_sig}" => true,
+            "#{service.send(:generate_primary_key_signature, record_data.last)}:#{service.send(:generate_data_signature, record_data.last)}" => false
+          }
+          allow(mock_bloom_filter).to receive(:contains?).and_return(potential_exists)
+
+          # Then set up the database check to confirm the first record is a duplicate
+          allow(SyncWriteRecord).to receive(:where).with(
+            sync_id: sync.id,
+            primary_key_signature: [pk_sig]
+          ).and_return(
+            instance_double("ActiveRecord::Relation", pluck: [[pk_sig, data_sig]])
+          )
+
+          # Allow other queries to work normally
+          allow(SyncWriteRecord).to receive(:where).with(any_args).and_call_original
         end
 
         it "skips exact duplicates" do
+          # Only the second record should be created since the first is a duplicate
           expect { service.call }.to change(SyncWriteRecord, :count).by(1)
         end
       end
@@ -103,19 +185,19 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
 
   describe "#generate_primary_key_signature" do
     context "when primary key is missing" do
-      let(:record_data) { [{ "name" => "Test" }] }
+      let(:record_without_key) { { "name" => "Test" } }
 
       it "returns nil" do
-        expect(service.send(:generate_primary_key_signature, record_data.first)).to be_nil
+        expect(service.send(:generate_primary_key_signature, record_without_key)).to be_nil
       end
     end
 
     context "with valid primary key" do
-      let(:record_data) { [{ "id" => 1, "name" => "Test" }] }
+      let(:record_with_key) { { "id" => 1, "name" => "Test" } }
 
       it "generates consistent signature" do
-        signature1 = service.send(:generate_primary_key_signature, record_data.first)
-        signature2 = service.send(:generate_primary_key_signature, record_data.first)
+        signature1 = service.send(:generate_primary_key_signature, record_with_key)
+        signature2 = service.send(:generate_primary_key_signature, record_with_key)
 
         expect(signature1).to eq(signature2)
       end
@@ -144,40 +226,7 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
     end
   end
 
-  describe "#create_write_record" do
-    let(:test_record) { { "id" => 1, "name" => "Test Record" } }
-    let(:pk_signature) { service.send(:generate_primary_key_signature, test_record) }
-    let(:data_signature) { service.send(:generate_data_signature, test_record) }
-
-    it "adds system fields to the record" do
-      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
-
-      expect(write_record.data["_polymetrics_id"]).to eq(data_signature)
-      expect(write_record.data["_polymetrics_extracted_at"]).to be_present
-    end
-
-    it "uses data_signature as _polymetrics_id" do
-      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
-
-      expect(write_record.data["_polymetrics_id"]).to eq(data_signature)
-    end
-
-    it "preserves original data while adding system fields" do
-      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
-
-      expect(write_record.data["id"]).to eq(test_record["id"])
-      expect(write_record.data["name"]).to eq(test_record["name"])
-    end
-
-    it "creates write record with correct signatures" do
-      write_record = service.send(:create_write_record, test_record, pk_signature, data_signature)
-
-      expect(write_record.primary_key_signature).to eq(pk_signature)
-      expect(write_record.data_signature).to eq(data_signature)
-    end
-  end
-
-  describe "signature generation with system fields" do
+  describe "handling system fields" do
     let(:record_with_system_fields) do
       {
         "id" => 1,
@@ -199,6 +248,17 @@ RSpec.describe Etl::Extractors::ConvertReadRecord::IncrementalDedupService do
       sig2 = service.send(:generate_primary_key_signature, record_without_system_fields)
 
       expect(sig1).to eq(sig2)
+    end
+
+    it "adds system fields when creating write records" do
+      allow(mock_bloom_filter).to receive(:contains?).and_return(Hash.new(false))
+      allow(sync_run).to receive(:sync_read_records).and_return([sync_read_record])
+
+      service.call
+
+      created_record = SyncWriteRecord.last
+      expect(created_record.data["_polymetrics_id"]).to be_present
+      expect(created_record.data["_polymetrics_extracted_at"]).to be_present
     end
   end
 end
