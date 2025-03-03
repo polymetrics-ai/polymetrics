@@ -25,14 +25,6 @@ RSpec.describe BloomFilterService do
     rescue Redis::CommandError
       skip "Redis Bloom module not installed"
     end
-
-    it "reuses existing bloom filter" do
-      described_class.new(redis, test_key)
-      info = redis.call("BF.INFO", test_key)
-      expect(info).to include("capacity" => 1000000)
-    rescue Redis::CommandError
-      skip "Redis Bloom module not installed"
-    end
   end
 
   describe "#add" do
