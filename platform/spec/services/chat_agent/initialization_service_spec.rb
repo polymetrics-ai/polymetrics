@@ -35,7 +35,7 @@ RSpec.describe ChatAgent::InitializationService do
       message = chat.messages.first
       expect(message.content).to eq(query)
       expect(message.role).to eq("user")
-      expect(message.message_type).to eq("text")
+      expect(message.message_type).to eq("question")
     end
 
     it "starts a temporal workflow with the correct parameters" do

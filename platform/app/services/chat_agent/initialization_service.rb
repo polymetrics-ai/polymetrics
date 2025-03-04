@@ -43,7 +43,7 @@ module ChatAgent
       chat.messages.create!(
         content: @query,
         role: :user,
-        message_type: :text
+        message_type: :question
       )
     end
 
