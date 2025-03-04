@@ -55,7 +55,7 @@ RSpec.describe Api::V1::Agents::DataAgentController, type: :controller do
             "last_message" => {
               "content" => "Sample query",
               "role" => "user",
-              "message_type" => "text",
+              "message_type" => "question",
               "created_at" => message.created_at.utc.to_s
             }
           }
