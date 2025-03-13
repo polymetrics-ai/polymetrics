@@ -17,8 +17,8 @@ RSpec.describe Temporal::Activities::Agents::DataAgent::ChatProcessingActivity d
         end.to change(chat.messages, :count).by(1)
 
         message = chat.messages.last
-        expect(message.content).to eq(content["description"])
-        expect(message.role).to eq("assistant")
+        expect(message.content).to eq(content.to_s)
+        expect(message.role).to eq("system")
       end
 
       it "updates tool calls when present" do

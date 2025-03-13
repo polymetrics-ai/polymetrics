@@ -1,0 +1,91 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://openrouter.ai/api/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"messages":[{"role":"user","content":"You are a data analysis assistant.
+        Generate a comprehensive Markdown-formatted summary based on the following:\n\n**User
+        Query**: \nProvide quarterly sales summary\n\n**Data Results**:\n---\n- :id:
+        1\n  :content: ''Q1 sales: $1.2M''\n- :id: 2\n  :content: ''Q2 sales: $1.5M''\n\n\n**Additional
+        Context**:\nFocus on growth trends\n\n**Requirements**:\n- Structure the summary
+        using Markdown with these sections:\n  ## Analysis Overview\n  ## Key Insights\n  ##
+        Data Quality Notes\n- Use bullet points for lists\n- Highlight important trends/patterns\n-
+        Flag any data inconsistencies or missing values\n- Maintain professional tone
+        for business users\n- Keep insights actionable and data-driven\n\nYou must
+        format your output as a JSON value that adheres to a given \"JSON Schema\"
+        instance.\n\n\"JSON Schema\" is a declarative language that allows you to
+        annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
+        instance {\"properties\": {\"foo\": {\"description\": \"a list of test words\",
+        \"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould
+        match an object with one required property, \"foo\". The \"type\" property
+        specifies \"foo\" must be an \"array\", and the \"description\" property semantically
+        describes it as \"a list of test words\". The items within \"foo\" must be
+        strings.\nThus, the object {\"foo\": [\"bar\", \"baz\"]} is a well-formatted
+        instance of this example \"JSON Schema\". The object {\"properties\": {\"foo\":
+        [\"bar\", \"baz\"]}}} is not well-formatted.\n\nYour output will be parsed
+        and type-checked according to the provided schema instance, so make sure all
+        fields in your output match the schema exactly and there are no trailing commas!\n\nHere
+        is the JSON Schema instance your output must adhere to. Include the enclosing
+        markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\",\"description\":\"Markdown
+        formatted summary containing data analysis, key insights, and quality notes\"}},\"required\":[\"summary\"],\"additionalProperties\":false}\n```\n\n"}],"model":"google/gemini-2.0-flash-exp:free","temperature":0.7,"n":1}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <AUTH_TOKEN>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 11 Mar 2025 18:41:38 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Clerk-Auth-Message:
+      - Invalid JWT form. A JWT consists of three parts separated by dots. (reason=token-invalid,
+        token-carrier=header)
+      X-Clerk-Auth-Reason:
+      - token-invalid
+      X-Clerk-Auth-Status:
+      - signed-out
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 91ed2fe3bce97f62-MAA
+    body:
+      encoding: ASCII-8BIT
+      string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n{\"id\":\"gen-1741718499-wMqDQ0j8jVuCAXFw5D7S\",\"provider\":\"Google
+        AI Studio\",\"model\":\"google/gemini-2.0-flash-exp\",\"object\":\"chat.completion\",\"created\":1741718499,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"STOP\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
+        \ \\\"summary\\\": \\\"## Analysis Overview\\\\nThis report provides a quarterly
+        sales summary, focusing on growth trends between Q1 and Q2.\\\\n\\\\n## Key
+        Insights\\\\n*   **Sales Growth:** Sales increased from $1.2M in Q1 to $1.5M
+        in Q2, representing a significant growth trend.\\\\n*   **Growth Rate:** The
+        sales growth rate from Q1 to Q2 is approximately 25% (($1.5M - $1.2M) / $1.2M).\\\\n\\\\n##
+        Data Quality Notes\\\\n*   **Limited Data:** The analysis is based on only
+        two quarters of data (Q1 and Q2). A more comprehensive analysis would require
+        additional historical data to identify long-term trends and seasonality.\\\\n*
+        \  **Missing Quarters:** Data for Q3 and Q4 are missing. This limits the ability
+        to perform a full year-over-year comparison or forecast future performance.\\\\n*
+        \  **No Granularity:** The data only provides total sales figures per quarter.
+        Further analysis could benefit from breaking down sales by product, region,
+        or customer segment.\\\"\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":461,\"completion_tokens\":243,\"total_tokens\":704}}"
+  recorded_at: Tue, 11 Mar 2025 18:41:42 GMT
+recorded_with: VCR 6.3.1

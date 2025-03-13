@@ -1,0 +1,90 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://openrouter.ai/api/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"messages":[{"role":"user","content":"You are a data analysis assistant.
+        Generate a comprehensive Markdown-formatted summary based on the following:\n\n**User
+        Query**: \nSales summary\n\n**Data Results**:\n---\n- id: 1\n  amount: 100\n-
+        id: 2\n  amount: 200\n\n\n\n\n**Requirements**:\n- Structure the summary using
+        Markdown with these sections:\n  ## Analysis Overview\n  ## Key Insights\n  ##
+        Data Quality Notes\n- Use bullet points for lists\n- Highlight important trends/patterns\n-
+        Flag any data inconsistencies or missing values\n- Maintain professional tone
+        for business users\n- Keep insights actionable and data-driven\n\nYou must
+        format your output as a JSON value that adheres to a given \"JSON Schema\"
+        instance.\n\n\"JSON Schema\" is a declarative language that allows you to
+        annotate and validate JSON documents.\n\nFor example, the example \"JSON Schema\"
+        instance {\"properties\": {\"foo\": {\"description\": \"a list of test words\",
+        \"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"foo\"]}}\nwould
+        match an object with one required property, \"foo\". The \"type\" property
+        specifies \"foo\" must be an \"array\", and the \"description\" property semantically
+        describes it as \"a list of test words\". The items within \"foo\" must be
+        strings.\nThus, the object {\"foo\": [\"bar\", \"baz\"]} is a well-formatted
+        instance of this example \"JSON Schema\". The object {\"properties\": {\"foo\":
+        [\"bar\", \"baz\"]}}} is not well-formatted.\n\nYour output will be parsed
+        and type-checked according to the provided schema instance, so make sure all
+        fields in your output match the schema exactly and there are no trailing commas!\n\nHere
+        is the JSON Schema instance your output must adhere to. Include the enclosing
+        markdown codeblock:\n```json\n{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\",\"description\":\"Markdown
+        formatted summary containing data analysis, key insights, and quality notes\"}},\"required\":[\"summary\"],\"additionalProperties\":false}\n```\n\n"}],"model":"google/gemini-2.0-flash-exp:free","temperature":0.7,"n":1}'
+    headers:
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <AUTH_TOKEN>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 11 Mar 2025 18:46:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Clerk-Auth-Message:
+      - Invalid JWT form. A JWT consists of three parts separated by dots. (reason=token-invalid,
+        token-carrier=header)
+      X-Clerk-Auth-Reason:
+      - token-invalid
+      X-Clerk-Auth-Status:
+      - signed-out
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 91ed3773787d7fd3-MAA
+    body:
+      encoding: ASCII-8BIT
+      string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
+        \        \n\n         \n{\"id\":\"gen-1741718810-mLG7w1UxtbXGVy87mq2o\",\"provider\":\"Google
+        AI Studio\",\"model\":\"google/gemini-2.0-flash-exp\",\"object\":\"chat.completion\",\"created\":1741718810,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"STOP\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n
+        \ \\\"summary\\\": \\\"## Analysis Overview\\\\n\\\\nThis report provides
+        a sales summary based on the provided data. The analysis focuses on the total
+        sales amount and individual transaction values.\\\\n\\\\n## Key Insights\\\\n\\\\n*
+        \  Total sales amount: $300 (calculated as $100 + $200).\\\\n*   Two sales
+        transactions were recorded.\\\\n*   Transaction IDs are 1 and 2, with amounts
+        of $100 and $200 respectively.\\\\n\\\\n## Data Quality Notes\\\\n\\\\n*   The
+        dataset is small (only two records), limiting the scope of analysis.\\\\n*
+        \  There are no explicitly missing values identified in the provided data.
+        However, additional fields such as customer information, product details,
+        and timestamps would provide a more comprehensive sales analysis.\\\\n*   Future
+        analysis could benefit from a larger dataset covering a longer period to identify
+        trends and patterns.\\\"\\n}\\n```\",\"refusal\":null}}],\"usage\":{\"prompt_tokens\":431,\"completion_tokens\":200,\"total_tokens\":631}}"
+  recorded_at: Tue, 11 Mar 2025 18:46:53 GMT
+recorded_with: VCR 6.3.1

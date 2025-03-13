@@ -9,7 +9,7 @@ class Message < ApplicationRecord
   validates :message_type, presence: true
 
   enum role: { user: 0, system: 1, assistant: 2 }
-  enum message_type: { text: 0, pipeline: 1, question: 2 }
+  enum message_type: { text: 0, pipeline: 1, question: 2, summary: 3 }
 
   scope :pending_questions, -> { where(message_type: :question, answered: false) }
 end
