@@ -34,7 +34,10 @@ module Temporal
                 options: { task_queue: "platform_queue", workflow_id: process_assistant_query_workflow_id }
               )
 
-              save_response(process_result)
+              summary_result = Activities::Agents::DataAgent::GenerateSummaryActivity.execute!(chat_id: @chat_id)
+
+              status = summary_result[:status]
+              status == :success ? save_response(summary_result[:summary], process_result) : handle_error(summary_result[:error])
               handle_success(process_result)
             rescue StandardError => e
               handle_error(e.message)
@@ -60,10 +63,10 @@ module Temporal
             )
           end
 
-          def save_response(response)
+          def save_response(summary, response)
             Activities::Agents::DataAgent::ChatProcessingActivity.execute!(
               chat_id: @chat_id,
-              content: response[:content],
+              content: summary,
               tool_calls: response[:tool_calls]
             )
           end

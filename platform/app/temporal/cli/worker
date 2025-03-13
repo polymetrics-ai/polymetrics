@@ -43,4 +43,5 @@ worker.register_activity(Temporal::Activities::Agents::DataAgent::ChatProcessing
 worker.register_activity(Temporal::Activities::Agents::DataAgent::CreateQueryExecutionActivity)
 worker.register_activity(Temporal::Activities::Agents::DataAgent::SqlGenerationActivity)
 worker.register_activity(Temporal::Activities::Agents::DataAgent::CheckConnectionHealthActivity)
+worker.register_activity(Temporal::Activities::Agents::DataAgent::GenerateSummaryActivity)
 worker.start

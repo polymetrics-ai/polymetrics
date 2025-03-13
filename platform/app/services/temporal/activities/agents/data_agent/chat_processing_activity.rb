@@ -31,11 +31,12 @@ module Temporal
 
           private
 
+          # Update this to accomaodate when we don't have a summary and only pipeline was created
           def create_success_message(chat, content)
             chat.messages.create!(
-              content: content["description"],
-              role: :assistant,
-              message_type: :text
+              content: content,
+              role: :system,
+              message_type: :summary
             )
           end
 

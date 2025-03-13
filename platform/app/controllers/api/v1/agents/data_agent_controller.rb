@@ -27,7 +27,7 @@ module Api
                                   .where(user: current_user)
                                   .find(params[:chat_id])
 
-          render json: ChatMessagesBlueprint.render_with_data(chat.messages)
+          render json: ChatMessagesBlueprint.render_with_data(chat.messages.order(created_at: :asc))
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Chat not found" }, status: :not_found
         end

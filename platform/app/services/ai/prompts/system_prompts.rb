@@ -16,6 +16,14 @@ module Ai
           Ai::Prompts::Tools::QueryGenerationPrompt.content(destination_database_schemas: destination_database_schemas, json_schemas: json_schemas,
                                                             query_requirements: query_requirements)
         end
+
+        def summary_generation(user_query:, data_results:, additional_context: nil)
+          Ai::Prompts::Tools::SummaryGenerationPrompt.content(
+            user_query: user_query,
+            data_results: data_results,
+            additional_context: additional_context
+          )
+        end
       end
     end
   end

@@ -16,7 +16,7 @@ RSpec.describe Message, type: :model do
 
   describe "enums" do
     it { is_expected.to define_enum_for(:role).with_values(user: 0, system: 1, assistant: 2) }
-    it { is_expected.to define_enum_for(:message_type).with_values(text: 0, pipeline: 1, question: 2) }
+    it { is_expected.to define_enum_for(:message_type).with_values(text: 0, pipeline: 1, question: 2, summary: 3) }
   end
 
   describe "scopes" do

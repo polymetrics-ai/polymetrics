@@ -24,6 +24,7 @@ RSpec.describe Temporal::Workflows::Agents::DataAgent::ChatProcessingWorkflow do
     allow(Temporal::Activities::Agents::DataAgent::ProcessMessageActivity).to receive(:execute!)
     allow(Temporal::Activities::Agents::DataAgent::ChatProcessingActivity).to receive(:execute!)
     allow(Temporal::Activities::Agents::DataAgent::CheckConnectionHealthActivity).to receive(:execute!)
+    allow(Temporal::Activities::Agents::DataAgent::GenerateSummaryActivity).to receive(:execute!)
     allow(Temporal::Workflows::Agents::DataAgent::ProcessAssistantQueryWorkflow).to receive(:execute!)
   end
 
@@ -42,6 +43,8 @@ RSpec.describe Temporal::Workflows::Agents::DataAgent::ChatProcessingWorkflow do
           .and_return(mock_response)
         allow(Temporal::Activities::Agents::DataAgent::CheckConnectionHealthActivity).to receive(:execute!)
           .and_return(recently_synced_healthy_connection_ids: [])
+        allow(Temporal::Activities::Agents::DataAgent::GenerateSummaryActivity).to receive(:execute!)
+          .and_return(summary: "Test summary")
       end
 
       it "executes the full processing flow" do

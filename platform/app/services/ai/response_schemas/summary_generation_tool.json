@@ -1,0 +1,11 @@
+{
+	"type": "object",
+	"properties": {
+		"summary": {
+			"type": "string",
+			"description": "Markdown formatted summary containing data analysis, key insights, and quality notes"
+		}
+	},
+	"required": ["summary"],
+	"additionalProperties": false
+}

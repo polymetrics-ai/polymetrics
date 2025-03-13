@@ -13,6 +13,7 @@ import { defineStepper } from '@stepperize/react';
 import { dataAgentSteps } from '@/constants/constants';
 import { useNavigate } from '@tanstack/react-router';
 import { DataAgentThinking } from '@/components/DataAgentThinking';
+import { SummaryMessage } from '@/components/data-agent/SummaryMessage';
 
 const { useStepper } = defineStepper(...dataAgentSteps);
 
@@ -92,11 +93,27 @@ function ChatView() {
                                         />
                                     );
                                 }
-                                return <SystemMessage key={message.id} message={message.content} />;
+                                if (message.message_type === 'summary') {
+                                    return (
+                                        <SummaryMessage
+                                            key={message.id}
+                                            summaryData={message.content}
+                                        />
+                                    );
+                                }
+                                return (
+                                    <SystemMessage
+                                        key={message.id}
+                                        message={message.content}
+                                        isQuestion={message.message_type === 'question'}
+                                    />
+                                );
                             })}
-                            {!messages?.some((msg) => msg.message_type === 'text') && (
-                                <DataAgentThinking />
-                            )}
+                            {!messages?.some(
+                                (msg) =>
+                                    msg.message_type === 'summary' ||
+                                    (msg.message_type === 'question' && msg.role === 'assistant')
+                            ) && <DataAgentThinking />}
                         </div>
 
                         <div className="mt-4 chat-input-transition input-bar-enter-active">
